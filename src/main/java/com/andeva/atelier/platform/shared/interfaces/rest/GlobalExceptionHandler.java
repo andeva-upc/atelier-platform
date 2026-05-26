@@ -30,7 +30,6 @@ public class GlobalExceptionHandler {
 
     /**
      * Creates a new GlobalExceptionHandler with the given MessageSource.
-     * @param messageSource
      */
     public GlobalExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
@@ -55,5 +54,17 @@ public class GlobalExceptionHandler {
                 HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()),
                 prefix + " " + fields
         );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorResponse handleException(IllegalArgumentException exception, Locale locale) {
+        String messageKey = exception.getMessage() != null ? exception.getMessage() : "errors.found";
+        String message = Objects.requireNonNullElse(messageSource.getMessage(messageKey, null, messageKey, locale), messageKey);
+        log.warn("Illegal argument: {}", message);
+        return ErrorResponse.create(
+                exception,
+                HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()),
+                message);
     }
 }
