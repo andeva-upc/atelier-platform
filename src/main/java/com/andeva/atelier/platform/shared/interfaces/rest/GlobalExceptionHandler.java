@@ -56,6 +56,12 @@ public class GlobalExceptionHandler {
         );
     }
 
+    /**
+     * Handles IllegalArgumentException, which occurs when a method receives an argument that is not valid.
+     * @param exception The IllegalArgumentException to handle
+     * @param locale The Locale to use for error message localization
+     * @return An ErrorResponse containing the error details, with a BAD_REQUEST status
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse handleException(IllegalArgumentException exception, Locale locale) {
