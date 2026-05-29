@@ -46,7 +46,8 @@ public interface WorkOrderCommandService {
     Result<WorkOrder, WorkOrderCommandFailure> handle(CompleteTaskCommand command);
 
     /**
-     * Reabre una tarea técnica mediante tu botón especial (pasa a DOING y libera stock temporal).
+     * Reabre una tarea técnica mediante el botón especial en el frontend (retorna la tarea a DOING 
+     * para permitir editar o agregar más productos, manteniendo la reserva de stock temporal intacta).
      */
     Result<WorkOrder, WorkOrderCommandFailure> handle(ReopenTaskCommand command);
 
@@ -54,4 +55,24 @@ public interface WorkOrderCommandService {
      * Paga la orden de trabajo (pasa a PAID y ejecuta el descuento físico definitivo del inventario).
      */
     Result<WorkOrder, WorkOrderCommandFailure> handle(MarkWorkOrderAsPaidCommand command);
+
+    /**
+     * Actualiza los detalles de la orden de trabajo (diagnóstico y kilometraje).
+     */
+    Result<WorkOrder, WorkOrderCommandFailure> handle(UpdateWorkOrderDetailsCommand command);
+
+    /**
+     * Actualiza los detalles de una tarea mecánica.
+     */
+    Result<WorkOrder, WorkOrderCommandFailure> handle(UpdateWorkOrderTaskDetailsCommand command);
+
+    /**
+     * Modifica la cantidad reservada de un producto en una tarea.
+     */
+    Result<WorkOrder, WorkOrderCommandFailure> handle(UpdateProductQuantityInTaskCommand command);
+
+    /**
+     * Elimina lógicamente una orden de trabajo completa (Soft Delete) y libera todas sus reservas de stock.
+     */
+    Result<WorkOrder, WorkOrderCommandFailure> handle(DeleteWorkOrderCommand command);
 }
