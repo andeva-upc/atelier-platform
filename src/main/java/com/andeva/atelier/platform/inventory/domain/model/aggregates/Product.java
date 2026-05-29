@@ -1,4 +1,4 @@
-﻿package com.andeva.atelier.platform.inventory.domain.model.aggregates;
+package com.andeva.atelier.platform.inventory.domain.model.aggregates;
 import com.andeva.atelier.platform.inventory.domain.exceptions.InsufficientStockException;
 import com.andeva.atelier.platform.inventory.domain.model.entities.ProductBatch;
 import com.andeva.atelier.platform.inventory.domain.model.events.ProductCreatedEvent;
@@ -41,6 +41,10 @@ public class Product extends AbstractAggregateRoot<Product> {
         this.batches.add(batch);
         this.currentStock = this.currentStock.add(batch.getAvailableQuantity());
     }
+    /**
+     * Bloquea temporalmente el stock cuando se agrega a una orden de trabajo.
+     * Si no hay suficiente stock físico disponible, lanza excepción.
+     */
     public void reserveStock(InventoryQuantity amount) {
         if (this.currentStock.value() < amount.value()) throw new InsufficientStockException("Not enough stock available");
         this.currentStock = this.currentStock.subtract(amount);
@@ -50,6 +54,11 @@ public class Product extends AbstractAggregateRoot<Product> {
         this.reservedStock = this.reservedStock.subtract(amount);
         this.currentStock = this.currentStock.add(amount);
     }
+    /**
+     * Algoritmo FIFO para despachar el stock.
+     * Recorre los lotes del producto y va restando la cantidad empezando 
+     * por el lote más antiguo hasta cubrir todo lo solicitado.
+     */
     public void dispatchStock(InventoryQuantity amount) {
         this.reservedStock = this.reservedStock.subtract(amount);
         int remainingToDeduct = amount.value();

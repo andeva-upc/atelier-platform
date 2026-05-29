@@ -1,4 +1,4 @@
-﻿package com.andeva.atelier.platform.inventory.interfaces.rest;
+package com.andeva.atelier.platform.inventory.interfaces.rest;
 import com.andeva.atelier.platform.inventory.application.commandservices.ProductCommandService;
 import com.andeva.atelier.platform.inventory.domain.model.aggregates.Product;
 import com.andeva.atelier.platform.inventory.domain.model.commands.CreateProductCommand;
@@ -12,6 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
+/**
+ * Controlador REST para manejar los productos de inventario.
+ * Usamos el command service para delegar toda la lógica de escritura.
+ */
 @RestController
 @RequestMapping("/api/v1/inventory/products")
 public class ProductsController {

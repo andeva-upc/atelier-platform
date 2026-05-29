@@ -1,4 +1,4 @@
-﻿package com.andeva.atelier.platform.inventory.application.internal.eventhandlers;
+package com.andeva.atelier.platform.inventory.application.internal.eventhandlers;
 import com.andeva.atelier.platform.operations.domain.model.events.ProductReservedEvent;
 import com.andeva.atelier.platform.inventory.domain.model.aggregates.Product;
 import com.andeva.atelier.platform.inventory.domain.repositories.ProductRepository;
@@ -13,6 +13,8 @@ public class InventoryStockListener {
     public InventoryStockListener(ProductRepository productRepository) { this.productRepository = productRepository; }
     @EventListener
     public void on(ProductReservedEvent event) {
+        // Escuchamos el evento del modulo de operaciones cuando reservan un repuesto.
+        // Buscamos el producto y le reservamos el stock para que nadie más lo tome.
         Optional<Product> productOpt = productRepository.findById(UUID.fromString(event.productId()));
         productOpt.ifPresent(product -> {
             product.reserveStock(new InventoryQuantity(event.quantity()));
