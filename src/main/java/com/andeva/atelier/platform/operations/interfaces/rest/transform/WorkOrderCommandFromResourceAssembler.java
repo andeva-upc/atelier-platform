@@ -54,4 +54,30 @@ public final class WorkOrderCommandFromResourceAssembler {
                 new Money(resource.unitPrice())
         );
     }
+
+    /**
+     * Convierte el recurso de edición de tarea en un comando UpdateWorkOrderTaskDetailsCommand.
+     */
+    public static UpdateWorkOrderTaskDetailsCommand toCommandFromResource(UUID workOrderId, UUID taskId, UpdateWorkOrderTaskDetailsResource resource) {
+        return new UpdateWorkOrderTaskDetailsCommand(
+                workOrderId,
+                taskId,
+                new ServiceId(resource.serviceId()),
+                new MechanicId(resource.assignedMechanicId()),
+                new TaskDescription(resource.description()),
+                new Money(resource.laborPrice())
+        );
+    }
+
+    /**
+     * Convierte el recurso de edición de cantidad de producto en un comando UpdateProductQuantityInTaskCommand.
+     */
+    public static UpdateProductQuantityInTaskCommand toCommandFromResource(UUID workOrderId, UUID taskId, UUID productId, UpdateProductQuantityInTaskResource resource) {
+        return new UpdateProductQuantityInTaskCommand(
+                workOrderId,
+                taskId,
+                new ProductId(productId),
+                new Quantity(resource.quantity())
+        );
+    }
 }
