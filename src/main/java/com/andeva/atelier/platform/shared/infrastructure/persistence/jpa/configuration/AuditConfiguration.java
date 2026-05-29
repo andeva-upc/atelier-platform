@@ -13,7 +13,6 @@ import java.util.UUID;
  */
 
 @Configuration
-@EnableJpaAuditing
 public class AuditConfiguration {
 
     @Bean
