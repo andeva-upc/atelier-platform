@@ -198,7 +198,17 @@ public class WorkOrder extends AbstractAggregateRoot<WorkOrder> {
     public void completeTask(UUID taskId) {
         WorkOrderTask task = findTaskOrThrow(taskId);
         if (task.complete()) {
-            checkAutoCompletion();
+            // Verificamos si todas las tareas activas están completadas
+            boolean allTasksCompleted = this.tasks.stream()
+                    .filter(t -> !t.isDeleted())
+                    .allMatch(t -> t.getStatus() == WorkOrderTaskStatus.COMPLETED);
+
+            if (allTasksCompleted) {
+                // Auto-completamos la orden completa de trabajo
+                this.status = WorkOrderStatus.COMPLETED;
+            } else {
+                checkAutoCompletion();
+            }
         }
     }
 
@@ -255,6 +265,41 @@ public class WorkOrder extends AbstractAggregateRoot<WorkOrder> {
                 .filter(t -> t.getId().equals(taskId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("operations.error.task.notFound"));
+    }
+
+    public void updateDetails(DiagnosticSummary diagnosticSummary, Mileage mileageIn) {
+        if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
+            throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
+        }
+        this.diagnosticSummary = diagnosticSummary;
+        this.mileageIn = mileageIn;
+    }
+
+    public void updateTaskDetails(UUID taskId, ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money laborPrice) {
+        if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
+            throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
+        }
+        WorkOrderTask task = findTaskOrThrow(taskId);
+        task.updateDetails(serviceId, mechanicId, description, laborPrice);
+        recalculateTotalAmount();
+    }
+
+    public void updateProductQuantityInTask(UUID taskId, ProductId productId, Quantity newQuantity) {
+        if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
+            throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
+        }
+        WorkOrderTask task = findTaskOrThrow(taskId);
+
+        Quantity oldQuantity = task.updateProductQuantity(productId, newQuantity);
+        recalculateTotalAmount();
+
+        // Registramos eventos de reserva/cancelación en base a la diferencia (delta)
+        int delta = newQuantity.value() - oldQuantity.value();
+        if (delta > 0) {
+            this.registerEvent(new ProductReservedEvent(this, this.branchId, productId, new Quantity(delta)));
+        } else if (delta < 0) {
+            this.registerEvent(new ProductReservationCanceledEvent(this, this.branchId, productId, new Quantity(Math.abs(delta))));
+        }
     }
 
     private void checkAutoCompletion() {
