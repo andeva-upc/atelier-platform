@@ -5,9 +5,12 @@ import com.andeva.atelier.platform.operations.application.queryservices.WorkOrde
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
 import com.andeva.atelier.platform.operations.domain.model.commands.*;
 import com.andeva.atelier.platform.operations.domain.model.queries.*;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.DiagnosticSummary;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.ProductId;
 import com.andeva.atelier.platform.operations.interfaces.rest.resources.*;
 import com.andeva.atelier.platform.operations.interfaces.rest.transform.*;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.Mileage;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,6 +56,15 @@ public class WorkOrdersController {
         return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
     }
 
+    @PutMapping("/{id}/tasks/{taskId}")
+    @Operation(summary = "Update mechanic task details")
+    public ResponseEntity<?> updateWorkOrderTaskDetails(@PathVariable UUID id, @PathVariable UUID taskId,
+                                                        @Valid @RequestBody UpdateWorkOrderTaskDetailsResource resource) {
+        var command = WorkOrderCommandFromResourceAssembler.toCommandFromResource(id, taskId, resource);
+        var result = commandService.handle(command);
+        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+    }
+
     @PostMapping("/{id}/tasks/{taskId}/products")
     @Operation(summary = "Add an inventory product/part to a task")
     public ResponseEntity<?> addProductToTask(@PathVariable UUID id, @PathVariable UUID taskId,
@@ -62,11 +74,21 @@ public class WorkOrdersController {
         return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
     }
 
+    @PutMapping("/{id}/tasks/{taskId}/products/{productId}")
+    @Operation(summary = "Update a product's quantity in a task")
+    public ResponseEntity<?> updateProductQuantityInTask(@PathVariable UUID id, @PathVariable UUID taskId,
+                                                         @PathVariable UUID productId,
+                                                         @Valid @RequestBody UpdateProductQuantityInTaskResource resource) {
+        var command = WorkOrderCommandFromResourceAssembler.toCommandFromResource(id, taskId, productId, resource);
+        var result = commandService.handle(command);
+        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+    }
+
     @DeleteMapping("/{id}/tasks/{taskId}/products/{productId}")
     @Operation(summary = "Remove a product/part from a task (releases stock reservation)")
     public ResponseEntity<?> removeProductFromTask(@PathVariable UUID id, @PathVariable UUID taskId,
                                                    @PathVariable UUID productId) {
-        var command = new RemoveProductFromTaskCommand(id, taskId, new com.andeva.atelier.platform.operations.domain.model.valueobjects.ProductId(productId));
+        var command = new RemoveProductFromTaskCommand(id, taskId, new ProductId(productId));
         var result = commandService.handle(command);
         return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
     }
@@ -75,6 +97,14 @@ public class WorkOrdersController {
     @Operation(summary = "Remove a task from the Work Order (releases all task's stock reservations)")
     public ResponseEntity<?> removeTaskFromWorkOrder(@PathVariable UUID id, @PathVariable UUID taskId) {
         var command = new RemoveTaskFromWorkOrderCommand(id, taskId);
+        var result = commandService.handle(command);
+        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Soft delete a Work Order (releases all active stock reservations)")
+    public ResponseEntity<?> deleteWorkOrder(@PathVariable UUID id) {
+        var command = new DeleteWorkOrderCommand(id);
         var result = commandService.handle(command);
         return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
     }
@@ -96,7 +126,7 @@ public class WorkOrdersController {
     }
 
     @PostMapping("/{id}/tasks/{taskId}/reopen")
-    @Operation(summary = "Reopen a completed task (returns task to DOING, clears completedAt, releases stock)")
+    @Operation(summary = "Reopen a completed task (returns task to DOING, clears completedAt, keeps stock reserved)")
     public ResponseEntity<?> reopenTask(@PathVariable UUID id, @PathVariable UUID taskId) {
         var command = new ReopenTaskCommand(id, taskId);
         var result = commandService.handle(command);
@@ -133,5 +163,20 @@ public class WorkOrdersController {
                 .map(WorkOrderResourceFromAggregateAssembler::toResourceFromAggregate)
                 .toList();
         return ResponseEntity.ok(resources);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update Work Order details (diagnostic and mileage)")
+    public ResponseEntity<?> updateWorkOrderDetails(@PathVariable UUID id,
+                                                    @Valid @RequestBody UpdateWorkOrderDetailsResource resource) {
+        // Traducimos los datos de entrada a Value Objects y creamos el comando
+        var command = new UpdateWorkOrderDetailsCommand(
+                id,
+                new DiagnosticSummary(resource.diagnosticSummary()),
+                new Mileage(resource.mileageIn())
+        );
+
+        var result = commandService.handle(command);
+        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
     }
 }
