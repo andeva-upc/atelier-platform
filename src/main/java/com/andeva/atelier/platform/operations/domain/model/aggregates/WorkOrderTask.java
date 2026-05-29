@@ -147,6 +147,43 @@ public class WorkOrderTask {
         return true;
     }
 
+    public void updateDetails(ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money newLaborPrice) {
+        if (this.status == WorkOrderTaskStatus.COMPLETED) {
+            throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
+        }
+        this.serviceId = serviceId;
+        this.assignedMechanicId = mechanicId;
+        this.description = description;
+
+        // Recalculamos el precio total: nuevo labor price + sumatoria de productos activos
+        Money productsTotal = this.products.stream()
+                .filter(p -> !p.isDeleted())
+                .map(WorkOrderTaskProduct::getTotalAmount)
+                .reduce(Money.ZERO, Money::plus);
+        this.price = newLaborPrice.plus(productsTotal);
+    }
+
+    public Quantity updateProductQuantity(ProductId productId, Quantity newQuantity) {
+        if (this.status == WorkOrderTaskStatus.COMPLETED) {
+            throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
+        }
+
+        WorkOrderTaskProduct product = this.products.stream()
+                .filter(p -> p.getProductId().equals(productId) && !p.isDeleted())
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("operations.error.taskProduct.notFound"));
+
+        Quantity oldQuantity = product.getQuantity();
+        Money oldTotalAmount = product.getTotalAmount();
+
+        product.updateQuantity(newQuantity);
+
+        // Ajustamos el precio de la tarea restando el monto anterior y sumando el nuevo
+        this.price = this.price.minus(oldTotalAmount).plus(product.getTotalAmount());
+
+        return oldQuantity;
+    }
+
     public boolean isDeleted() {
         return this.deletedAt != null;
     }
