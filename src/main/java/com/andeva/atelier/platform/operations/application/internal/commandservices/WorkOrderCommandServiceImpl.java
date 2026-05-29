@@ -25,6 +25,24 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
 
     @Override
     @Transactional
+    public Result<WorkOrder, WorkOrderCommandFailure> handle(UpdateWorkOrderDetailsCommand command) {
+        try {
+            WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
+
+            // Ejecutamos la edición en el agregado de forma segura
+            workOrder.updateDetails(command.diagnosticSummary(), command.mileageIn());
+
+            workOrderRepository.save(workOrder);
+            return Result.success(workOrder);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
+        } catch (IllegalStateException e) {
+            return Result.failure(new WorkOrderCommandFailure.InvalidState(e.getMessage()));
+        }
+    }
+
+    @Override
+    @Transactional
     public Result<WorkOrder, WorkOrderCommandFailure> handle(CreateWorkOrderCommand command) {
         try {
             // INVARIANTE: Validamos que no exista otra orden para la misma cita (Appointment)
@@ -182,6 +200,61 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
             workOrderRepository.save(workOrder);
             return Result.success(workOrder);
 
+        } catch (IllegalArgumentException e) {
+            return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
+        } catch (IllegalStateException e) {
+            return Result.failure(new WorkOrderCommandFailure.InvalidState(e.getMessage()));
+        }
+    }
+
+    @Override
+    @Transactional
+    public Result<WorkOrder, WorkOrderCommandFailure> handle(UpdateWorkOrderTaskDetailsCommand command) {
+        try {
+            WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
+            workOrder.updateTaskDetails(
+                    command.taskId(),
+                    command.serviceId(),
+                    command.mechanicId(),
+                    command.description(),
+                    command.laborPrice()
+            );
+            workOrderRepository.save(workOrder);
+            return Result.success(workOrder);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
+        } catch (IllegalStateException e) {
+            return Result.failure(new WorkOrderCommandFailure.InvalidState(e.getMessage()));
+        }
+    }
+
+    @Override
+    @Transactional
+    public Result<WorkOrder, WorkOrderCommandFailure> handle(UpdateProductQuantityInTaskCommand command) {
+        try {
+            WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
+            workOrder.updateProductQuantityInTask(
+                    command.taskId(),
+                    command.productId(),
+                    command.newQuantity()
+            );
+            workOrderRepository.save(workOrder);
+            return Result.success(workOrder);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
+        } catch (IllegalStateException e) {
+            return Result.failure(new WorkOrderCommandFailure.InvalidState(e.getMessage()));
+        }
+    }
+
+    @Override
+    @Transactional
+    public Result<WorkOrder, WorkOrderCommandFailure> handle(DeleteWorkOrderCommand command) {
+        try {
+            WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
+            workOrder.delete();
+            workOrderRepository.save(workOrder);
+            return Result.success(workOrder);
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
         } catch (IllegalStateException e) {
