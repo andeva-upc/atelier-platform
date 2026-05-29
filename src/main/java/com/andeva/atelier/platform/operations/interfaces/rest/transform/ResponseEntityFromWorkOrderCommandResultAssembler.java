@@ -29,26 +29,24 @@ public final class ResponseEntityFromWorkOrderCommandResultAssembler {
                 // Caso Exitoso (201 Created o 200 OK)
                 workOrder -> new ResponseEntity<>(
                         WorkOrderResourceFromAggregateAssembler.toResourceFromAggregate(workOrder),
-                        HttpStatus.OK // O HttpStatus.CREATED dependiendo del caso de uso
+                        HttpStatus.OK
                 ),
                 // Caso Fallido (Mapeamos el error de negocio al estado HTTP correcto)
                 failure -> {
                     HttpStatus status = statusFromFailure(failure);
                     String localizedMessage = messageFromFailure(failure, messageSource);
-
-                    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, localizedMessage);
-                    problemDetail.setType(URI.create("https://api.atelier-workshop.com/errors/" + failure.getClass().getSimpleName().toLowerCase()));
-
-                    return new ResponseEntity<>(problemDetail, status);
+                    return ResponseEntity.status(status).body(
+                            ProblemDetail.forStatusAndDetail(status, localizedMessage)
+                    );
                 }
         );
     }
 
     private static HttpStatus statusFromFailure(WorkOrderCommandFailure failure) {
         return switch (failure) {
-            case WorkOrderCommandFailure.Duplicate(String message) -> HttpStatus.CONFLICT;
-            case WorkOrderCommandFailure.NotFound(String message) -> HttpStatus.NOT_FOUND;
-            case WorkOrderCommandFailure.InvalidState(String message) -> HttpStatus.BAD_REQUEST;
+            case WorkOrderCommandFailure.Duplicate(String _) -> HttpStatus.CONFLICT;
+            case WorkOrderCommandFailure.NotFound(String _) -> HttpStatus.NOT_FOUND;
+            case WorkOrderCommandFailure.InvalidState(String _) -> HttpStatus.BAD_REQUEST;
         };
     }
 
