@@ -23,6 +23,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST controller for managing workshop work orders and mechanic tasks. This controller provides endpoints for creating, updating, retrieving, and deleting work orders, as well as managing the tasks and products associated with those work orders. It uses a command-query separation approach, delegating command handling to the WorkOrderCommandService and query handling to the WorkOrderQueryService. The controller also utilizes a MessageSource for internationalization of response messages.
+ * @author Joel Huamani Estefanero
+ */
 @RestController
 @RequestMapping(value = "/api/v1/work-orders", produces = "application/json")
 @Tag(name = "Work Orders", description = "Endpoints for managing workshop work orders and mechanic tasks")
@@ -169,7 +173,6 @@ public class WorkOrdersController {
     @Operation(summary = "Update Work Order details (diagnostic and mileage)")
     public ResponseEntity<?> updateWorkOrderDetails(@PathVariable UUID id,
                                                     @Valid @RequestBody UpdateWorkOrderDetailsResource resource) {
-        // Traducimos los datos de entrada a Value Objects y creamos el comando
         var command = new UpdateWorkOrderDetailsCommand(
                 id,
                 new DiagnosticSummary(resource.diagnosticSummary()),
