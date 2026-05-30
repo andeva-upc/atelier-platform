@@ -4,6 +4,15 @@ import com.andeva.atelier.platform.operations.domain.model.valueobjects.Diagnost
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Mileage;
 
 import java.util.UUID;
+
+/**
+ * Command representing the intent to update the details of a Work Order, specifically the diagnostic summary and mileage.
+ * This command encapsulates the necessary information to perform the update action on a Work Order within the
+ * @param workOrderId
+ * @param diagnosticSummary
+ * @param mileageIn
+ * @author Joel Huamani Estefanero
+ */
 public record UpdateWorkOrderDetailsCommand(
         UUID workOrderId,
         DiagnosticSummary diagnosticSummary,
