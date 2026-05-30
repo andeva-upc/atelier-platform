@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Entity representing a Work Order Task in the automotive repair shop management system. This class is an aggregate root that encapsulates the properties and behaviors of a task within a work order, including its associated products, status transitions, and audit information. It uses JPA annotations for persistence and includes logic to manage task details and enforce business rules related to task modifications based on its status.
+ * @author Joel Huamani Estefanero
+ */
 @Getter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -84,8 +88,20 @@ public class WorkOrderTask {
 
     @Version
     private Long version;
+
+    /**
+     * Protected no-args constructor required by JPA. This constructor is used by the JPA provider to create instances of the entity when retrieving data from the database. It should not be used directly in application code, and it is marked as protected to prevent unintended usage while still allowing JPA to access it.
+     */
     protected WorkOrderTask() {}
 
+    /**
+     * Constructor to create a new WorkOrderTask with the specified service, branch, assigned mechanic, description, and labor price. It initializes the task with a unique identifier, sets the initial status to PENDING, and calculates the total price based on the labor price and any associated products. This constructor is used when creating a new task for a work order.
+     * @param serviceId the identifier of the service associated with this task
+     * @param branchId the identifier of the branch where the task will be performed
+     * @param mechanicId the identifier of the mechanic assigned to this task
+     * @param description a description of the task to be performed
+     * @param laborPrice the price of the labor for this task, which will be included in the total price calculation along with any associated products
+     */
     public WorkOrderTask(ServiceId serviceId, BranchId branchId, MechanicId mechanicId, TaskDescription description, Money laborPrice) {
         this.id = UUID.randomUUID();
         this.serviceId = serviceId;
@@ -96,6 +112,12 @@ public class WorkOrderTask {
         this.status = WorkOrderTaskStatus.PENDING;
     }
 
+    /**
+     * Adds a product to the task or updates the quantity if the product already exists. If the task is completed, it throws an IllegalStateException to prevent modifications. If the product already exists in the task, it updates the quantity and recalculates the total price accordingly. If the product does not exist, it creates a new WorkOrderTaskProduct, adds it to the list of products, and updates the total price of the task by adding the total amount of the new product.
+     * @param productId the identifier of the product to be added or updated in the task
+     * @param quantity the quantity of the product to be added or updated. If the product already exists, this quantity will be added to the existing quantity.
+     * @param unitPrice the unit price of the product, which will be used to calculate the total amount for the product based on the quantity. This total amount will then be added to the task's total price if it's a new product, or used to adjust the total price if it's an existing product being updated.
+     */
     public void addProduct(ProductId productId, Quantity quantity, Money unitPrice) {
         if (this.status == WorkOrderTaskStatus.COMPLETED) {
             throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
@@ -116,6 +138,10 @@ public class WorkOrderTask {
         }
     }
 
+    /**
+     * Removes a product from the task. If the task is completed, it throws an IllegalStateException to prevent modifications. It searches for the product in the list of products associated with the task, and if found, it marks it as deleted and updates the total price of the task by subtracting the total amount of the removed product. If the product is not found, it throws an IllegalArgumentException indicating that the product was not found in the task.
+     * @param productId the identifier of the product to be removed from the task. The method will look for this product in the list of products associated with the task, and if found, it will mark it as deleted and adjust the total price of the task accordingly. If the product is not found, an exception will be thrown.
+     */
     public void removeProduct(ProductId productId) {
         if (this.status == WorkOrderTaskStatus.COMPLETED) {
             throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
@@ -130,23 +156,41 @@ public class WorkOrderTask {
         this.products.remove(product);
     }
 
+    /**
+     * Starts the task by transitioning its status to DOING and setting the startedAt timestamp to the current time. This method is used to indicate that work on the task has begun. It updates the status of the task to reflect that it is now in progress and records the time at which the task was started.
+     */
     public void start() {
         this.status = this.status.transitionTo(WorkOrderTaskStatus.DOING);
         this.startedAt = Instant.now();
     }
 
+    /**
+     * Completes the task by transitioning its status to COMPLETED and setting the completedAt timestamp to the current time. This method is used to indicate that work on the task has been finished. It updates the status of the task to reflect that it is now completed and records the time at which the task was completed.
+     * @return true if the task was successfully completed, false otherwise. In this implementation, it always returns true after successfully updating the status and timestamp, but in a more complex implementation, it could include additional logic to determine if the completion was successful.
+     */
     public boolean complete() {
         this.status = this.status.transitionTo(WorkOrderTaskStatus.COMPLETED);
         this.completedAt = Instant.now();
         return true;
     }
 
+    /**
+     * Reopens the task by transitioning its status back to DOING and clearing the completedAt timestamp. This method is used to indicate that a previously completed task needs to be reopened for further work. It updates the status of the task to reflect that it is now in progress again and clears the completion timestamp since the task is no longer considered completed.
+     * @return true if the task was successfully reopened, false otherwise. In this implementation, it always returns true after successfully updating the status and clearing the timestamp, but in a more complex implementation, it could include additional logic to determine if the reopening was successful.
+     */
     public boolean reopen() {
         this.status = this.status.transitionTo(WorkOrderTaskStatus.DOING);
         this.completedAt = null;
         return true;
     }
 
+    /**
+     * Updates the details of the task, including the service, assigned mechanic, description, and labor price. If the task is completed, it throws an IllegalStateException to prevent modifications. It updates the serviceId, assignedMechanicId, and description with the new values provided. It then recalculates the total price of the task by summing the new labor price with the total amounts of all active (non-deleted) products associated with the task. This ensures that any changes to the labor price are reflected in the overall cost of the task while maintaining the integrity of the product costs.
+     * @param serviceId the new service identifier to be associated with the task. This allows for changing the service that the task is related to, which may affect the type of work being performed and potentially the labor price.
+     * @param mechanicId the new mechanic identifier to be assigned to the task. This allows for changing the mechanic responsible for performing the task, which may be necessary if there are scheduling changes or if the original mechanic is unavailable.
+     * @param description the new description of the task, providing updated details about the work to be performed. This allows for clarifying or modifying the instructions for the task as needed.
+     * @param newLaborPrice the new labor price for the task, which will be used to recalculate the total price of the task. This allows for adjusting the cost of labor based on changes to the service or other factors, and ensures that the total price reflects the current labor cost along with any associated product costs.
+     */
     public void updateDetails(ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money newLaborPrice) {
         if (this.status == WorkOrderTaskStatus.COMPLETED) {
             throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
@@ -155,7 +199,6 @@ public class WorkOrderTask {
         this.assignedMechanicId = mechanicId;
         this.description = description;
 
-        // Recalculamos el precio total: nuevo labor price + sumatoria de productos activos
         Money productsTotal = this.products.stream()
                 .filter(p -> !p.isDeleted())
                 .map(WorkOrderTaskProduct::getTotalAmount)
@@ -163,6 +206,12 @@ public class WorkOrderTask {
         this.price = newLaborPrice.plus(productsTotal);
     }
 
+    /**
+     * Updates the quantity of a specific product associated with the task. If the task is completed, it throws an IllegalStateException to prevent modifications. It searches for the product in the list of products associated with the task, and if found, it updates the quantity and recalculates the total price of the task by adjusting for the change in the product's total amount. If the product is not found, it throws an IllegalArgumentException indicating that the product was not found in the task. The method returns the old quantity of the product before the update, allowing callers to know how much the quantity was changed.
+     * @param productId the identifier of the product whose quantity is to be updated. The method will look for this product in the list of products associated with the task, and if found, it will update its quantity and adjust the total price of the task accordingly. If the product is not found, an exception will be thrown.
+     * @param newQuantity the new quantity to be set for the specified product. This will replace the existing quantity of the product in the task, and the total price of the task will be recalculated based on this new quantity and the unit price of the product. The method returns the old quantity of the product before the update, allowing callers to know how much the quantity was changed.
+     * @return the old quantity of the product before the update. This allows callers to understand how much the quantity was changed, which can be useful for logging, auditing, or further processing after the update is made.
+     */
     public Quantity updateProductQuantity(ProductId productId, Quantity newQuantity) {
         if (this.status == WorkOrderTaskStatus.COMPLETED) {
             throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
@@ -178,12 +227,15 @@ public class WorkOrderTask {
 
         product.updateQuantity(newQuantity);
 
-        // Ajustamos el precio de la tarea restando el monto anterior y sumando el nuevo
         this.price = this.price.minus(oldTotalAmount).plus(product.getTotalAmount());
 
         return oldQuantity;
     }
 
+    /**
+     * Checks if the task has been marked as deleted by verifying if the deletedAt timestamp is not null. This method is used to determine if the task has been logically deleted from the system, which is important for ensuring that deleted tasks are not included in active queries or operations. If the deletedAt field has a value, it indicates that the task has been marked as deleted; otherwise, it is considered active.
+     * @return true if the task is marked as deleted (i.e., deletedAt is not null), false otherwise. This allows callers to easily check the deletion status of the task and handle it accordingly in their logic, such as excluding deleted tasks from results or preventing operations on them.
+     */
     public boolean isDeleted() {
         return this.deletedAt != null;
     }
