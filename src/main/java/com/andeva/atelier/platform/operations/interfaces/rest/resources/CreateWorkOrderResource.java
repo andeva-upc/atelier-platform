@@ -28,9 +28,6 @@ public record CreateWorkOrderResource(
         @NotNull(message = "operations.error.resource.customerId.required")
         UUID customerId,
 
-        @NotNull(message = "operations.error.resource.internalNumber.required")
-        Integer internalNumber,
-
         @NotNull(message = "operations.error.resource.diagnosticSummary.required")
         @Size(min = 5, max = 2000, message = "operations.error.resource.diagnosticSummary.size")
         String diagnosticSummary,

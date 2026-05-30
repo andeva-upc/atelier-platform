@@ -29,6 +29,7 @@ public record WorkOrderResource(
         UUID vehicleId,
         UUID customerId,
         Integer internalNumber,
+        String formattedNumber,
         String status,
         String diagnosticSummary,
         Integer mileageIn,
