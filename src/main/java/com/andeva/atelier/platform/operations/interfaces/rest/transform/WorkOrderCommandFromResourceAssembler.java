@@ -26,7 +26,6 @@ public final class WorkOrderCommandFromResourceAssembler {
                 new BranchId(resource.branchId()),
                 new VehicleId(resource.vehicleId()),
                 new CustomerId(resource.customerId()),
-                resource.internalNumber(),
                 new DiagnosticSummary(resource.diagnosticSummary()),
                 new Mileage(resource.mileageIn())
         );

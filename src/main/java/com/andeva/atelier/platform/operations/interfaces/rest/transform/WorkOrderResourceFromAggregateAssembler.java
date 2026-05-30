@@ -21,7 +21,7 @@ public final class WorkOrderResourceFromAggregateAssembler {
      * @param workOrder The WorkOrder aggregate to be transformed into a REST resource. This aggregate contains all the necessary information about the work order, including its tasks and products, which will be included in the resulting WorkOrderResource.
      * @return A WorkOrderResource that represents the given WorkOrder aggregate, including its tasks and products. This resource is suitable for use in REST API responses, providing a structured representation of the work order data that can be easily consumed by clients.
      */
-    public static WorkOrderResource toResourceFromAggregate(WorkOrder workOrder) {
+    public static WorkOrderResource toResourceFromAggregate(WorkOrder workOrder, String branchCode) {
         List<WorkOrderTaskResource> taskResources = new ArrayList<>();
 
         for (WorkOrderTask task : workOrder.getTasks()) {
@@ -30,6 +30,8 @@ public final class WorkOrderResourceFromAggregateAssembler {
             }
         }
 
+        String formattedNumber = String.format("%s-%06d", branchCode, workOrder.getInternalNumber());
+
         return new WorkOrderResource(
                 workOrder.getId(),
                 workOrder.getAppointmentId().value(),
@@ -37,6 +39,7 @@ public final class WorkOrderResourceFromAggregateAssembler {
                 workOrder.getVehicleId().value(),
                 workOrder.getCustomerId().value(),
                 workOrder.getInternalNumber(),
+                formattedNumber,
                 workOrder.getStatus().name(),
                 workOrder.getDiagnosticSummary().value(),
                 workOrder.getMileageIn().value(),
