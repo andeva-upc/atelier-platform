@@ -47,6 +47,7 @@ CREATE TABLE branches
 (
     id          uuid         NOT NULL UNIQUE,
     workshop_id uuid         NOT NULL,
+    code        varchar(10)  NOT NULL UNIQUE,
     name        varchar(100) NOT NULL,
     address     varchar(100),
     phone       char(9)      UNIQUE,

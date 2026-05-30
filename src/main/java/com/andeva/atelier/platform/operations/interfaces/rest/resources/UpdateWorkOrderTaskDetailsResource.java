@@ -5,6 +5,14 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * Resource representing the details required to update a Task within a Work Order. This resource is typically used in REST API endpoints to receive the necessary information from the client when updating a Task's details, such as the associated Service, assigned Mechanic, description of the work, and labor price.
+ * @param serviceId
+ * @param assignedMechanicId
+ * @param description
+ * @param laborPrice
+ * @author Joel Huamani Estefanero
+ */
 public record UpdateWorkOrderTaskDetailsResource(
         @NotNull(message = "operations.error.resource.serviceId.required")
         UUID serviceId,
