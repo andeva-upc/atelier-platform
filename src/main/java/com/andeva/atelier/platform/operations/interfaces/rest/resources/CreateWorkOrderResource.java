@@ -5,7 +5,15 @@ import jakarta.validation.constraints.Size;
 import java.util.UUID;
 
 /**
- * REST resource for creating a new Work Order.
+ * Resource representing the necessary information to create a new Work Order in the system. This resource is typically used as the payload for a REST API endpoint that handles the creation of Work Orders. It includes fields such as appointmentId, branchId, vehicleId, customerId, internalNumber, diagnosticSummary, and mileageIn, all of which are required for the successful creation of a Work Order.
+ * @param appointmentId
+ * @param branchId
+ * @param vehicleId
+ * @param customerId
+ * @param internalNumber
+ * @param diagnosticSummary
+ * @param mileageIn
+ * @author Joel Huamani Estefanero
  */
 public record CreateWorkOrderResource(
         @NotNull(message = "operations.error.resource.appointmentId.required")
