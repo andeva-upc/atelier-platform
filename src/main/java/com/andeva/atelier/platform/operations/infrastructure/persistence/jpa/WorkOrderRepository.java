@@ -61,4 +61,13 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, UUID> {
      * @return an Optional containing the Work Order associated with the given Internal Number and Branch Id, or empty if not found
      */
     Optional<WorkOrder> findByInternalNumberAndBranchId(Integer internalNumber, BranchId branchId);
+
+    /**
+     * Finds the maximum internal number used by work orders in a given branch.
+     * Used for automatic sequential number generation.
+     * @param branchId the Branch Id to check
+     * @return the highest internal number, or 0 if no work orders exist in that branch yet
+     */
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(MAX(w.internalNumber), 0) FROM WorkOrder w WHERE w.branchId = :branchId")
+    int findMaxInternalNumberByBranchId(@org.springframework.data.repository.query.Param("branchId") BranchId branchId);
 }
