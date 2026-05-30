@@ -63,12 +63,14 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
                         "operations.error.workOrder.alreadyExistsForAppointment"));
             }
 
+            int nextInternalNumber = workOrderRepository.findMaxInternalNumberByBranchId(command.branchId()) + 1;
+
             WorkOrder workOrder = new WorkOrder(
                     command.appointmentId(),
                     command.branchId(),
                     command.vehicleId(),
                     command.customerId(),
-                    command.internalNumber(),
+                    nextInternalNumber,
                     command.diagnosticSummary(),
                     command.mileageIn()
             );

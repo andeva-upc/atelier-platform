@@ -16,17 +16,20 @@ import java.util.Optional;
  * @author Joel Huamani Estefanero
  */
 @Service
-@Transactional(readOnly = true) // Optimiza las conexiones de lectura de la base de datos
+@Transactional(readOnly = true)
 public class WorkOrderQueryServiceImpl implements WorkOrderQueryService {
 
     private final WorkOrderRepository workOrderRepository;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     /**
-     * Constructor for WorkOrderQueryServiceImpl, injecting the WorkOrderRepository dependency.
+     * Constructor for WorkOrderQueryServiceImpl, injecting the WorkOrderRepository and JdbcTemplate dependency.
      * @param workOrderRepository Repository for accessing work order data from the database.
+     * @param jdbcTemplate JdbcTemplate for executing SQL queries directly on organizational tables.
      */
-    public WorkOrderQueryServiceImpl(WorkOrderRepository workOrderRepository) {
+    public WorkOrderQueryServiceImpl(WorkOrderRepository workOrderRepository, org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
         this.workOrderRepository = workOrderRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
@@ -66,5 +69,17 @@ public class WorkOrderQueryServiceImpl implements WorkOrderQueryService {
             throw new IllegalArgumentException("operations.error.query.vehicleId.required");
         }
         return workOrderRepository.findAllByVehicleId(query.vehicleId());
+    }
+
+    @Override
+    public String getBranchCode(java.util.UUID branchId) {
+        if (branchId == null) {
+            return "WO";
+        }
+        try {
+            return jdbcTemplate.queryForObject("SELECT code FROM branches WHERE id = ?", String.class, branchId);
+        } catch (Exception e) {
+            return "WO"; // Fallback to "WO" if database doesn't have the column/record yet
+        }
     }
 }

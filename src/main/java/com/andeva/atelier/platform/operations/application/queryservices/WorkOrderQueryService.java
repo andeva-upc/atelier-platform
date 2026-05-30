@@ -32,4 +32,11 @@ public interface WorkOrderQueryService {
      * @return A list of Work Orders associated with the specified Vehicle ID.
      */
     List<WorkOrder> handle(GetWorkOrdersByVehicleIdQuery query);
+
+    /**
+     * Gets the short code for a branch.
+     * @param branchId the unique identifier of the branch
+     * @return the short code, or "WO" as fallback
+     */
+    String getBranchCode(java.util.UUID branchId);
 }
