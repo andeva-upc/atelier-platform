@@ -9,7 +9,6 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.*;
  * @param branchId
  * @param vehicleId
  * @param customerId
- * @param internalNumber
  * @param diagnosticSummary
  * @param mileageIn
  * @author Joel Huamani Estefanero

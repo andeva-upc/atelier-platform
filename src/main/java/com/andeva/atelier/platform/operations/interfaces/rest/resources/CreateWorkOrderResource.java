@@ -10,7 +10,6 @@ import java.util.UUID;
  * @param branchId
  * @param vehicleId
  * @param customerId
- * @param internalNumber
  * @param diagnosticSummary
  * @param mileageIn
  * @author Joel Huamani Estefanero
