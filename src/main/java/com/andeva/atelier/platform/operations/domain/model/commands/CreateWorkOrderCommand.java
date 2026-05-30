@@ -19,7 +19,6 @@ public record CreateWorkOrderCommand(
         BranchId branchId,
         VehicleId vehicleId,
         CustomerId customerId,
-        Integer internalNumber,
         DiagnosticSummary diagnosticSummary,
         Mileage mileageIn
 ) {}
