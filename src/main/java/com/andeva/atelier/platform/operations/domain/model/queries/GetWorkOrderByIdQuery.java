@@ -2,4 +2,9 @@ package com.andeva.atelier.platform.operations.domain.model.queries;
 
 import java.util.UUID;
 
+/**
+ * Query representing the intention to retrieve a work order by its unique identifier. This query is typically handled by a query handler that will perform the necessary operations to fetch the work order from the database and return it to the caller.
+ * @param workOrderId
+ * @author Joel Huamani Estefanero
+ */
 public record GetWorkOrderByIdQuery(UUID workOrderId) {}
