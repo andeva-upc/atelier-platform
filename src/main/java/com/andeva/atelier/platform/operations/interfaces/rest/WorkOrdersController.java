@@ -1,5 +1,6 @@
 package com.andeva.atelier.platform.operations.interfaces.rest;
 
+import com.andeva.atelier.platform.operations.application.commandservices.WorkOrderCommandFailure;
 import com.andeva.atelier.platform.operations.application.commandservices.WorkOrderCommandService;
 import com.andeva.atelier.platform.operations.application.queryservices.WorkOrderQueryService;
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
@@ -9,6 +10,7 @@ import com.andeva.atelier.platform.operations.domain.model.valueobjects.Diagnost
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.ProductId;
 import com.andeva.atelier.platform.operations.interfaces.rest.resources.*;
 import com.andeva.atelier.platform.operations.interfaces.rest.transform.*;
+import com.andeva.atelier.platform.shared.application.result.Result;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Mileage;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
@@ -44,12 +46,22 @@ public class WorkOrdersController {
         this.messageSource = messageSource;
     }
 
+    /**
+     * Helper private method to transform command Result mapping branch short code formatting.
+     */
+    private ResponseEntity<?> toResponse(Result<WorkOrder, WorkOrderCommandFailure> result) {
+        String branchCode = result.success()
+                .map(wo -> queryService.getBranchCode(wo.getBranchId().value()))
+                .orElse("WO");
+        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource, branchCode);
+    }
+
     @PostMapping
     @Operation(summary = "Create a new Work Order")
     public ResponseEntity<?> createWorkOrder(@Valid @RequestBody CreateWorkOrderResource resource) {
         var command = WorkOrderCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @PostMapping("/{id}/tasks")
@@ -57,7 +69,7 @@ public class WorkOrdersController {
     public ResponseEntity<?> addTaskToWorkOrder(@PathVariable UUID id, @Valid @RequestBody AddTaskResource resource) {
         var command = WorkOrderCommandFromResourceAssembler.toCommandFromResource(id, resource);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @PutMapping("/{id}/tasks/{taskId}")
@@ -66,7 +78,7 @@ public class WorkOrdersController {
                                                         @Valid @RequestBody UpdateWorkOrderTaskDetailsResource resource) {
         var command = WorkOrderCommandFromResourceAssembler.toCommandFromResource(id, taskId, resource);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @PostMapping("/{id}/tasks/{taskId}/products")
@@ -75,7 +87,7 @@ public class WorkOrdersController {
                                               @Valid @RequestBody AddProductResource resource) {
         var command = WorkOrderCommandFromResourceAssembler.toCommandFromResource(id, taskId, resource);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @PutMapping("/{id}/tasks/{taskId}/products/{productId}")
@@ -85,7 +97,7 @@ public class WorkOrdersController {
                                                          @Valid @RequestBody UpdateProductQuantityInTaskResource resource) {
         var command = WorkOrderCommandFromResourceAssembler.toCommandFromResource(id, taskId, productId, resource);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @DeleteMapping("/{id}/tasks/{taskId}/products/{productId}")
@@ -94,7 +106,7 @@ public class WorkOrdersController {
                                                    @PathVariable UUID productId) {
         var command = new RemoveProductFromTaskCommand(id, taskId, new ProductId(productId));
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @DeleteMapping("/{id}/tasks/{taskId}")
@@ -102,7 +114,7 @@ public class WorkOrdersController {
     public ResponseEntity<?> removeTaskFromWorkOrder(@PathVariable UUID id, @PathVariable UUID taskId) {
         var command = new RemoveTaskFromWorkOrderCommand(id, taskId);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @DeleteMapping("/{id}")
@@ -110,7 +122,7 @@ public class WorkOrdersController {
     public ResponseEntity<?> deleteWorkOrder(@PathVariable UUID id) {
         var command = new DeleteWorkOrderCommand(id);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @PostMapping("/{id}/tasks/{taskId}/start")
@@ -118,7 +130,7 @@ public class WorkOrdersController {
     public ResponseEntity<?> startTask(@PathVariable UUID id, @PathVariable UUID taskId) {
         var command = new StartTaskCommand(id, taskId);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @PostMapping("/{id}/tasks/{taskId}/complete")
@@ -126,7 +138,7 @@ public class WorkOrdersController {
     public ResponseEntity<?> completeTask(@PathVariable UUID id, @PathVariable UUID taskId) {
         var command = new CompleteTaskCommand(id, taskId);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @PostMapping("/{id}/tasks/{taskId}/reopen")
@@ -134,7 +146,7 @@ public class WorkOrdersController {
     public ResponseEntity<?> reopenTask(@PathVariable UUID id, @PathVariable UUID taskId) {
         var command = new ReopenTaskCommand(id, taskId);
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 
     @GetMapping("/{id}")
@@ -143,8 +155,10 @@ public class WorkOrdersController {
         var query = new GetWorkOrderByIdQuery(id);
         var workOrder = queryService.handle(query);
 
-        return workOrder.map(value -> ResponseEntity.ok(WorkOrderResourceFromAggregateAssembler.toResourceFromAggregate(value)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        return workOrder.map(value -> {
+            String branchCode = queryService.getBranchCode(value.getBranchId().value());
+            return ResponseEntity.ok(WorkOrderResourceFromAggregateAssembler.toResourceFromAggregate(value, branchCode));
+        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @GetMapping("/branch/{branchId}")
@@ -152,8 +166,9 @@ public class WorkOrdersController {
     public ResponseEntity<?> getWorkOrdersByBranch(@PathVariable UUID branchId) {
         var query = new GetWorkOrdersByBranchIdQuery(new BranchId(branchId));
         List<WorkOrder> list = queryService.handle(query);
+        String branchCode = queryService.getBranchCode(branchId);
         List<WorkOrderResource> resources = list.stream()
-                .map(WorkOrderResourceFromAggregateAssembler::toResourceFromAggregate)
+                .map(value -> WorkOrderResourceFromAggregateAssembler.toResourceFromAggregate(value, branchCode))
                 .toList();
         return ResponseEntity.ok(resources);
     }
@@ -164,7 +179,10 @@ public class WorkOrdersController {
         var query = new GetWorkOrdersByVehicleIdQuery(new VehicleId(vehicleId));
         List<WorkOrder> list = queryService.handle(query);
         List<WorkOrderResource> resources = list.stream()
-                .map(WorkOrderResourceFromAggregateAssembler::toResourceFromAggregate)
+                .map(value -> {
+                    String branchCode = queryService.getBranchCode(value.getBranchId().value());
+                    return WorkOrderResourceFromAggregateAssembler.toResourceFromAggregate(value, branchCode);
+                })
                 .toList();
         return ResponseEntity.ok(resources);
     }
@@ -180,6 +198,6 @@ public class WorkOrdersController {
         );
 
         var result = commandService.handle(command);
-        return ResponseEntityFromWorkOrderCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return toResponse(result);
     }
 }
