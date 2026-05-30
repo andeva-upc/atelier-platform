@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Repositorio JPA para la entidad WorkOrder. Proporciona métodos de consulta personalizados para recuperar órdenes de trabajo basadas en criterios específicos, como sucursal, cliente, vehículo o cita asociada. Este repositorio es esencial para la persistencia y recuperación de datos relacionados con las órdenes de trabajo dentro del sistema.
+ * Repository interface for managing WorkOrder entities in the database. This interface extends JpaRepository, providing basic CRUD operations and custom query methods for retrieving Work Orders based on various criteria such as Branch ID, Appointment ID, Customer ID, Vehicle ID, and Internal Number. The repository also includes a custom query to find the maximum internal number used by work orders in a specific branch, which is useful for generating sequential internal numbers for new work orders.
  * @author Joel Huamani Estefanero
  */
 @Repository
