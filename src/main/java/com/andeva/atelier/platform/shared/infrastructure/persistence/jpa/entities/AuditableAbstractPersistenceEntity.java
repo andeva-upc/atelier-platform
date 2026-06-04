@@ -3,9 +3,7 @@ package com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entiti
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,7 +13,7 @@ import java.util.UUID;
 /**
  * Base JPA persistence entity for all persistence entities that require auditing.
  *
- * <p>Provides {@code id}, {@code createdAt}, {@code updatedAt}, {@code createdBy}, and {@code updatedBy} fields.
+ * <p>Provides {@code id}, {@code createdAt}, and {@code updatedAt} fields.
  * This class intentionally lives in the infrastructure layer to keep JPA and
  * Spring Data auditing concerns out of the domain model.</p>
  *
@@ -39,12 +37,4 @@ public abstract class AuditableAbstractPersistenceEntity {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
-
-    @CreatedBy
-    @Column(name = "created_by", updatable = false)
-    private UUID createdBy;
-
-    @LastModifiedBy
-    @Column(name = "updated_by")
-    private UUID updatedBy;
 }
