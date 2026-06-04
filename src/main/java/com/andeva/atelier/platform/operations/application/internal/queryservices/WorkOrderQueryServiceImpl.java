@@ -3,7 +3,7 @@ package com.andeva.atelier.platform.operations.application.internal.queryservice
 import com.andeva.atelier.platform.operations.application.queryservices.WorkOrderQueryService;
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
 import com.andeva.atelier.platform.operations.domain.model.queries.*;
-import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.WorkOrderRepository;
+import com.andeva.atelier.platform.operations.domain.repositories.WorkOrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

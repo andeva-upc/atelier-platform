@@ -1,19 +1,10 @@
 package com.andeva.atelier.platform.operations.domain.model.aggregates;
 
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.*;
-import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.converters.TaskDescriptionAttributeConverter;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
-import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MoneyAttributeConverter;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,74 +16,27 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 @Getter
-@Entity
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "work_order_tasks")
-@SQLDelete(sql = "UPDATE work_order_tasks SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
+@AllArgsConstructor
 public class WorkOrderTask {
 
-    @Id
     private UUID id;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "service_id", nullable = false))
     private ServiceId serviceId;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "branch_id", nullable = false))
     private BranchId branchId;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "assigned_mechanic_id", nullable = false))
     private MechanicId assignedMechanicId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private WorkOrderTaskStatus status;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    @Convert(converter = TaskDescriptionAttributeConverter.class)
     private TaskDescription description;
-
-    @Column(name = "price", nullable = false)
-    @Convert(converter = MoneyAttributeConverter.class)
     private Money price;
-
     private Instant startedAt;
-
     private Instant completedAt;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "work_order_task_id")
-    private List<WorkOrderTaskProduct> products = new ArrayList<>();
-
-    @Column(nullable = false, updatable = false)
-    @CreatedDate
+    private List<WorkOrderTaskProduct> products;
     private Instant createdAt;
-
-    @Column(nullable = false)
-    @LastModifiedDate
     private Instant updatedAt;
-
-    @Column(name = "deleted_at")
     private Instant deletedAt;
-
-    @Column(name = "created_by", nullable = false, updatable = false)
-    @CreatedBy
     private UUID createdBy;
-
-    @Column(name = "updated_by")
-    @LastModifiedBy
     private UUID updatedBy;
-
-    @Version
     private Long version;
 
-    /**
-     * Protected no-args constructor required by JPA. This constructor is used by the JPA provider to create instances of the entity when retrieving data from the database. It should not be used directly in application code, and it is marked as protected to prevent unintended usage while still allowing JPA to access it.
-     */
-    protected WorkOrderTask() {}
+    public WorkOrderTask() {}
 
     /**
      * Constructor to create a new WorkOrderTask with the specified service, branch, assigned mechanic, description, and labor price. It initializes the task with a unique identifier, sets the initial status to PENDING, and calculates the total price based on the labor price and any associated products. This constructor is used when creating a new task for a work order.
@@ -110,6 +54,7 @@ public class WorkOrderTask {
         this.description = description;
         this.price = laborPrice;
         this.status = WorkOrderTaskStatus.PENDING;
+        this.products = new ArrayList<>();
     }
 
     /**

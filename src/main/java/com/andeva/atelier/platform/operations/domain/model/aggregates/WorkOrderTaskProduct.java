@@ -6,14 +6,8 @@ import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.con
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MoneyAttributeConverter;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -24,54 +18,21 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 @Getter
-@Entity
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "work_order_task_products")
-@SQLDelete(sql = "UPDATE work_order_task_products SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
+@AllArgsConstructor
 public class WorkOrderTaskProduct {
 
-    @Id
     private UUID id;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "product_id", nullable = false))
     private ProductId productId;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "branch_id", nullable = false))
     private BranchId branchId;
-
-    @Column(nullable = false)
-    @Convert(converter = QuantityAttributeConverter.class)
     private Quantity quantity;
-
-    @Column(name = "unit_price", nullable = false)
-    @Convert(converter = MoneyAttributeConverter.class)
     private Money unitPrice;
-
-    @Column(name = "total_amount", nullable = false)
-    @Convert(converter = MoneyAttributeConverter.class)
     private Money totalAmount;
-
-    @Column(nullable = false, updatable = false)
-    @CreatedDate
     private Instant createdAt;
-
-    @Column(nullable = false)
-    @LastModifiedDate
     private Instant updatedAt;
-
-    @Column(name = "deleted_at")
     private Instant deletedAt;
-
-    @Version
     private Long version;
 
-    /**
-     * Protected no-args constructor required by JPA. This constructor is used by the JPA provider to create instances of the entity when retrieving data from the database. It should not be used directly in application code.
-     */
-    protected WorkOrderTaskProduct() {}
+    public WorkOrderTaskProduct() {}
 
     /**
      * Constructor to create a new WorkOrderTaskProduct instance with the specified product ID, branch ID, quantity, and unit price. The total amount is calculated by multiplying the unit price by the quantity. A unique UUID is generated for the entity ID.
