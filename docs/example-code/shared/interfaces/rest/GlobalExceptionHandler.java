@@ -1,7 +1,8 @@
-package com.andeva.atelier.platform.shared.interfaces.rest;
+package com.acme.center.platform.shared.interfaces.rest;
 
-import com.andeva.atelier.platform.shared.application.result.ApplicationError;
-import com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,6 +20,7 @@ import java.util.ResourceBundle;
  * HTTP responses via the shared error assembly pattern.
  */
 @RestControllerAdvice
+@NullMarked
 public class GlobalExceptionHandler {
     private static final String MESSAGES_BASENAME = "messages";
 
@@ -107,3 +109,4 @@ public class GlobalExceptionHandler {
         }
     }
 }
+
