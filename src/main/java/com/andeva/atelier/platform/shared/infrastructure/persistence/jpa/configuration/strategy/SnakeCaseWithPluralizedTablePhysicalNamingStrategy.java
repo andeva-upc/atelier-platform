@@ -1,4 +1,4 @@
-package com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.strategy;
+package com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.configuration.strategy;
 
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
