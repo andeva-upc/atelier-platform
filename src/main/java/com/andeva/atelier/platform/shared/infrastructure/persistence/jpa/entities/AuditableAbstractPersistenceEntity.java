@@ -2,16 +2,20 @@ package com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entiti
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.Instant;
+import java.util.UUID;
 
 /**
  * Base JPA persistence entity for all persistence entities that require auditing.
  *
- * <p>Provides {@code id}, {@code createdAt}, and {@code updatedAt} fields.
+ * <p>Provides {@code id}, {@code createdAt}, {@code updatedAt}, {@code createdBy}, and {@code updatedBy} fields.
  * This class intentionally lives in the infrastructure layer to keep JPA and
  * Spring Data auditing concerns out of the domain model.</p>
  *
@@ -24,24 +28,23 @@ import java.util.Date;
 public abstract class AuditableAbstractPersistenceEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Setter
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    private UUID id;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private Date createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
     @LastModifiedDate
-    @Column(nullable = false)
-    private Date updatedAt;
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
-    /**
-     * Sets the id. Used by assemblers when reconstructing a persistence entity
-     * from an existing domain object that already carries an identity.
-     *
-     * @param id the persistence identity to assign
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @CreatedBy
+    @Column(name = "created_by", updatable = false)
+    private UUID createdBy;
+
+    @LastModifiedBy
+    @Column(name = "updated_by")
+    private UUID updatedBy;
 }
