@@ -5,6 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.andeva.atelier.platform.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,6 +20,7 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 @Configuration
+@EnableJpaAuditing
 public class AuditConfiguration {
 
     /**
@@ -25,8 +30,18 @@ public class AuditConfiguration {
     @Bean
     public AuditorAware<UUID> auditorProvider() {
         return () -> {
-            // Retorno de prueba por defecto (reemplazar por lógica real de Spring Security)
-            return Optional.of(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+                return Optional.empty();
+            }
+
+            Object principal = authentication.getPrincipal();
+            if (!(principal instanceof UserDetailsImpl userDetails)) {
+                return Optional.empty();
+            }
+
+            return Optional.of(userDetails.getId());
         };
     }
 }
