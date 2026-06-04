@@ -4,20 +4,10 @@ import com.andeva.atelier.platform.operations.domain.model.events.ProductReserva
 import com.andeva.atelier.platform.operations.domain.model.events.ProductReservedEvent;
 import com.andeva.atelier.platform.operations.domain.model.events.WorkOrderPaidEvent;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.*;
-import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.converters.DiagnosticSummaryAttributeConverter;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.*;
-import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MileageAttributeConverter;
-import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MoneyAttributeConverter;
-import jakarta.persistence.*;
+import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.domain.AbstractAggregateRoot;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,81 +19,28 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 @Getter
-@Entity
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "work_orders")
-@SQLDelete(sql = "UPDATE work_orders SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
-public class WorkOrder extends AbstractAggregateRoot<WorkOrder> {
+@AllArgsConstructor
+public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
 
-    @Id
     private UUID id;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "appointment_id", nullable = false))
     private AppointmentId appointmentId;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "branch_id", nullable = false))
     private BranchId branchId;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "vehicle_id", nullable = false))
     private VehicleId vehicleId;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "customer_id", nullable = false))
     private CustomerId customerId;
-
-    @Column(name = "internal_number", nullable = false, updatable = false)
     private Integer internalNumber;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private WorkOrderStatus status;
-
-    @Column(name = "diagnostic_summary", nullable = false, columnDefinition = "TEXT")
-    @Convert(converter = DiagnosticSummaryAttributeConverter.class)
     private DiagnosticSummary diagnosticSummary;
-
-    @Column(name = "mileage_in", nullable = false)
-    @Convert(converter = MileageAttributeConverter.class)
     private Mileage mileageIn;
-
-    @Column(name = "total_amount", nullable = false)
-    @Convert(converter = MoneyAttributeConverter.class)
     private Money totalAmount;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "work_order_id")
-    private List<WorkOrderTask> tasks = new ArrayList<>();
-
-    @Column(nullable = false, updatable = false)
-    @CreatedDate
+    private List<WorkOrderTask> tasks;
     private Instant createdAt;
-
-    @Column(nullable = false)
-    @LastModifiedDate
     private Instant updatedAt;
-
-    @Column(name = "deleted_at")
     private Instant deletedAt;
-
-    @Column(name = "created_by", nullable = false, updatable = false)
-    @CreatedBy
     private UUID createdBy;
-
-    @Column(name = "updated_by")
-    @LastModifiedBy
     private UUID updatedBy;
-
-    @Version
     private Long version;
 
-    /**
-     * Protected no-args constructor required by JPA. This constructor is not intended to be used directly in application code, but is necessary for JPA to create instances of the WorkOrder entity when retrieving data from the database.
-     */
-    protected WorkOrder() {}
+    public WorkOrder() {}
 
     /**
      * Public constructor for creating a new WorkOrder instance. This constructor initializes the WorkOrder with the provided details and sets the initial status to PENDING. It also generates a new UUID for the WorkOrder ID and initializes the total amount to zero.
@@ -126,6 +63,7 @@ public class WorkOrder extends AbstractAggregateRoot<WorkOrder> {
         this.mileageIn = mileageIn;
         this.status = WorkOrderStatus.PENDING;
         this.totalAmount = Money.ZERO;
+        this.tasks = new ArrayList<>();
     }
 
     /**
