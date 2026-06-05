@@ -24,11 +24,11 @@ public class BranchCommandServiceImpl implements BranchCommandService {
     @Override
     public Optional<Branch> handle(CreateBranchCommand command) {
         if (!workshopRepository.existsById(command.workshopId())) {
-            throw new IllegalArgumentException("Workshop does not exist.");
+            throw new IllegalArgumentException("core.error.workshop.notFound");
         }
         
         if (branchRepository.existsByCode(command.code())) {
-            throw new IllegalArgumentException("Branch code must be unique.");
+            throw new IllegalArgumentException("core.error.branch.codeMustBeUnique");
         }
 
         var branch = new Branch(
@@ -46,13 +46,13 @@ public class BranchCommandServiceImpl implements BranchCommandService {
     @Override
     public Optional<Branch> handle(UpdateBranchCommand command) {
         var result = branchRepository.findById(command.id());
-        if (result.isEmpty()) throw new IllegalArgumentException("Branch does not exist");
+        if (result.isEmpty()) throw new IllegalArgumentException("core.error.branch.notFound");
 
         var branch = result.get();
         
         // If they change the code, we must ensure it's not taken by someone else
         if (!branch.getCode().equals(command.code()) && branchRepository.existsByCode(command.code())) {
-            throw new IllegalArgumentException("Branch code must be unique.");
+            throw new IllegalArgumentException("core.error.branch.codeMustBeUnique");
         }
         
         branch.update(

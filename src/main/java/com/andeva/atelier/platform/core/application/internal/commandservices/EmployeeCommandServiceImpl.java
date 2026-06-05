@@ -24,7 +24,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
     @Override
     public Optional<Employee> handle(CreateEmployeeCommand command) {
         if (employeeRepository.existsByUserId(command.userId())) {
-            throw new IllegalArgumentException("Employee profile already exists for this user.");
+            throw new IllegalArgumentException("core.error.employee.profileAlreadyExists");
         }
 
         var document = new Document(command.documentType(), command.documentNumber());
@@ -44,7 +44,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
     @Override
     public Optional<Employee> handle(UpdateEmployeeCommand command) {
         var result = employeeRepository.findByUserId(command.userId());
-        if (result.isEmpty()) throw new IllegalArgumentException("Employee profile does not exist");
+        if (result.isEmpty()) throw new IllegalArgumentException("core.error.employee.notFound");
 
         var employee = result.get();
         
@@ -64,7 +64,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
     public void handle(DeleteEmployeeCommand command) {
         var existingEmployee = employeeRepository.findByUserId(command.userId());
         if (existingEmployee.isEmpty()) {
-            throw new IllegalArgumentException("Employee does not exist.");
+            throw new IllegalArgumentException("core.error.employee.notFound");
         }
         
         employeeRepository.delete(existingEmployee.get());

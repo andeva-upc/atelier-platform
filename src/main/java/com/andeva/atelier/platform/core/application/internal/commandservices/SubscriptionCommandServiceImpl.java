@@ -37,7 +37,7 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
     @Override
     public Optional<BranchSubscription> handle(AssignSubscriptionCommand command) {
         if (!branchRepository.existsById(command.branchId())) {
-            throw new IllegalArgumentException("Branch does not exist.");
+            throw new IllegalArgumentException("core.error.branch.notFound");
         }
 
         planRepository.findById(command.planId())
@@ -78,7 +78,7 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
     public Optional<BranchSubscription> handle(CancelSubscriptionCommand command) {
         var existingSubscription = subscriptionRepository.findActiveByBranchId(command.branchId());
         if (existingSubscription.isEmpty()) {
-            throw new IllegalArgumentException("Branch does not have an active subscription.");
+            throw new IllegalArgumentException("core.error.branch.noActiveSubscription");
         }
 
         var sub = existingSubscription.get();

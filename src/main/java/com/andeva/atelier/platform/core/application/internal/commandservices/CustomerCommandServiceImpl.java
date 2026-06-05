@@ -24,7 +24,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
     @Override
     public Optional<Customer> handle(CreateCustomerCommand command) {
         if (customerRepository.existsByUserId(command.userId())) {
-            throw new IllegalArgumentException("Customer profile already exists for this user.");
+            throw new IllegalArgumentException("core.error.customer.profileAlreadyExists");
         }
 
         var document = new Document(command.documentType(), command.documentNumber());
@@ -50,7 +50,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
     @Override
     public Optional<Customer> handle(UpdateCustomerCommand command) {
         var result = customerRepository.findByUserId(command.userId());
-        if (result.isEmpty()) throw new IllegalArgumentException("Customer profile does not exist");
+        if (result.isEmpty()) throw new IllegalArgumentException("core.error.customer.notFound");
         
         var customer = result.get();
         
@@ -71,7 +71,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
     public void handle(DeleteCustomerCommand command) {
         var existingCustomer = customerRepository.findByUserId(command.userId());
         if (existingCustomer.isEmpty()) {
-            throw new IllegalArgumentException("Customer does not exist.");
+            throw new IllegalArgumentException("core.error.customer.notFound");
         }
         
         customerRepository.delete(existingCustomer.get());
