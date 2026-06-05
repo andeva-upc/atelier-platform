@@ -1,0 +1,72 @@
+package com.andeva.atelier.platform.iam.interfaces.rest;
+
+import com.andeva.atelier.platform.iam.application.commandservices.UserCommandService;
+import com.andeva.atelier.platform.iam.application.queryservices.UserQueryService;
+import com.andeva.atelier.platform.iam.domain.model.queries.GetUserByIdQuery;
+import com.andeva.atelier.platform.iam.interfaces.rest.resources.UpdateUserEmailResource;
+import com.andeva.atelier.platform.iam.interfaces.rest.resources.UpdateUserPasswordResource;
+import com.andeva.atelier.platform.iam.interfaces.rest.resources.UserResource;
+import com.andeva.atelier.platform.iam.interfaces.rest.transform.UpdateUserEmailCommandFromResourceAssembler;
+import com.andeva.atelier.platform.iam.interfaces.rest.transform.UpdateUserPasswordCommandFromResourceAssembler;
+import com.andeva.atelier.platform.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/v1/users")
+@Tag(name = "Users", description = "User Management Endpoints")
+public class UsersController {
+
+    private final UserCommandService userCommandService;
+    private final UserQueryService userQueryService;
+
+    public UsersController(UserCommandService userCommandService, UserQueryService userQueryService) {
+        this.userCommandService = userCommandService;
+        this.userQueryService = userQueryService;
+    }
+
+    @Operation(summary = "Get user by ID", description = "Retrieves the details of a specific user")
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResource> getUserById(@PathVariable UUID userId) {
+        var query = new GetUserByIdQuery(userId);
+        var user = userQueryService.handle(query);
+
+        if (user.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
+        return ResponseEntity.ok(userResource);
+    }
+
+    @Operation(summary = "Update user email", description = "Updates the email address of a specific user")
+    @PutMapping("/{userId}/email")
+    public ResponseEntity<UserResource> updateUserEmail(@PathVariable UUID userId, @RequestBody UpdateUserEmailResource resource) {
+        var command = UpdateUserEmailCommandFromResourceAssembler.toCommandFromResource(userId, resource);
+        var user = userCommandService.handle(command);
+
+        if (user.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
+        return ResponseEntity.ok(userResource);
+    }
+
+    @Operation(summary = "Update user password", description = "Updates the password of a specific user")
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<?> updateUserPassword(@PathVariable UUID userId, @RequestBody UpdateUserPasswordResource resource) {
+        var command = UpdateUserPasswordCommandFromResourceAssembler.toCommandFromResource(userId, resource);
+        var user = userCommandService.handle(command);
+
+        if (user.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+}

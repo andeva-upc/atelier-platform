@@ -1,0 +1,79 @@
+package com.andeva.atelier.platform.core.application.internal.commandservices;
+
+import com.andeva.atelier.platform.core.application.commandservices.CustomerCommandService;
+import com.andeva.atelier.platform.core.domain.model.aggregates.Customer;
+import com.andeva.atelier.platform.core.domain.model.commands.CreateCustomerCommand;
+import com.andeva.atelier.platform.core.domain.model.commands.DeleteCustomerCommand;
+import com.andeva.atelier.platform.core.domain.model.commands.UpdateCustomerCommand;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
+import com.andeva.atelier.platform.core.domain.repositories.CustomerRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class CustomerCommandServiceImpl implements CustomerCommandService {
+
+    private final CustomerRepository customerRepository;
+
+    public CustomerCommandServiceImpl(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
+    @Override
+    public Optional<Customer> handle(CreateCustomerCommand command) {
+        if (customerRepository.existsByUserId(command.userId())) {
+            throw new IllegalArgumentException("Customer profile already exists for this user.");
+        }
+
+        var document = new Document(command.documentType(), command.documentNumber());
+        PersonName personName = null;
+        
+        if (!command.isCorporate()) {
+            personName = new PersonName(command.firstName(), command.lastName());
+        }
+
+        var customer = new Customer(
+                command.userId(),
+                command.isCorporate(),
+                personName,
+                command.businessName(),
+                document,
+                command.phone()
+        );
+
+        customerRepository.save(customer);
+        return customerRepository.findByUserId(command.userId());
+    }
+
+    @Override
+    public Optional<Customer> handle(UpdateCustomerCommand command) {
+        var result = customerRepository.findByUserId(command.userId());
+        if (result.isEmpty()) throw new IllegalArgumentException("Customer profile does not exist");
+        
+        var customer = result.get();
+        
+        customer.update(
+            command.firstName(), 
+            command.lastName(), 
+            command.businessName(), 
+            command.documentType(), 
+            command.documentNumber(), 
+            command.phone()
+        );
+        
+        customerRepository.save(customer);
+        return Optional.of(customer);
+    }
+
+    @Override
+    public void handle(DeleteCustomerCommand command) {
+        var existingCustomer = customerRepository.findByUserId(command.userId());
+        if (existingCustomer.isEmpty()) {
+            throw new IllegalArgumentException("Customer does not exist.");
+        }
+        
+        customerRepository.delete(existingCustomer.get());
+    }
+}
