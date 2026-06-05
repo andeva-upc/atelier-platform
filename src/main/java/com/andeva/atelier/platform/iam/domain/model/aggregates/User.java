@@ -52,4 +52,8 @@ public class User extends AbstractDomainAggregateRoot<User> {
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
+
+    public void updateEmail(String newEmail) {
+        this.email = newEmail;
+    }
 }
