@@ -6,7 +6,7 @@ import com.andeva.atelier.platform.operations.domain.model.events.WorkOrderPaidE
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.*;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.*;
 import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 @Getter
-@AllArgsConstructor
+
 public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
 
     private UUID id;
@@ -41,6 +41,26 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
     private Long version;
 
     public WorkOrder() {}
+
+    public WorkOrder(UUID id, AppointmentId appointmentId, BranchId branchId, VehicleId vehicleId, CustomerId customerId, Integer internalNumber, WorkOrderStatus status, DiagnosticSummary diagnosticSummary, Mileage mileageIn, Money totalAmount, List<WorkOrderTask> tasks, Instant createdAt, Instant updatedAt, Instant deletedAt, UUID createdBy, UUID updatedBy, Long version) {
+        this.id = id;
+        this.appointmentId = appointmentId;
+        this.branchId = branchId;
+        this.vehicleId = vehicleId;
+        this.customerId = customerId;
+        this.internalNumber = internalNumber;
+        this.status = status;
+        this.diagnosticSummary = diagnosticSummary;
+        this.mileageIn = mileageIn;
+        this.totalAmount = totalAmount;
+        this.tasks = tasks;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+        this.version = version;
+    }
 
     /**
      * Public constructor for creating a new WorkOrder instance. This constructor initializes the WorkOrder with the provided details and sets the initial status to PENDING. It also generates a new UUID for the WorkOrder ID and initializes the total amount to zero.
