@@ -11,7 +11,11 @@ public class AssignSubscriptionCommandFromResourceAssembler {
         return new AssignSubscriptionCommand(
                 branchId,
                 resource.planId(),
-                BillingCycle.valueOf(resource.billingCycle())
+                BillingCycle.valueOf(resource.billingCycle()),
+                resource.cardNumber(),
+                resource.cardHolderName(),
+                resource.expirationDate(),
+                resource.cvv()
         );
     }
 }

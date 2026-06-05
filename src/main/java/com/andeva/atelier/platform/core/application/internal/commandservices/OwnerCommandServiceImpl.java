@@ -24,7 +24,7 @@ public class OwnerCommandServiceImpl implements OwnerCommandService {
     @Override
     public Optional<Owner> handle(CreateOwnerCommand command) {
         if (ownerRepository.existsByUserId(command.userId())) {
-            throw new IllegalArgumentException("Owner profile already exists for this user.");
+            throw new IllegalArgumentException("core.error.owner.profileAlreadyExists");
         }
 
         var document = new Document(command.documentType(), command.documentNumber());
@@ -44,7 +44,7 @@ public class OwnerCommandServiceImpl implements OwnerCommandService {
     @Override
     public Optional<Owner> handle(UpdateOwnerCommand command) {
         var result = ownerRepository.findByUserId(command.userId());
-        if (result.isEmpty()) throw new IllegalArgumentException("Owner profile does not exist");
+        if (result.isEmpty()) throw new IllegalArgumentException("core.error.owner.notFound");
 
         var owner = result.get();
         
@@ -64,7 +64,7 @@ public class OwnerCommandServiceImpl implements OwnerCommandService {
     public void handle(DeleteOwnerCommand command) {
         var existingOwner = ownerRepository.findByUserId(command.userId());
         if (existingOwner.isEmpty()) {
-            throw new IllegalArgumentException("Owner does not exist.");
+            throw new IllegalArgumentException("core.error.owner.notFound");
         }
         
         ownerRepository.delete(existingOwner.get());

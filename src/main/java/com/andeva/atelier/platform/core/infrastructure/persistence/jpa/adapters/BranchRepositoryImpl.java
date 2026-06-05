@@ -2,8 +2,9 @@ package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.adapters
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Branch;
 import com.andeva.atelier.platform.core.domain.repositories.BranchRepository;
+import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.BranchPersistenceAssembler;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.BranchPersistenceEntity;
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.BranchJpaRepository;
+import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.BranchPersistenceRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,36 +15,28 @@ import java.util.stream.Collectors;
 @Component
 public class BranchRepositoryImpl implements BranchRepository {
 
-    private final BranchJpaRepository jpaRepository;
+    private final BranchPersistenceRepository jpaRepository;
 
-    public BranchRepositoryImpl(BranchJpaRepository jpaRepository) {
+    public BranchRepositoryImpl(BranchPersistenceRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
     @Override
     public void save(Branch branch) {
         BranchPersistenceEntity entity = jpaRepository.findById(branch.getId()).orElse(new BranchPersistenceEntity());
-        entity.setId(branch.getId());
-        entity.setWorkshopId(branch.getWorkshopId());
-        entity.setCode(branch.getCode());
-        entity.setName(branch.getName());
-        if (branch.getAddress() != null) {
-            entity.setAddress(branch.getAddress().value());
-        }
-        entity.setPhone(branch.getPhone());
-
+        BranchPersistenceAssembler.toEntity(branch, entity);
         jpaRepository.save(entity);
     }
 
     @Override
     public Optional<Branch> findById(UUID id) {
-        return jpaRepository.findById(id).map(this::toDomain);
+        return jpaRepository.findById(id).map(BranchPersistenceAssembler::toDomain);
     }
 
     @Override
     public List<Branch> findAllByWorkshopId(UUID workshopId) {
         return jpaRepository.findAllByWorkshopId(workshopId).stream()
-                .map(this::toDomain)
+                .map(BranchPersistenceAssembler::toDomain)
                 .collect(Collectors.toList());
     }
 
@@ -55,24 +48,5 @@ public class BranchRepositoryImpl implements BranchRepository {
     @Override
     public boolean existsByCode(String code) {
         return jpaRepository.existsByCode(code);
-    }
-
-    private Branch toDomain(BranchPersistenceEntity entity) {
-        var branch = new Branch(
-                entity.getWorkshopId(),
-                entity.getCode(),
-                entity.getName(),
-                entity.getAddress(),
-                entity.getPhone()
-        );
-
-        try {
-            var field = com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(branch, entity.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Could not set ID on domain object", e);
-        }
-        return branch;
     }
 }

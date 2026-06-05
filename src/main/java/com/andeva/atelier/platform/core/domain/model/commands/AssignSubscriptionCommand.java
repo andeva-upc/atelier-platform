@@ -7,7 +7,11 @@ import java.util.UUID;
 public record AssignSubscriptionCommand(
         UUID branchId,
         UUID planId,
-        BillingCycle billingCycle
+        BillingCycle billingCycle,
+        String cardNumber,
+        String cardHolderName,
+        String expirationDate,
+        String cvv
 ) {
     public AssignSubscriptionCommand {
         if (branchId == null) throw new IllegalArgumentException("core.error.branchId.required");

@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories;
 
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.OwnerPersistenceEntity;
+import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.CustomerPersistenceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface OwnerJpaRepository extends JpaRepository<OwnerPersistenceEntity, UUID> {
-    Optional<OwnerPersistenceEntity> findByUserId(UUID userId);
+public interface CustomerPersistenceRepository extends JpaRepository<CustomerPersistenceEntity, UUID> {
+    Optional<CustomerPersistenceEntity> findByUserId(UUID userId);
     boolean existsByUserId(UUID userId);
 }

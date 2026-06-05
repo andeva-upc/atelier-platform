@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PasswordRecoveryTokenJpaRepository extends JpaRepository<PasswordRecoveryTokenPersistenceEntity, UUID> {
+public interface PasswordRecoveryTokenPersistenceRepository extends JpaRepository<PasswordRecoveryTokenPersistenceEntity, UUID> {
     Optional<PasswordRecoveryTokenPersistenceEntity> findByTokenHash(String tokenHash);
 }

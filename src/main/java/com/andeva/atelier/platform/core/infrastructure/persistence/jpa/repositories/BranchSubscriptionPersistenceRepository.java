@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface BranchSubscriptionJpaRepository extends JpaRepository<BranchSubscriptionPersistenceEntity, UUID> {
+public interface BranchSubscriptionPersistenceRepository extends JpaRepository<BranchSubscriptionPersistenceEntity, UUID> {
     List<BranchSubscriptionPersistenceEntity> findAllByBranchId(UUID branchId);
     Optional<BranchSubscriptionPersistenceEntity> findByBranchIdAndStatus(UUID branchId, SubscriptionStatus status);
 }

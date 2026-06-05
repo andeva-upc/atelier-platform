@@ -32,7 +32,7 @@ public class PasswordRecoveryCommandServiceImpl implements PasswordRecoveryComma
     @Override
     public void handle(GeneratePasswordRecoveryTokenCommand command) {
         var user = userRepository.findByEmail(command.email())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
         String rawToken = UUID.randomUUID().toString();
         var token = new PasswordRecoveryToken(rawToken, user.getId(), 60); // 60 minutes
@@ -44,14 +44,14 @@ public class PasswordRecoveryCommandServiceImpl implements PasswordRecoveryComma
     @Override
     public void handle(ResetPasswordCommand command) {
         var tokenEntity = tokenRepository.findByTokenHash(command.token())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired token"));
+                .orElseThrow(() -> new IllegalArgumentException("iam.error.token.invalidOrExpired"));
 
         if (!tokenEntity.isValid()) {
-            throw new IllegalArgumentException("Token has expired or already used");
+            throw new IllegalArgumentException("iam.error.token.expiredOrUsed");
         }
 
         var user = userRepository.findById(tokenEntity.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
         user.updatePassword(hashingService.encode(command.newPassword()));
         userRepository.save(user);

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface BranchJpaRepository extends JpaRepository<BranchPersistenceEntity, UUID> {
+public interface BranchPersistenceRepository extends JpaRepository<BranchPersistenceEntity, UUID> {
     List<BranchPersistenceEntity> findAllByWorkshopId(UUID workshopId);
     boolean existsByCode(String code);
 }
