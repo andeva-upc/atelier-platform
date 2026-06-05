@@ -39,8 +39,12 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) {
+        try {
+            return authConfig.getAuthenticationManager();
+        } catch (Exception e) {
+            throw new RuntimeException("Could not get AuthenticationManager", e);
+        }
     }
 
     @Bean
