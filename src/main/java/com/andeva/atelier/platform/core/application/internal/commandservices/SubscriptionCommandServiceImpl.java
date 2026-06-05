@@ -40,7 +40,7 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
             throw new IllegalArgumentException("Branch does not exist.");
         }
 
-        var plan = planRepository.findById(command.planId())
+        planRepository.findById(command.planId())
                 .orElseThrow(() -> new IllegalArgumentException("Subscription plan does not exist."));
 
         // Mock Payment Processing
