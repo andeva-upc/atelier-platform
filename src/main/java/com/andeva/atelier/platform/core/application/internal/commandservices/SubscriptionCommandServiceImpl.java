@@ -13,9 +13,13 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class SubscriptionCommandServiceImpl implements SubscriptionCommandService {
+
+    private static final Logger log = LoggerFactory.getLogger(SubscriptionCommandServiceImpl.class);
 
     private final BranchSubscriptionRepository subscriptionRepository;
     private final SubscriptionPlanRepository planRepository;
@@ -38,6 +42,13 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
 
         var plan = planRepository.findById(command.planId())
                 .orElseThrow(() -> new IllegalArgumentException("Subscription plan does not exist."));
+
+        // Mock Payment Processing
+        if (command.cardNumber() != null && !command.cardNumber().isBlank()) {
+            log.info("Simulating payment processing via Stripe for card ending in {}", 
+                command.cardNumber().substring(Math.max(0, command.cardNumber().length() - 4)));
+            log.info("Payment successful for Branch ID: {}", command.branchId());
+        }
 
         // Todo: Validate limits when downgrading using other bounded context queries if necessary
 
