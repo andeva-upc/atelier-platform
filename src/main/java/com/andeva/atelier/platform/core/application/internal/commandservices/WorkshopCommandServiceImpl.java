@@ -1,0 +1,56 @@
+package com.andeva.atelier.platform.core.application.internal.commandservices;
+
+import com.andeva.atelier.platform.core.application.commandservices.WorkshopCommandService;
+import com.andeva.atelier.platform.core.domain.model.aggregates.Workshop;
+import com.andeva.atelier.platform.core.domain.model.commands.CreateWorkshopCommand;
+import com.andeva.atelier.platform.core.domain.model.commands.UpdateWorkshopCommand;
+import com.andeva.atelier.platform.core.domain.repositories.OwnerRepository;
+import com.andeva.atelier.platform.core.domain.repositories.WorkshopRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class WorkshopCommandServiceImpl implements WorkshopCommandService {
+
+    private final WorkshopRepository workshopRepository;
+    private final OwnerRepository ownerRepository;
+
+    public WorkshopCommandServiceImpl(WorkshopRepository workshopRepository, OwnerRepository ownerRepository) {
+        this.workshopRepository = workshopRepository;
+        this.ownerRepository = ownerRepository;
+    }
+
+    @Override
+    public Optional<Workshop> handle(CreateWorkshopCommand command) {
+        if (!ownerRepository.existsByUserId(command.ownerId())) {
+            throw new IllegalArgumentException("Owner profile does not exist.");
+        }
+
+        var workshop = new Workshop(
+                command.ownerId(),
+                command.businessName(),
+                command.brandName(),
+                command.taxId(),
+                command.mileageIntervalConfig()
+        );
+
+        workshopRepository.save(workshop);
+        return Optional.of(workshop); // Requires fetch back or relying on JPA's entity update. 
+    }
+
+    @Override
+    public Optional<Workshop> handle(UpdateWorkshopCommand command) {
+        var result = workshopRepository.findById(command.id());
+        if (result.isEmpty()) throw new IllegalArgumentException("Workshop does not exist");
+
+        var workshop = result.get();
+        workshop.setBusinessName(command.businessName());
+        workshop.setBrandName(command.brandName());
+        workshop.setTaxId(command.taxId());
+        workshop.setMileageIntervalConfig(command.mileageIntervalConfig());
+
+        workshopRepository.save(workshop);
+        return Optional.of(workshop);
+    }
+}

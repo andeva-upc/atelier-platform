@@ -1,0 +1,68 @@
+package com.andeva.atelier.platform.core.application.internal.commandservices;
+
+import com.andeva.atelier.platform.core.application.commandservices.BranchCommandService;
+import com.andeva.atelier.platform.core.domain.model.aggregates.Branch;
+import com.andeva.atelier.platform.core.domain.model.commands.CreateBranchCommand;
+import com.andeva.atelier.platform.core.domain.model.commands.UpdateBranchCommand;
+import com.andeva.atelier.platform.core.domain.repositories.BranchRepository;
+import com.andeva.atelier.platform.core.domain.repositories.WorkshopRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class BranchCommandServiceImpl implements BranchCommandService {
+
+    private final BranchRepository branchRepository;
+    private final WorkshopRepository workshopRepository;
+
+    public BranchCommandServiceImpl(BranchRepository branchRepository, WorkshopRepository workshopRepository) {
+        this.branchRepository = branchRepository;
+        this.workshopRepository = workshopRepository;
+    }
+
+    @Override
+    public Optional<Branch> handle(CreateBranchCommand command) {
+        if (!workshopRepository.existsById(command.workshopId())) {
+            throw new IllegalArgumentException("Workshop does not exist.");
+        }
+        
+        if (branchRepository.existsByCode(command.code())) {
+            throw new IllegalArgumentException("Branch code must be unique.");
+        }
+
+        var branch = new Branch(
+                command.workshopId(),
+                command.code(),
+                command.name(),
+                command.address(),
+                command.phone()
+        );
+
+        branchRepository.save(branch);
+        return Optional.of(branch);
+    }
+
+    @Override
+    public Optional<Branch> handle(UpdateBranchCommand command) {
+        var result = branchRepository.findById(command.id());
+        if (result.isEmpty()) throw new IllegalArgumentException("Branch does not exist");
+
+        var branch = result.get();
+        
+        // If they change the code, we must ensure it's not taken by someone else
+        if (!branch.getCode().equals(command.code()) && branchRepository.existsByCode(command.code())) {
+            throw new IllegalArgumentException("Branch code must be unique.");
+        }
+        
+        branch.update(
+            command.code(),
+            command.name(),
+            command.address(),
+            command.phone()
+        );
+
+        branchRepository.save(branch);
+        return Optional.of(branch);
+    }
+}
