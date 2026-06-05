@@ -6,7 +6,7 @@ import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.con
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MoneyAttributeConverter;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
 
 import java.time.Instant;
@@ -18,7 +18,7 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 @Getter
-@AllArgsConstructor
+
 public class WorkOrderTaskProduct {
 
     private UUID id;
@@ -33,6 +33,19 @@ public class WorkOrderTaskProduct {
     private Long version;
 
     public WorkOrderTaskProduct() {}
+
+    public WorkOrderTaskProduct(UUID id, ProductId productId, BranchId branchId, Quantity quantity, Money unitPrice, Money totalAmount, Instant createdAt, Instant updatedAt, Instant deletedAt, Long version) {
+        this.id = id;
+        this.productId = productId;
+        this.branchId = branchId;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.totalAmount = totalAmount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+        this.version = version;
+    }
 
     /**
      * Constructor to create a new WorkOrderTaskProduct instance with the specified product ID, branch ID, quantity, and unit price. The total amount is calculated by multiplying the unit price by the quantity. A unique UUID is generated for the entity ID.

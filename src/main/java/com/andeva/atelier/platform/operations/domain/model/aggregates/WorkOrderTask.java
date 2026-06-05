@@ -3,7 +3,7 @@ package com.andeva.atelier.platform.operations.domain.model.aggregates;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.*;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 @Getter
-@AllArgsConstructor
+
 public class WorkOrderTask {
 
     private UUID id;
@@ -37,6 +37,25 @@ public class WorkOrderTask {
     private Long version;
 
     public WorkOrderTask() {}
+
+    public WorkOrderTask(UUID id, ServiceId serviceId, BranchId branchId, MechanicId assignedMechanicId, WorkOrderTaskStatus status, TaskDescription description, Money price, Instant startedAt, Instant completedAt, List<WorkOrderTaskProduct> products, Instant createdAt, Instant updatedAt, Instant deletedAt, UUID createdBy, UUID updatedBy, Long version) {
+        this.id = id;
+        this.serviceId = serviceId;
+        this.branchId = branchId;
+        this.assignedMechanicId = assignedMechanicId;
+        this.status = status;
+        this.description = description;
+        this.price = price;
+        this.startedAt = startedAt;
+        this.completedAt = completedAt;
+        this.products = products;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+        this.version = version;
+    }
 
     /**
      * Constructor to create a new WorkOrderTask with the specified service, branch, assigned mechanic, description, and labor price. It initializes the task with a unique identifier, sets the initial status to PENDING, and calculates the total price based on the labor price and any associated products. This constructor is used when creating a new task for a work order.
