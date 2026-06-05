@@ -1,0 +1,46 @@
+package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities;
+
+import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Entity
+@Table(name = "owners")
+@SQLDelete(sql = "UPDATE owners SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
+@Getter
+@Setter
+@NoArgsConstructor
+public class OwnerPersistenceEntity extends AuditableAbstractPersistenceEntity {
+
+    @Column(name = "user_id", nullable = false, unique = true)
+    private UUID userId;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(name = "document_type", nullable = false)
+    private String documentType;
+
+    @Column(name = "document_number", nullable = false)
+    private String documentNumber;
+
+    @Column(nullable = false)
+    private String phone;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+}

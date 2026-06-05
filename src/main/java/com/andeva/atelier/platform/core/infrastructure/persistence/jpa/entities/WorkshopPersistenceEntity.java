@@ -1,0 +1,43 @@
+package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities;
+
+import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Entity
+@Table(name = "workshops")
+@SQLDelete(sql = "UPDATE workshops SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
+@Getter
+@Setter
+@NoArgsConstructor
+public class WorkshopPersistenceEntity extends AuditableAbstractPersistenceEntity {
+
+    @Column(name = "owner_id", nullable = false)
+    private UUID ownerId;
+
+    @Column(name = "business_name", nullable = false)
+    private String businessName;
+
+    @Column(name = "brand_name", nullable = false)
+    private String brandName;
+
+    @Column(name = "tax_id", nullable = false)
+    private String taxId;
+
+    @Column(name = "mileage_interval_config", nullable = false)
+    private int mileageIntervalConfig;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+}
