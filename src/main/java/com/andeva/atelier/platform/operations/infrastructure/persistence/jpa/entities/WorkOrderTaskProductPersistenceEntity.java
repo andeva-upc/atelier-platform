@@ -18,7 +18,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "work_order_task_products")

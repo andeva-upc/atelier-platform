@@ -28,7 +28,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "work_orders")
