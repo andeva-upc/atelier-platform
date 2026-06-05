@@ -27,13 +27,7 @@ public class WorkshopPersistenceAssembler {
                 entity.getMileageIntervalConfig()
         );
 
-        try {
-            var field = com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(workshop, entity.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Could not set ID on domain object", e);
-        }
+                workshop.setId(entity.getId());
         return workshop;
     }
 }

@@ -39,13 +39,7 @@ public class EmployeePersistenceAssembler {
                 entity.getPhone()
         );
         
-        try {
-            var field = com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(employee, entity.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Could not set ID on domain object", e);
-        }
+                employee.setId(entity.getId());
         return employee;
     }
 }

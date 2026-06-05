@@ -51,13 +51,7 @@ public class CustomerPersistenceAssembler {
                 entity.getPhone()
         );
         // Force the ID to match what was saved in the DB
-        try {
-            var field = com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(customer, entity.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Could not set ID on domain object", e);
-        }
+                customer.setId(entity.getId());
         return customer;
     }
 }

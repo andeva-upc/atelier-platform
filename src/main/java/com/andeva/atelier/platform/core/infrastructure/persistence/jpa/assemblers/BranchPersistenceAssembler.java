@@ -29,13 +29,7 @@ public class BranchPersistenceAssembler {
                 entity.getPhone()
         );
 
-        try {
-            var field = com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(branch, entity.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Could not set ID on domain object", e);
-        }
+                branch.setId(entity.getId());
         return branch;
     }
 }

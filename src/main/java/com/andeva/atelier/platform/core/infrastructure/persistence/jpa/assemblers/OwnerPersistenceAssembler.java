@@ -39,13 +39,7 @@ public class OwnerPersistenceAssembler {
                 entity.getPhone()
         );
         
-        try {
-            var field = com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(owner, entity.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Could not set ID on domain object", e);
-        }
+                owner.setId(entity.getId());
         return owner;
     }
 }

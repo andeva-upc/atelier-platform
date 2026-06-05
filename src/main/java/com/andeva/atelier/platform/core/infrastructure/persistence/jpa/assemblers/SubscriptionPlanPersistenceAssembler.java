@@ -15,13 +15,7 @@ public class SubscriptionPlanPersistenceAssembler {
         plan.setMaxStaffAccounts(entity.getMaxStaffAccounts());
         plan.setActive(entity.isActive());
 
-        try {
-            var field = com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(plan, entity.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Could not set ID on domain object", e);
-        }
+                plan.setId(entity.getId());
         return plan;
     }
 }
