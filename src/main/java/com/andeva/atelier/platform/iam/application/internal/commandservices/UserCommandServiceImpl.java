@@ -5,6 +5,8 @@ import com.andeva.atelier.platform.iam.application.internal.outboundservices.Tok
 import com.andeva.atelier.platform.iam.domain.model.aggregates.User;
 import com.andeva.atelier.platform.iam.domain.model.commands.SignInCommand;
 import com.andeva.atelier.platform.iam.domain.model.commands.SignUpCommand;
+import com.andeva.atelier.platform.iam.domain.model.commands.UpdateUserEmailCommand;
+import com.andeva.atelier.platform.iam.domain.model.commands.UpdateUserPasswordCommand;
 import com.andeva.atelier.platform.iam.domain.model.queries.AuthenticatedUser;
 import com.andeva.atelier.platform.iam.domain.repositories.UserRepository;
 import com.andeva.atelier.platform.iam.application.commandservices.UserCommandService;
@@ -45,5 +47,33 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         var token = tokenService.generateToken(user.getEmail());
         return Optional.of(new AuthenticatedUser(user, token));
+    }
+
+    @Override
+    public Optional<User> handle(UpdateUserEmailCommand command) {
+        var user = userRepository.findById(command.userId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!user.getEmail().equals(command.newEmail()) && userRepository.findByEmail(command.newEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+
+        user.updateEmail(command.newEmail());
+        userRepository.save(user);
+        return Optional.of(user);
+    }
+
+    @Override
+    public Optional<User> handle(UpdateUserPasswordCommand command) {
+        var user = userRepository.findById(command.userId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!hashingService.matches(command.currentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid current password");
+        }
+
+        user.updatePassword(hashingService.encode(command.newPassword()));
+        userRepository.save(user);
+        return Optional.of(user);
     }
 }
