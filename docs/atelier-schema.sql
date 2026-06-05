@@ -338,6 +338,7 @@ CREATE TABLE vehicle_registrations
     vehicle_id uuid        NOT NULL,
     status     varchar(20) NOT NULL DEFAULT 'ACTIVE',
     created_at timestamp   NOT NULL,
+    deleted_at timestamp  ,
     PRIMARY KEY (id)
 );
 
