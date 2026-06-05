@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface SubscriptionPlanJpaRepository extends JpaRepository<SubscriptionPlanPersistenceEntity, UUID> {
+public interface SubscriptionPlanPersistenceRepository extends JpaRepository<SubscriptionPlanPersistenceEntity, UUID> {
     Optional<SubscriptionPlanPersistenceEntity> findByName(String name);
 }

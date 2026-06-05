@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface WorkshopJpaRepository extends JpaRepository<WorkshopPersistenceEntity, UUID> {
+public interface WorkshopPersistenceRepository extends JpaRepository<WorkshopPersistenceEntity, UUID> {
     List<WorkshopPersistenceEntity> findAllByOwnerId(UUID ownerId);
 }
