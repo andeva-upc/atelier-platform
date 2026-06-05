@@ -58,7 +58,7 @@ public class Customer extends AbstractDomainAggregateRoot<Customer> {
     public void update(String firstName, String lastName, String businessName, String documentType, String documentNumber, String phone) {
         if (this.isCorporate) {
             if (!this.document.getDocumentType().name().equalsIgnoreCase(documentType)) {
-                throw new IllegalArgumentException("Corporate customers cannot change their document type.");
+                throw new IllegalArgumentException("core.error.customer.corporateDocumentTypeImmutable");
             }
             if (businessName == null || businessName.isBlank()) {
                 throw new IllegalArgumentException("core.error.businessName.required");
