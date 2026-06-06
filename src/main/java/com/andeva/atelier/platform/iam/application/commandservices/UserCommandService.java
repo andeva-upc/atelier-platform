@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.iam.domain.model.commands.SignInCommand;
 import com.andeva.atelier.platform.iam.domain.model.commands.SignUpCommand;
 import com.andeva.atelier.platform.iam.domain.model.commands.UpdateUserEmailCommand;
 import com.andeva.atelier.platform.iam.domain.model.commands.UpdateUserPasswordCommand;
+import com.andeva.atelier.platform.iam.domain.model.commands.GoogleSignInCommand;
 import com.andeva.atelier.platform.iam.domain.model.queries.AuthenticatedUser;
 
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
 public interface UserCommandService {
     Optional<User> handle(SignUpCommand command);
     Optional<AuthenticatedUser> handle(SignInCommand command);
+    Optional<AuthenticatedUser> handle(GoogleSignInCommand command);
     Optional<User> handle(UpdateUserEmailCommand command);
     Optional<User> handle(UpdateUserPasswordCommand command);
 }
