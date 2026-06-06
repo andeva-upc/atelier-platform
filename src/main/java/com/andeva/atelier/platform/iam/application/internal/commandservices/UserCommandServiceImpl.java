@@ -13,17 +13,27 @@ import com.andeva.atelier.platform.iam.application.commandservices.UserCommandSe
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Collections;
+import java.util.UUID;
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class UserCommandServiceImpl implements UserCommandService {
     private final UserRepository userRepository;
     private final HashingService hashingService;
     private final TokenService tokenService;
+    private final String googleClientId;
 
-    public UserCommandServiceImpl(UserRepository userRepository, HashingService hashingService, TokenService tokenService) {
+    public UserCommandServiceImpl(UserRepository userRepository, HashingService hashingService, TokenService tokenService, @Value("${google.client.id}") String googleClientId) {
         this.userRepository = userRepository;
         this.hashingService = hashingService;
         this.tokenService = tokenService;
+        this.googleClientId = googleClientId;
     }
 
     @Override
@@ -47,6 +57,45 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         var token = tokenService.generateToken(user.getEmail());
         return Optional.of(new AuthenticatedUser(user, token));
+    }
+
+    @Override
+    public Optional<AuthenticatedUser> handle(com.andeva.atelier.platform.iam.domain.model.commands.GoogleSignInCommand command) {
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(command.idToken());
+            if (idToken == null) {
+                throw new IllegalArgumentException("iam.error.googleToken.invalid");
+            }
+
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            String email = payload.getEmail();
+            String googleId = payload.getSubject();
+
+            User user = userRepository.findByEmail(email).orElse(null);
+
+            if (user == null) {
+                // Register new user with a secure random password since they use Google
+                String randomPassword = UUID.randomUUID().toString() + UUID.randomUUID().toString();
+                user = new User(email, hashingService.encode(randomPassword), googleId);
+                userRepository.save(user);
+            } else {
+                // If user exists but doesn't have a googleId linked, link it
+                if (user.getGoogleId() == null || user.getGoogleId().isEmpty()) {
+                    user.setGoogleId(googleId);
+                    userRepository.save(user);
+                }
+            }
+
+            var token = tokenService.generateToken(user.getEmail());
+            return Optional.of(new AuthenticatedUser(user, token));
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException("iam.error.googleToken.invalid");
+        }
     }
 
     @Override

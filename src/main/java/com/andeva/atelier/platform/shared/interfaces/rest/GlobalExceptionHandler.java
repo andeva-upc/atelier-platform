@@ -56,9 +56,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
+        String detailMessage = ex.getMessage() != null ? resolveMessageOrDefault(ex.getMessage(), ex.getMessage()) : resolveMessageOrDefault("validation.request.failed", "Request validation failed");
         var applicationError = ApplicationError.validationError(
                 resolveMessageOrDefault("validation.request.argument", "request-argument"),
-                ex.getMessage() != null ? ex.getMessage() : resolveMessageOrDefault("validation.request.failed", "Request validation failed")
+                detailMessage
         );
         return ErrorResponseAssembler.toErrorResponseFromApplicationError(applicationError);
     }
@@ -72,9 +73,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
+        String detailMessage = ex.getMessage() != null ? resolveMessageOrDefault(ex.getMessage(), ex.getMessage()) : resolveMessageOrDefault("error.unexpected.message", "An unexpected error occurred");
         var applicationError = ApplicationError.unexpected(
                 resolveMessageOrDefault("error.unexpected.context", "global-exception-handler"),
-                ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred"
+                detailMessage
         );
         return ErrorResponseAssembler.toErrorResponseFromApplicationError(applicationError);
     }
@@ -88,9 +90,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception ex) {
+        String detailMessage = ex.getMessage() != null ? resolveMessageOrDefault(ex.getMessage(), ex.getMessage()) : resolveMessageOrDefault("error.unexpected.message", "An unexpected error occurred");
         var applicationError = ApplicationError.unexpected(
                 resolveMessageOrDefault("error.unexpected.context", "global-exception-handler"),
-                ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred"
+                detailMessage
         );
         return ErrorResponseAssembler.toErrorResponseFromApplicationError(applicationError);
     }

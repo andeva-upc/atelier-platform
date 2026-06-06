@@ -48,6 +48,18 @@ public class AuthenticationController {
         return new ResponseEntity<>(userResource, HttpStatus.CREATED);
     }
 
+    @PostMapping("/google-sign-in")
+    @Operation(summary = "Google sign in", description = "Authenticate a user using Google and return a token")
+    public ResponseEntity<AuthenticatedUserResource> googleSignIn(@RequestBody GoogleSignInResource resource) {
+        var googleSignInCommand = GoogleSignInCommandFromResourceAssembler.toCommandFromResource(resource);
+        var authenticatedUser = userCommandService.handle(googleSignInCommand);
+        if (authenticatedUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.toResourceFromEntity(authenticatedUser.get());
+        return ResponseEntity.ok(authenticatedUserResource);
+    }
+
     @PostMapping("/forgot-password")
     @Operation(summary = "Forgot password", description = "Send a password recovery email")
     public ResponseEntity<Void> forgotPassword(@RequestBody PasswordRecoveryResource resource) {
