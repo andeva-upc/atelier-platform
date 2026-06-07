@@ -191,12 +191,7 @@ public class WorkOrdersController {
     @Operation(summary = "Update Work Order details", description = "Updates the diagnostic summary and mileage of a Work Order")
     public ResponseEntity<?> updateWorkOrderDetails(@PathVariable UUID id,
                                                     @Valid @RequestBody UpdateWorkOrderDetailsResource resource) {
-        var command = new UpdateWorkOrderDetailsCommand(
-                id,
-                new DiagnosticSummary(resource.diagnosticSummary()),
-                new Mileage(resource.mileageIn())
-        );
-
+        var command = WorkOrderCommandFromResourceAssembler.toCommandFromResource(id, resource);
         var result = commandService.handle(command);
         return toResponse(result);
     }
