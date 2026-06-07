@@ -6,7 +6,11 @@ import com.andeva.atelier.platform.billing.domain.model.aggregates.Quote;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.CreateQuoteResource;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.CreateQuoteCommandFromResourceAssembler;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.QuoteResourceFromAggregateAssembler;
+import com.andeva.atelier.platform.billing.application.queryservices.QuoteQueryService;
+import com.andeva.atelier.platform.billing.domain.model.queries.GetQuoteByIdQuery;
+import com.andeva.atelier.platform.billing.interfaces.rest.resources.QuoteResource;
 import com.andeva.atelier.platform.shared.application.result.Result;
+import java.util.UUID;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,9 +29,11 @@ import org.springframework.web.bind.annotation.*;
 public class QuotesController {
 
     private final QuoteCommandService commandService;
+    private final QuoteQueryService queryService;
 
-    public QuotesController(QuoteCommandService commandService) {
+    public QuotesController(QuoteCommandService commandService, QuoteQueryService queryService) {
         this.commandService = commandService;
+        this.queryService = queryService;
     }
 
     /**
@@ -43,6 +49,25 @@ public class QuotesController {
         var command = CreateQuoteCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = commandService.handle(command);
         return toResponse(result);
+    }
+
+    /**
+     * Handles the retrieval of a quote by its ID.
+     * 
+     * @param id The unique identifier of the quote.
+     * @return A ResponseEntity with the quote resource and a 200 OK status, 
+     *         or a 404 NOT FOUND status if the quote does not exist.
+     */
+    @GetMapping("/{id}")
+    @Operation(summary = "Get quote by ID", description = "Retrieves a Quote by its unique identifier")
+    public ResponseEntity<QuoteResource> getQuoteById(@PathVariable UUID id) {
+        var query = new GetQuoteByIdQuery(id);
+        var quote = queryService.handle(query);
+        if (quote.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        var resource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(quote.get());
+        return ResponseEntity.ok(resource);
     }
 
     private ResponseEntity<?> toResponse(Result<Quote, QuoteCommandFailure> result) {
