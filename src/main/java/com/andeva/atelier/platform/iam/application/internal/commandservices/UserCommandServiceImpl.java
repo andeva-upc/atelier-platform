@@ -38,7 +38,7 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     public Optional<User> handle(SignUpCommand command) {
-        if (userRepository.findByEmail(command.email().value()).isPresent()) {
+        if (userRepository.existsByEmail(command.email().value())) {
             throw new IllegalArgumentException("iam.error.email.alreadyInUse");
         }
         var user = new User(command.email(), new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(hashingService.encode(command.password().value())));
@@ -103,7 +103,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         var user = userRepository.findById(command.userId().value())
                 .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
-        if (!user.getEmail().value().equals(command.newEmail().value()) && userRepository.findByEmail(command.newEmail().value()).isPresent()) {
+        if (!user.getEmail().value().equals(command.newEmail().value()) && userRepository.existsByEmail(command.newEmail().value())) {
             throw new IllegalArgumentException("iam.error.email.alreadyInUse");
         }
 
