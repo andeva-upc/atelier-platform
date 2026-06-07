@@ -54,7 +54,11 @@ public class QuotesController {
     public ResponseEntity<?> createQuote(@Valid @RequestBody CreateQuoteResource resource) {
         var command = CreateQuoteCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = commandService.handle(command);
-        return toResponse(result);
+        if (result.isSuccess()) {
+            var quoteResource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
+            return new ResponseEntity<>(quoteResource, HttpStatus.CREATED);
+        }
+        return toErrorResponse(result.failure().get());
     }
 
     /**
@@ -70,7 +74,11 @@ public class QuotesController {
     public ResponseEntity<?> updateQuoteDiscount(@PathVariable UUID id, @Valid @RequestBody UpdateQuoteResource resource) {
         var command = UpdateQuoteCommandFromResourceAssembler.toCommandFromResource(id, resource);
         var result = commandService.handle(command);
-        return toResponse(result);
+        if (result.isSuccess()) {
+            var quoteResource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
+            return ResponseEntity.ok(quoteResource);
+        }
+        return toErrorResponse(result.failure().get());
     }
 
     /**
@@ -109,13 +117,8 @@ public class QuotesController {
         return ResponseEntity.ok(resources);
     }
 
-    private ResponseEntity<?> toResponse(Result<Quote, QuoteCommandFailure> result) {
-        if (result.isSuccess()) {
-            var resource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
-            return new ResponseEntity<>(resource, HttpStatus.CREATED);
-        }
-
-        return switch (result.failure().get()) {
+    private ResponseEntity<?> toErrorResponse(QuoteCommandFailure failure) {
+        return switch (failure) {
             case WORK_ORDER_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Work order not found");
             case INVALID_QUOTE_DATA -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid quote data");
             case QUOTE_ALREADY_EXISTS_FOR_WORK_ORDER -> ResponseEntity.status(HttpStatus.CONFLICT).body("Quote already exists");
