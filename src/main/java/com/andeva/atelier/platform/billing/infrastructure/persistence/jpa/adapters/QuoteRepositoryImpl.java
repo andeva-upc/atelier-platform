@@ -12,6 +12,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the QuoteRepository interface using Spring Data JPA.
+ */
 @Service
 public class QuoteRepositoryImpl implements QuoteRepository {
 
