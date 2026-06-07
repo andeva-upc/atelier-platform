@@ -21,6 +21,12 @@ public class QuoteQueryServiceImpl implements QuoteQueryService {
         this.quoteRepository = quoteRepository;
     }
 
+    /**
+     * Executes the query by delegating the lookup to the repository.
+     * 
+     * @param query The query object containing the target quote ID.
+     * @return An Optional containing the Quote if found, or empty if it does not exist.
+     */
     @Override
     public Optional<Quote> handle(GetQuoteByIdQuery query) {
         return quoteRepository.findById(query.quoteId());
