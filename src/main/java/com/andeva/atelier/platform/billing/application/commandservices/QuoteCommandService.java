@@ -18,4 +18,13 @@ public interface QuoteCommandService {
      * @return A Result containing the created Quote if successful, or a failure reason otherwise.
      */
     Result<Quote, QuoteCommandFailure> handle(CreateQuoteCommand command);
+
+    /**
+     * Updates the discount percentage of an existing Quote.
+     * Validates that the Quote exists, is in DRAFT state, and the new discount is valid.
+     * 
+     * @param command The command object containing the quote ID and new discount percentage.
+     * @return A Result containing the updated Quote if successful, or a failure reason otherwise.
+     */
+    Result<Quote, QuoteCommandFailure> handle(com.andeva.atelier.platform.billing.domain.model.commands.UpdateQuoteDiscountCommand command);
 }

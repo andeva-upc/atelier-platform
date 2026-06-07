@@ -12,6 +12,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the QuoteRepository interface using Spring Data JPA.
+ */
 @Service
 public class QuoteRepositoryImpl implements QuoteRepository {
 
@@ -23,7 +26,10 @@ public class QuoteRepositoryImpl implements QuoteRepository {
 
     @Override
     public Quote save(Quote quote) {
-        var entity = QuotePersistenceAssembler.toEntity(quote);
+        var existingEntityOpt = persistenceRepository.findById(quote.getId());
+        var entity = existingEntityOpt.orElseGet(com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.entities.QuotePersistenceEntity::new);
+        QuotePersistenceAssembler.updateEntityFromAggregate(entity, quote);
+        
         var savedEntity = persistenceRepository.save(entity);
         return QuotePersistenceAssembler.toAggregate(savedEntity);
     }

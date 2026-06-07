@@ -4,7 +4,9 @@ import com.andeva.atelier.platform.billing.application.commandservices.QuoteComm
 import com.andeva.atelier.platform.billing.application.commandservices.QuoteCommandService;
 import com.andeva.atelier.platform.billing.domain.model.aggregates.Quote;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.CreateQuoteResource;
+import com.andeva.atelier.platform.billing.interfaces.rest.resources.UpdateQuoteResource;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.CreateQuoteCommandFromResourceAssembler;
+import com.andeva.atelier.platform.billing.interfaces.rest.transform.UpdateQuoteCommandFromResourceAssembler;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.QuoteResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.billing.application.queryservices.QuoteQueryService;
 import com.andeva.atelier.platform.billing.domain.model.queries.GetQuoteByIdQuery;
@@ -52,7 +54,31 @@ public class QuotesController {
     public ResponseEntity<?> createQuote(@Valid @RequestBody CreateQuoteResource resource) {
         var command = CreateQuoteCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = commandService.handle(command);
-        return toResponse(result);
+        if (result.isSuccess()) {
+            var quoteResource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
+            return new ResponseEntity<>(quoteResource, HttpStatus.CREATED);
+        }
+        return toErrorResponse(result.failure().get());
+    }
+
+    /**
+     * Handles the update of a quote's discount percentage.
+     * 
+     * @param id The unique identifier of the quote to update.
+     * @param resource The resource payload containing the new discount percentage.
+     * @return A ResponseEntity with the updated quote resource and a 200 OK status, 
+     *         or an appropriate error status based on the business failure.
+     */
+    @PutMapping("/{id}")
+    @Operation(summary = "Update quote discount", description = "Updates the discount percentage of an existing DRAFT quote")
+    public ResponseEntity<?> updateQuoteDiscount(@PathVariable UUID id, @Valid @RequestBody UpdateQuoteResource resource) {
+        var command = UpdateQuoteCommandFromResourceAssembler.toCommandFromResource(id, resource);
+        var result = commandService.handle(command);
+        if (result.isSuccess()) {
+            var quoteResource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
+            return ResponseEntity.ok(quoteResource);
+        }
+        return toErrorResponse(result.failure().get());
     }
 
     /**
@@ -91,16 +117,13 @@ public class QuotesController {
         return ResponseEntity.ok(resources);
     }
 
-    private ResponseEntity<?> toResponse(Result<Quote, QuoteCommandFailure> result) {
-        if (result.isSuccess()) {
-            var resource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
-            return new ResponseEntity<>(resource, HttpStatus.CREATED);
-        }
-
-        return switch (result.failure().get()) {
+    private ResponseEntity<?> toErrorResponse(QuoteCommandFailure failure) {
+        return switch (failure) {
             case WORK_ORDER_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Work order not found");
             case INVALID_QUOTE_DATA -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid quote data");
             case QUOTE_ALREADY_EXISTS_FOR_WORK_ORDER -> ResponseEntity.status(HttpStatus.CONFLICT).body("Quote already exists");
+            case QUOTE_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quote not found");
+            case INVALID_QUOTE_STATE -> ResponseEntity.status(HttpStatus.CONFLICT).body("Quote must be in DRAFT state to be updated");
         };
     }
 }
