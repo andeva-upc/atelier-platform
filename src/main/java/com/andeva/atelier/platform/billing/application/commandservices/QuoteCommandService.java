@@ -27,4 +27,13 @@ public interface QuoteCommandService {
      * @return A Result containing the updated Quote if successful, or a failure reason otherwise.
      */
     Result<Quote, QuoteCommandFailure> handle(com.andeva.atelier.platform.billing.domain.model.commands.UpdateQuoteDiscountCommand command);
+
+    /**
+     * Approves an existing Quote.
+     * Validates that the Quote exists and is currently in DRAFT state.
+     * 
+     * @param command The command object containing the quote ID to approve.
+     * @return A Result containing the approved Quote if successful, or a failure reason otherwise.
+     */
+    Result<Quote, QuoteCommandFailure> handle(com.andeva.atelier.platform.billing.domain.model.commands.ApproveQuoteCommand command);
 }
