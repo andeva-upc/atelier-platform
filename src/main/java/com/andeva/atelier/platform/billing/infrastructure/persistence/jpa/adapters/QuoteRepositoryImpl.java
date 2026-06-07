@@ -36,7 +36,7 @@ public class QuoteRepositoryImpl implements QuoteRepository {
 
     @Override
     public List<Quote> findAllByBranchId(BranchId branchId) {
-        return persistenceRepository.findAllByBranchId(branchId.value())
+        return persistenceRepository.findAllByBranchId(branchId)
                 .stream()
                 .map(QuotePersistenceAssembler::toAggregate)
                 .collect(Collectors.toList());

@@ -2,8 +2,6 @@ package com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.assem
 
 import com.andeva.atelier.platform.billing.domain.model.aggregates.Quote;
 import com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.entities.QuotePersistenceEntity;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 
 public class QuotePersistenceAssembler {
 
@@ -12,10 +10,10 @@ public class QuotePersistenceAssembler {
         var entity = new QuotePersistenceEntity();
         entity.setId(aggregate.getId());
         entity.setWorkOrderId(aggregate.getWorkOrderId());
-        entity.setBranchId(aggregate.getBranchId().value());
-        entity.setSubtotalAmount(aggregate.getSubtotalAmount().amount());
+        entity.setBranchId(aggregate.getBranchId());
+        entity.setSubtotalAmount(aggregate.getSubtotalAmount());
         entity.setDiscountPercentage(aggregate.getDiscountPercentage());
-        entity.setTotalAmount(aggregate.getTotalAmount().amount());
+        entity.setTotalAmount(aggregate.getTotalAmount());
         entity.setStatus(aggregate.getStatus());
         return entity;
     }
@@ -25,10 +23,10 @@ public class QuotePersistenceAssembler {
         return new Quote(
                 entity.getId(),
                 entity.getWorkOrderId(),
-                new BranchId(entity.getBranchId()),
-                new Money(entity.getSubtotalAmount()),
+                entity.getBranchId(),
+                entity.getSubtotalAmount(),
                 entity.getDiscountPercentage(),
-                new Money(entity.getTotalAmount()),
+                entity.getTotalAmount(),
                 entity.getStatus()
         );
     }

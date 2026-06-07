@@ -4,7 +4,6 @@ import com.andeva.atelier.platform.billing.application.commandservices.QuoteComm
 import com.andeva.atelier.platform.billing.application.commandservices.QuoteCommandService;
 import com.andeva.atelier.platform.billing.domain.model.aggregates.Quote;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.CreateQuoteResource;
-import com.andeva.atelier.platform.billing.interfaces.rest.resources.QuoteResource;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.CreateQuoteCommandFromResourceAssembler;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.QuoteResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.shared.application.result.Result;

@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface QuotePersistenceRepository extends JpaRepository<QuotePersistenceEntity, UUID> {
-    List<QuotePersistenceEntity> findAllByBranchId(UUID branchId);
+    List<QuotePersistenceEntity> findAllByBranchId(com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId branchId);
 }
