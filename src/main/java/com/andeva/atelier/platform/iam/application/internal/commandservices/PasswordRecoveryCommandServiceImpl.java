@@ -8,7 +8,8 @@ import com.andeva.atelier.platform.iam.domain.model.entities.PasswordRecoveryTok
 import com.andeva.atelier.platform.iam.domain.repositories.PasswordRecoveryTokenRepository;
 import com.andeva.atelier.platform.iam.domain.repositories.UserRepository;
 import com.andeva.atelier.platform.iam.application.commandservices.PasswordRecoveryCommandService;
-import com.andeva.atelier.platform.iam.infrastructure.email.EmailService;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.EmailService;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.TokenService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

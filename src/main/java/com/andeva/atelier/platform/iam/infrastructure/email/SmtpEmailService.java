@@ -5,15 +5,16 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.EmailService;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 
 /**
- * Service for sending emails.
+ * Adapter for sending emails using SMTP (Infrastructure Layer).
  */
 @Service
-public class EmailService {
+public class SmtpEmailService implements EmailService {
 
     private final JavaMailSender emailSender;
     private final MessageSource messageSource;
@@ -21,7 +22,7 @@ public class EmailService {
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
-    public EmailService(JavaMailSender emailSender, MessageSource messageSource) {
+    public SmtpEmailService(JavaMailSender emailSender, MessageSource messageSource) {
         this.emailSender = emailSender;
         this.messageSource = messageSource;
     }
