@@ -37,6 +37,20 @@ public final class WorkOrderCommandFromResourceAssembler {
      * @param resource The incoming resource containing the new diagnostic summary and mileage information for the Work Order, received from the HTTP request body.
      * @return An UpdateWorkOrderDetailsCommand instance populated with the work order ID and the new details from the resource, ready to be processed by the application layer to update the Work Order in the system.
      */
+    public static UpdateWorkOrderDetailsCommand toCommandFromResource(UUID workOrderId, UpdateWorkOrderDetailsResource resource) {
+        return new UpdateWorkOrderDetailsCommand(
+                workOrderId,
+                new DiagnosticSummary(resource.diagnosticSummary()),
+                new Mileage(resource.mileageIn())
+        );
+    }
+
+    /**
+     * Transforms the AddTaskResource into an AddTaskToWorkOrderCommand.
+     * @param workOrderId The unique identifier of the Work Order.
+     * @param resource The incoming resource containing the task details.
+     * @return An AddTaskToWorkOrderCommand instance.
+     */
     public static AddTaskToWorkOrderCommand toCommandFromResource(UUID workOrderId, AddTaskResource resource) {
         return new AddTaskToWorkOrderCommand(
                 workOrderId,
