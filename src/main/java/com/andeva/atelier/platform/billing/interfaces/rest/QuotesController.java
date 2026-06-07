@@ -8,9 +8,8 @@ import com.andeva.atelier.platform.billing.interfaces.rest.resources.UpdateQuote
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.CreateQuoteCommandFromResourceAssembler;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.UpdateQuoteCommandFromResourceAssembler;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.QuoteResourceFromAggregateAssembler;
-import com.andeva.atelier.platform.billing.application.queryservices.QuoteQueryService;
-import com.andeva.atelier.platform.billing.domain.model.queries.GetQuoteByIdQuery;
 import com.andeva.atelier.platform.billing.domain.model.commands.ApproveQuoteCommand;
+import com.andeva.atelier.platform.billing.domain.model.commands.CancelQuoteCommand;
 import com.andeva.atelier.platform.billing.domain.model.queries.GetQuotesByBranchIdQuery;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.QuoteResource;
@@ -93,6 +92,25 @@ public class QuotesController {
     @Operation(summary = "Approve a quote", description = "Approves a Quote, transitioning its state from DRAFT to APPROVED")
     public ResponseEntity<?> approveQuote(@PathVariable UUID id) {
         var command = new ApproveQuoteCommand(id);
+        var result = commandService.handle(command);
+        if (result.isSuccess()) {
+            var quoteResource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
+            return ResponseEntity.ok(quoteResource);
+        }
+        return toErrorResponse(result.failure().get());
+    }
+
+    /**
+     * Handles the cancellation of an existing quote.
+     * 
+     * @param id The unique identifier of the quote to cancel.
+     * @return A ResponseEntity with the canceled quote resource and a 200 OK status, 
+     *         or an appropriate error status based on the business failure.
+     */
+    @PostMapping("/{id}/cancel")
+    @Operation(summary = "Cancel a quote", description = "Cancels a Quote, transitioning its state to CANCELED")
+    public ResponseEntity<?> cancelQuote(@PathVariable UUID id) {
+        var command = new CancelQuoteCommand(id);
         var result = commandService.handle(command);
         if (result.isSuccess()) {
             var quoteResource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
