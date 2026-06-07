@@ -9,6 +9,11 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * Aggregate root representing a Quote in the billing context.
+ * This class encapsulates business logic related to quoting a Work Order before generating a voucher.
+ * It tracks subtotals, applies discounts, calculates the final total amount, and manages its state transitions.
+ */
 @Getter
 public class Quote extends AbstractDomainAggregateRoot<Quote> {
 

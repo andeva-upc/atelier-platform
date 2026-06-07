@@ -15,6 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST controller for managing billing quotes.
+ * This controller provides endpoints for creating and interacting with quotes.
+ * It delegates command handling to the QuoteCommandService.
+ */
 @RestController
 @RequestMapping(value = "/api/v1/quotes", produces = "application/json")
 @Tag(name = "Quotes", description = "Endpoints for managing billing quotes")
@@ -36,11 +41,11 @@ public class QuotesController {
 
     private ResponseEntity<?> toResponse(Result<Quote, QuoteCommandFailure> result) {
         if (result.isSuccess()) {
-            var resource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.getValue());
+            var resource = QuoteResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
             return new ResponseEntity<>(resource, HttpStatus.CREATED);
         }
 
-        return switch (result.getFailure()) {
+        return switch (result.failure().get()) {
             case WORK_ORDER_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Work order not found");
             case INVALID_QUOTE_DATA -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid quote data");
             case QUOTE_ALREADY_EXISTS_FOR_WORK_ORDER -> ResponseEntity.status(HttpStatus.CONFLICT).body("Quote already exists");
