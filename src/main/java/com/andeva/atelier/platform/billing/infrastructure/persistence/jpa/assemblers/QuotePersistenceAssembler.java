@@ -1,0 +1,33 @@
+package com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.assemblers;
+
+import com.andeva.atelier.platform.billing.domain.model.aggregates.Quote;
+import com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.entities.QuotePersistenceEntity;
+
+public class QuotePersistenceAssembler {
+
+    public static QuotePersistenceEntity toEntity(Quote aggregate) {
+        if (aggregate == null) return null;
+        var entity = new QuotePersistenceEntity();
+        entity.setId(aggregate.getId());
+        entity.setWorkOrderId(aggregate.getWorkOrderId());
+        entity.setBranchId(aggregate.getBranchId());
+        entity.setSubtotalAmount(aggregate.getSubtotalAmount());
+        entity.setDiscountPercentage(aggregate.getDiscountPercentage());
+        entity.setTotalAmount(aggregate.getTotalAmount());
+        entity.setStatus(aggregate.getStatus());
+        return entity;
+    }
+
+    public static Quote toAggregate(QuotePersistenceEntity entity) {
+        if (entity == null) return null;
+        return new Quote(
+                entity.getId(),
+                entity.getWorkOrderId(),
+                entity.getBranchId(),
+                entity.getSubtotalAmount(),
+                entity.getDiscountPercentage(),
+                entity.getTotalAmount(),
+                entity.getStatus()
+        );
+    }
+}
