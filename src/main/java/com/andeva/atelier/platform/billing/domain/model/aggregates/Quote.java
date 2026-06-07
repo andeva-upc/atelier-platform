@@ -40,6 +40,10 @@ public class Quote extends AbstractDomainAggregateRoot<Quote> {
         calculateTotal();
     }
 
+    /**
+     * Calculates the total amount based on the subtotal and the applied discount percentage.
+     * Sets the totalAmount property. If subtotal is null, totalAmount defaults to ZERO.
+     */
     private void calculateTotal() {
         if (this.subtotalAmount == null) {
             this.totalAmount = Money.ZERO;
@@ -49,6 +53,11 @@ public class Quote extends AbstractDomainAggregateRoot<Quote> {
         this.totalAmount = this.subtotalAmount.multiply(java.math.BigDecimal.valueOf(discountFactor));
     }
 
+    /**
+     * Approves the quote, transitioning its state from DRAFT to APPROVED.
+     * 
+     * @throws IllegalStateException if the quote is not in DRAFT status.
+     */
     public void approve() {
         if (this.status != QuoteStatus.DRAFT) {
             throw new IllegalStateException("Only DRAFT quotes can be approved.");
@@ -56,6 +65,11 @@ public class Quote extends AbstractDomainAggregateRoot<Quote> {
         this.status = QuoteStatus.APPROVED;
     }
 
+    /**
+     * Cancels the quote, transitioning its state to CANCELED.
+     * 
+     * @throws IllegalStateException if the quote has already been APPROVED.
+     */
     public void cancel() {
         if (this.status == QuoteStatus.APPROVED) {
             throw new IllegalStateException("APPROVED quotes cannot be canceled directly. Revert them first.");

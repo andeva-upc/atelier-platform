@@ -10,6 +10,12 @@ import com.andeva.atelier.platform.operations.domain.model.queries.GetWorkOrderB
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementation of the QuoteCommandService interface.
+ * Handles the business use cases for Quote operations, acting as an orchestrator 
+ * between the domain aggregates, query services from other contexts (e.g., Operations), 
+ * and persistence repositories.
+ */
 @Service
 public class QuoteCommandServiceImpl implements QuoteCommandService {
 

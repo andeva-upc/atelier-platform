@@ -30,6 +30,13 @@ public class QuotesController {
         this.commandService = commandService;
     }
 
+    /**
+     * Handles the creation of a new quote.
+     * 
+     * @param resource The resource payload containing quote creation details.
+     * @return A ResponseEntity with the created quote resource and a 201 CREATED status, 
+     *         or an appropriate error status based on the business failure.
+     */
     @PostMapping
     @Operation(summary = "Create a new quote", description = "Creates a new Quote based on a Work Order")
     public ResponseEntity<?> createQuote(@Valid @RequestBody CreateQuoteResource resource) {
