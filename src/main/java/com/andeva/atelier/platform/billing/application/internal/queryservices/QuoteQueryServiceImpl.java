@@ -31,4 +31,15 @@ public class QuoteQueryServiceImpl implements QuoteQueryService {
     public Optional<Quote> handle(GetQuoteByIdQuery query) {
         return quoteRepository.findById(query.quoteId());
     }
+
+    /**
+     * Executes the query to find all quotes for a given branch.
+     * 
+     * @param query The query object containing the target branch ID.
+     * @return A list of Quotes matching the branch ID.
+     */
+    @Override
+    public java.util.List<Quote> handle(com.andeva.atelier.platform.billing.domain.model.queries.GetQuotesByBranchIdQuery query) {
+        return quoteRepository.findAllByBranchId(query.branchId());
+    }
 }

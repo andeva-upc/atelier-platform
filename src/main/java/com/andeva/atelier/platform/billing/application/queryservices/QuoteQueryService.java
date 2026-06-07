@@ -18,4 +18,12 @@ public interface QuoteQueryService {
      * @return An Optional containing the Quote if found, or empty otherwise.
      */
     Optional<Quote> handle(GetQuoteByIdQuery query);
+
+    /**
+     * Handles the retrieval of all Quotes associated with a specific Branch.
+     * 
+     * @param query The query object containing the branch ID.
+     * @return A list of Quotes belonging to the branch, or an empty list if none are found.
+     */
+    java.util.List<Quote> handle(com.andeva.atelier.platform.billing.domain.model.queries.GetQuotesByBranchIdQuery query);
 }
