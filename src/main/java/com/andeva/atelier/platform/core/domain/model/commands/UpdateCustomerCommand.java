@@ -1,20 +1,15 @@
 package com.andeva.atelier.platform.core.domain.model.commands;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
 public record UpdateCustomerCommand(
-        UUID userId,
-        String firstName,
-        String lastName,
+        UserId userId,
+        PersonName name,
         String businessName,
-        String documentType,
-        String documentNumber,
-        String phone
+        Document document,
+        Phone phone
 ) {
-    public UpdateCustomerCommand {
-        if (userId == null) throw new IllegalArgumentException("core.error.userId.required");
-        if (documentType == null || documentType.isBlank()) throw new IllegalArgumentException("core.error.documentType.required");
-        if (documentNumber == null || documentNumber.isBlank()) throw new IllegalArgumentException("core.error.documentNumber.required");
-        if (phone == null || phone.isBlank()) throw new IllegalArgumentException("core.error.phone.required");
-    }
 }

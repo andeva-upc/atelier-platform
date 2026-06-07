@@ -1,14 +1,15 @@
 package com.andeva.atelier.platform.core.domain.repositories;
 
 import com.andeva.atelier.platform.core.domain.model.entities.BranchSubscription;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchSubscriptionId;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface BranchSubscriptionRepository {
     void save(BranchSubscription branchSubscription);
-    Optional<BranchSubscription> findById(UUID id);
-    List<BranchSubscription> findAllByBranchId(UUID branchId);
-    Optional<BranchSubscription> findActiveByBranchId(UUID branchId);
+    Optional<BranchSubscription> findById(BranchSubscriptionId id);
+    List<BranchSubscription> findAllByBranchId(BranchId branchId);
+    Optional<BranchSubscription> findActiveByBranchId(BranchId branchId);
 }

@@ -5,8 +5,6 @@ import com.andeva.atelier.platform.core.domain.model.aggregates.Employee;
 import com.andeva.atelier.platform.core.domain.model.commands.CreateEmployeeCommand;
 import com.andeva.atelier.platform.core.domain.model.commands.DeleteEmployeeCommand;
 import com.andeva.atelier.platform.core.domain.model.commands.UpdateEmployeeCommand;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
 import com.andeva.atelier.platform.core.domain.repositories.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +25,10 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
             throw new IllegalArgumentException("core.error.employee.profileAlreadyExists");
         }
 
-        var document = new Document(command.documentType(), command.documentNumber());
-        var personName = new PersonName(command.firstName(), command.lastName());
-
         var employee = new Employee(
                 command.userId(),
-                personName,
-                document,
+                command.name(),
+                command.document(),
                 command.phone()
         );
 
@@ -49,10 +44,8 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
         var employee = result.get();
         
         employee.update(
-            command.firstName(),
-            command.lastName(),
-            command.documentType(),
-            command.documentNumber(),
+            command.name(),
+            command.document(),
             command.phone()
         );
 

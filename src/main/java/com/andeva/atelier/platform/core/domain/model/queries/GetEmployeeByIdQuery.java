@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.domain.model.queries;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
 
-public record GetEmployeeByIdQuery(UUID id) {
+public record GetEmployeeByIdQuery(EmployeeId id) {
 }

@@ -6,8 +6,8 @@ import com.andeva.atelier.platform.core.interfaces.rest.resources.WorkshopResour
 public class WorkshopResourceFromEntityAssembler {
     public static WorkshopResource toResourceFromEntity(Workshop entity) {
         return new WorkshopResource(
-                entity.getId(),
-                entity.getOwnerId(),
+                entity.getId() != null ? entity.getId().value() : null,
+                entity.getOwnerId() != null ? entity.getOwnerId().value() : null,
                 entity.getBusinessName(),
                 entity.getBrandName(),
                 entity.getTaxId(),

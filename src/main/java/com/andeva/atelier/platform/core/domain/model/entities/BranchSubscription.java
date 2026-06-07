@@ -1,46 +1,30 @@
 package com.andeva.atelier.platform.core.domain.model.entities;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BillingCycle;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchSubscriptionId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionStatus;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Getter
 public class BranchSubscription {
 
-    @Setter
-    private UUID id;
-
-    @Setter
-    private UUID branchId;
-
-    @Setter
-    private UUID planId;
-
-    @Setter
+    private BranchSubscriptionId id;
+    private BranchId branchId;
+    private SubscriptionPlanId planId;
     private SubscriptionStatus status;
-
-    @Setter
     private BillingCycle billingCycle;
-
-    @Setter
     private Date startDate;
-
-    @Setter
     private Date endDate;
-
-    @Setter
     private Date canceledAt;
 
     public BranchSubscription() {
     }
 
-    public BranchSubscription(UUID branchId, UUID planId, BillingCycle billingCycle, Date startDate, Date endDate) {
-        if (branchId == null) throw new IllegalArgumentException("core.error.branchId.required");
-        if (planId == null) throw new IllegalArgumentException("core.error.planId.required");
+    public BranchSubscription(BranchId branchId, SubscriptionPlanId planId, BillingCycle billingCycle, Date startDate, Date endDate) {
         if (billingCycle == null) throw new IllegalArgumentException("core.error.billingCycle.required");
         if (startDate == null) throw new IllegalArgumentException("core.error.startDate.required");
         if (endDate == null) throw new IllegalArgumentException("core.error.endDate.required");
@@ -51,6 +35,13 @@ public class BranchSubscription {
         this.billingCycle = billingCycle;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public BranchSubscription(BranchSubscriptionId id, BranchId branchId, SubscriptionPlanId planId, SubscriptionStatus status, BillingCycle billingCycle, Date startDate, Date endDate, Date canceledAt) {
+        this(branchId, planId, billingCycle, startDate, endDate);
+        this.id = id;
+        this.status = status;
+        this.canceledAt = canceledAt;
     }
 
     public void cancel(Date canceledAt) {

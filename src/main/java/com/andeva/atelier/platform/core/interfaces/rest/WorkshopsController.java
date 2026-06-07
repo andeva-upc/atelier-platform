@@ -1,5 +1,8 @@
 package com.andeva.atelier.platform.core.interfaces.rest;
 
+import com.andeva.atelier.platform.core.domain.model.valueobjects.OwnerId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
+
 import com.andeva.atelier.platform.core.domain.model.queries.GetAllWorkshopsByOwnerIdQuery;
 import com.andeva.atelier.platform.core.domain.model.queries.GetWorkshopByIdQuery;
 import com.andeva.atelier.platform.core.application.commandservices.WorkshopCommandService;
@@ -63,7 +66,7 @@ public class WorkshopsController {
     @Operation(summary = "Get a workshop by ID", description = "Retrieves the details of a specific workshop")
     @GetMapping("/{workshopId}")
     public ResponseEntity<WorkshopResource> getWorkshopById(@PathVariable UUID workshopId) {
-        var query = new GetWorkshopByIdQuery(workshopId);
+        var query = new GetWorkshopByIdQuery(new WorkshopId(workshopId));
         var workshop = workshopQueryService.handle(query);
         if (workshop.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -76,7 +79,7 @@ public class WorkshopsController {
     @Operation(summary = "Get workshops by owner ID", description = "Retrieves all workshops belonging to a specific owner")
     @GetMapping("/owner/{ownerId}")
     public ResponseEntity<List<WorkshopResource>> getWorkshopsByOwnerId(@PathVariable UUID ownerId) {
-        var query = new GetAllWorkshopsByOwnerIdQuery(ownerId);
+        var query = new GetAllWorkshopsByOwnerIdQuery(new OwnerId(ownerId));
         var workshops = workshopQueryService.handle(query);
         
         var workshopResources = workshops.stream()

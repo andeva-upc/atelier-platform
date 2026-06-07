@@ -42,9 +42,9 @@ public class UserDetailsImpl implements UserDetails {
         boolean enabled = "ACTIVE".equals(user.getStatus());
 
         return new UserDetailsImpl(
-                user.getId(),
-                user.getEmail(),
-                user.getPassword(),
+                user.getId().value(),
+                user.getEmail().value(),
+                user.getPassword().value(),
                 Collections.singletonList(authority),
                 enabled
         );

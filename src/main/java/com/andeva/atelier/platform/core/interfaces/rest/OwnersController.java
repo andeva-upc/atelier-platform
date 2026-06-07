@@ -1,5 +1,8 @@
 package com.andeva.atelier.platform.core.interfaces.rest;
 
+import com.andeva.atelier.platform.core.domain.model.valueobjects.OwnerId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
+
 import com.andeva.atelier.platform.core.domain.model.queries.GetOwnerByIdQuery;
 import com.andeva.atelier.platform.core.application.commandservices.OwnerCommandService;
 import com.andeva.atelier.platform.core.application.queryservices.OwnerQueryService;
@@ -61,7 +64,7 @@ public class OwnersController {
     @Operation(summary = "Get an owner profile by ID", description = "Retrieves the details of a specific owner profile")
     @GetMapping("/{ownerId}")
     public ResponseEntity<OwnerResource> getOwnerById(@PathVariable UUID ownerId) {
-        var query = new GetOwnerByIdQuery(ownerId);
+        var query = new GetOwnerByIdQuery(new OwnerId(ownerId));
         var owner = ownerQueryService.handle(query);
         if (owner.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -74,7 +77,7 @@ public class OwnersController {
     @Operation(summary = "Delete an owner profile", description = "Deletes an existing owner profile using the user ID")
     @DeleteMapping("/user/{userId}")
     public ResponseEntity<?> deleteOwner(@PathVariable UUID userId) {
-        var command = new DeleteOwnerCommand(userId);
+        var command = new DeleteOwnerCommand(new UserId(userId));
         ownerCommandService.handle(command);
         return ResponseEntity.ok().build();
     }

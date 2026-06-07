@@ -1,4 +1,7 @@
 package com.andeva.atelier.platform.iam.domain.model.commands;
 
-public record SignUpCommand(String email, String password) {
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress;
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.Password;
+
+public record SignUpCommand(EmailAddress email, Password password) {
 }

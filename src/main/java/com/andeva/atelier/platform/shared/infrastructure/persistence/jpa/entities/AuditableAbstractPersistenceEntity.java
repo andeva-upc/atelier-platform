@@ -26,6 +26,7 @@ import java.util.UUID;
 public abstract class AuditableAbstractPersistenceEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Setter
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;

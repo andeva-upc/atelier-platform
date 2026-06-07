@@ -5,8 +5,6 @@ import com.andeva.atelier.platform.core.domain.model.aggregates.Customer;
 import com.andeva.atelier.platform.core.domain.model.commands.CreateCustomerCommand;
 import com.andeva.atelier.platform.core.domain.model.commands.DeleteCustomerCommand;
 import com.andeva.atelier.platform.core.domain.model.commands.UpdateCustomerCommand;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
 import com.andeva.atelier.platform.core.domain.repositories.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,19 +25,12 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
             throw new IllegalArgumentException("core.error.customer.profileAlreadyExists");
         }
 
-        var document = new Document(command.documentType(), command.documentNumber());
-        PersonName personName = null;
-        
-        if (!command.isCorporate()) {
-            personName = new PersonName(command.firstName(), command.lastName());
-        }
-
         var customer = new Customer(
                 command.userId(),
                 command.isCorporate(),
-                personName,
+                command.name(),
                 command.businessName(),
-                document,
+                command.document(),
                 command.phone()
         );
 
@@ -55,11 +46,9 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
         var customer = result.get();
         
         customer.update(
-            command.firstName(), 
-            command.lastName(), 
+            command.name(), 
             command.businessName(), 
-            command.documentType(), 
-            command.documentNumber(), 
+            command.document(), 
             command.phone()
         );
         

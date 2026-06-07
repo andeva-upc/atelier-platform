@@ -1,14 +1,15 @@
 package com.andeva.atelier.platform.core.domain.repositories;
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Customer;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface CustomerRepository {
     void save(Customer customer);
-    Optional<Customer> findById(UUID id);
-    Optional<Customer> findByUserId(UUID userId);
-    boolean existsByUserId(UUID userId);
+    Optional<Customer> findById(CustomerId id);
+    Optional<Customer> findByUserId(UserId userId);
+    boolean existsByUserId(UserId userId);
     void delete(Customer customer);
 }

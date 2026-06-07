@@ -1,9 +1,11 @@
 package com.andeva.atelier.platform.core.domain.model.queries;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
-public record GetProfileRolesByUserIdQuery(UUID userId) {
+public record GetProfileRolesByUserIdQuery(UserId userId) {
     public GetProfileRolesByUserIdQuery {
-        if (userId == null) throw new IllegalArgumentException("core.error.userId.required");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
+        }
     }
 }

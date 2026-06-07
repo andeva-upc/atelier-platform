@@ -1,5 +1,8 @@
 package com.andeva.atelier.platform.core.interfaces.rest;
 
+import com.andeva.atelier.platform.core.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
+
 import com.andeva.atelier.platform.core.domain.model.queries.GetCustomerByIdQuery;
 import com.andeva.atelier.platform.core.domain.model.commands.DeleteCustomerCommand;
 import com.andeva.atelier.platform.core.application.commandservices.CustomerCommandService;
@@ -61,7 +64,7 @@ public class CustomersController {
     @Operation(summary = "Get a customer profile by ID", description = "Retrieves the details of a specific customer profile")
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerResource> getCustomerById(@PathVariable UUID customerId) {
-        var query = new GetCustomerByIdQuery(customerId);
+        var query = new GetCustomerByIdQuery(new CustomerId(customerId));
         var customer = customerQueryService.handle(query);
         if (customer.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -74,7 +77,7 @@ public class CustomersController {
     @Operation(summary = "Delete a customer profile", description = "Deletes an existing customer profile using the user ID")
     @DeleteMapping("/user/{userId}")
     public ResponseEntity<?> deleteCustomer(@PathVariable UUID userId) {
-        var command = new DeleteCustomerCommand(userId);
+        var command = new DeleteCustomerCommand(new UserId(userId));
         customerCommandService.handle(command);
         return ResponseEntity.ok().build();
     }

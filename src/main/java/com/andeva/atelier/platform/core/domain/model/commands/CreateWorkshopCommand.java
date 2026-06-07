@@ -1,16 +1,15 @@
 package com.andeva.atelier.platform.core.domain.model.commands;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.OwnerId;
 
 public record CreateWorkshopCommand(
-        UUID ownerId,
+        OwnerId ownerId,
         String businessName,
         String brandName,
         String taxId,
         int mileageIntervalConfig
 ) {
     public CreateWorkshopCommand {
-        if (ownerId == null) throw new IllegalArgumentException("core.error.ownerId.required");
         if (businessName == null || businessName.isBlank()) throw new IllegalArgumentException("core.error.businessName.required");
         if (brandName == null || brandName.isBlank()) throw new IllegalArgumentException("core.error.brandName.required");
         if (taxId == null || taxId.isBlank()) throw new IllegalArgumentException("core.error.taxId.required");

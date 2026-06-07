@@ -23,7 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
     public void save(User user) {
         UserPersistenceEntity entity;
         if (user.getId() != null) {
-            entity = jpaRepository.findById(user.getId()).orElse(new UserPersistenceEntity());
+            entity = jpaRepository.findById(user.getId().value()).orElse(new UserPersistenceEntity());
         } else {
             entity = new UserPersistenceEntity();
         }

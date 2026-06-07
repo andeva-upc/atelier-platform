@@ -38,24 +38,24 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     public Optional<User> handle(SignUpCommand command) {
-        if (userRepository.findByEmail(command.email()).isPresent()) {
+        if (userRepository.findByEmail(command.email().value()).isPresent()) {
             throw new IllegalArgumentException("iam.error.email.alreadyInUse");
         }
-        var user = new User(command.email(), hashingService.encode(command.password()));
+        var user = new User(command.email(), new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(hashingService.encode(command.password().value())));
         userRepository.save(user);
-        return userRepository.findByEmail(command.email());
+        return userRepository.findByEmail(command.email().value());
     }
 
     @Override
     public Optional<AuthenticatedUser> handle(SignInCommand command) {
-        var user = userRepository.findByEmail(command.email())
+        var user = userRepository.findByEmail(command.email().value())
                 .orElseThrow(() -> new IllegalArgumentException("iam.error.credentials.invalid"));
 
-        if (!hashingService.matches(command.password(), user.getPassword())) {
+        if (!hashingService.matches(command.password().value(), user.getPassword().value())) {
             throw new IllegalArgumentException("iam.error.credentials.invalid");
         }
 
-        var token = tokenService.generateToken(user.getEmail());
+        var token = tokenService.generateToken(user.getEmail().value());
         return Optional.of(new AuthenticatedUser(user, token));
     }
 
@@ -80,17 +80,17 @@ public class UserCommandServiceImpl implements UserCommandService {
             if (user == null) {
                 // Register new user with a secure random password since they use Google
                 String randomPassword = UUID.randomUUID().toString() + UUID.randomUUID().toString();
-                user = new User(email, hashingService.encode(randomPassword), googleId);
+                user = new User(new com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress(email), new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(hashingService.encode(randomPassword)), new com.andeva.atelier.platform.iam.domain.model.valueobjects.GoogleId(googleId));
                 userRepository.save(user);
             } else {
                 // If user exists but doesn't have a googleId linked, link it
-                if (user.getGoogleId() == null || user.getGoogleId().isEmpty()) {
-                    user.setGoogleId(googleId);
+                if (user.getGoogleId() == null || user.getGoogleId().value().isEmpty()) {
+                    user.linkGoogleAccount(new com.andeva.atelier.platform.iam.domain.model.valueobjects.GoogleId(googleId));
                     userRepository.save(user);
                 }
             }
 
-            var token = tokenService.generateToken(user.getEmail());
+            var token = tokenService.generateToken(user.getEmail().value());
             return Optional.of(new AuthenticatedUser(user, token));
 
         } catch (Exception e) {
@@ -100,28 +100,28 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     public Optional<User> handle(UpdateUserEmailCommand command) {
-        var user = userRepository.findById(command.userId())
+        var user = userRepository.findById(command.userId().value())
                 .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
-        if (!user.getEmail().equals(command.newEmail()) && userRepository.findByEmail(command.newEmail()).isPresent()) {
+        if (!user.getEmail().value().equals(command.newEmail().value()) && userRepository.findByEmail(command.newEmail().value()).isPresent()) {
             throw new IllegalArgumentException("iam.error.email.alreadyInUse");
         }
 
-        user.updateEmail(command.newEmail());
+        user.changeEmail(command.newEmail());
         userRepository.save(user);
         return Optional.of(user);
     }
 
     @Override
     public Optional<User> handle(UpdateUserPasswordCommand command) {
-        var user = userRepository.findById(command.userId())
+        var user = userRepository.findById(command.userId().value())
                 .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
-        if (!hashingService.matches(command.currentPassword(), user.getPassword())) {
+        if (!hashingService.matches(command.currentPassword().value(), user.getPassword().value())) {
             throw new IllegalArgumentException("iam.error.currentPassword.invalid");
         }
 
-        user.updatePassword(hashingService.encode(command.newPassword()));
+        user.changePassword(new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(hashingService.encode(command.newPassword().value())));
         userRepository.save(user);
         return Optional.of(user);
     }

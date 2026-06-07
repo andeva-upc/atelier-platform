@@ -1,6 +1,9 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers;
 
 import com.andeva.atelier.platform.core.domain.model.entities.BranchSubscription;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchSubscriptionId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.BranchSubscriptionPersistenceEntity;
 
 public class BranchSubscriptionPersistenceAssembler {
@@ -9,9 +12,9 @@ public class BranchSubscriptionPersistenceAssembler {
         if (entity == null) {
             entity = new BranchSubscriptionPersistenceEntity();
         }
-        entity.setId(branchSubscription.getId());
-        entity.setBranchId(branchSubscription.getBranchId());
-        entity.setPlanId(branchSubscription.getPlanId());
+        entity.setId(branchSubscription.getId() != null ? branchSubscription.getId().value() : null);
+        entity.setBranchId(branchSubscription.getBranchId() != null ? branchSubscription.getBranchId().value() : null);
+        entity.setPlanId(branchSubscription.getPlanId() != null ? branchSubscription.getPlanId().value() : null);
         entity.setStatus(branchSubscription.getStatus());
         entity.setBillingCycle(branchSubscription.getBillingCycle());
         entity.setStartDate(branchSubscription.getStartDate());
@@ -21,23 +24,15 @@ public class BranchSubscriptionPersistenceAssembler {
     }
 
     public static BranchSubscription toDomain(BranchSubscriptionPersistenceEntity entity) {
-        var branchSub = new BranchSubscription(
-                entity.getBranchId(),
-                entity.getPlanId(),
+        return new BranchSubscription(
+                new BranchSubscriptionId(entity.getId()),
+                new BranchId(entity.getBranchId()),
+                new SubscriptionPlanId(entity.getPlanId()),
+                entity.getStatus(),
                 entity.getBillingCycle(),
                 entity.getStartDate(),
-                entity.getEndDate()
+                entity.getEndDate(),
+                entity.getCanceledAt()
         );
-        branchSub.setStatus(entity.getStatus());
-        branchSub.setCanceledAt(entity.getCanceledAt());
-
-        try {
-            var field = BranchSubscription.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(branchSub, entity.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Could not set ID on domain object", e);
-        }
-        return branchSub;
     }
 }
