@@ -1,8 +1,11 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers;
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Customer;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.CustomerPersistenceEntity;
 
 public class CustomerPersistenceAssembler {
@@ -11,8 +14,8 @@ public class CustomerPersistenceAssembler {
         if (entity == null) {
             entity = new CustomerPersistenceEntity();
         }
-        entity.setId(customer.getId());
-        entity.setUserId(customer.getUserId());
+        entity.setId(customer.getId() != null ? customer.getId().value() : null);
+        entity.setUserId(customer.getUserId() != null ? customer.getUserId().value() : null);
         entity.setCorporate(customer.isCorporate());
         
         if (customer.getName() != null) {
@@ -27,7 +30,7 @@ public class CustomerPersistenceAssembler {
             entity.setDocumentNumber(customer.getDocument().getDocumentNumber());
         }
         
-        entity.setPhone(customer.getPhone());
+        entity.setPhone(customer.getPhone() != null ? customer.getPhone().value() : null);
         return entity;
     }
 
@@ -42,16 +45,14 @@ public class CustomerPersistenceAssembler {
             document = new Document(entity.getDocumentType(), entity.getDocumentNumber());
         }
 
-        var customer = new Customer(
-                entity.getUserId(),
+        return new Customer(
+                new CustomerId(entity.getId()),
+                new UserId(entity.getUserId()),
                 entity.isCorporate(),
                 personName,
                 entity.getBusinessName(),
                 document,
-                entity.getPhone()
+                new Phone(entity.getPhone())
         );
-        // Force the ID to match what was saved in the DB
-                customer.setId(entity.getId());
-        return customer;
     }
 }

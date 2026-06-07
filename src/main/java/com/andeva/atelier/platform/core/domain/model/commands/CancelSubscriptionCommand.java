@@ -1,11 +1,8 @@
 package com.andeva.atelier.platform.core.domain.model.commands;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
 
 public record CancelSubscriptionCommand(
-        UUID branchId
+        BranchId branchId
 ) {
-    public CancelSubscriptionCommand {
-        if (branchId == null) throw new IllegalArgumentException("core.error.branchId.required");
-    }
 }

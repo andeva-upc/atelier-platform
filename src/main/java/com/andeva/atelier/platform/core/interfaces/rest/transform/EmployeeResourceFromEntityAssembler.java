@@ -6,13 +6,13 @@ import com.andeva.atelier.platform.core.interfaces.rest.resources.EmployeeResour
 public class EmployeeResourceFromEntityAssembler {
     public static EmployeeResource toResourceFromEntity(Employee entity) {
         return new EmployeeResource(
-                entity.getId(),
-                entity.getUserId(),
+                entity.getId() != null ? entity.getId().value() : null,
+                entity.getUserId() != null ? entity.getUserId().value() : null,
                 entity.getName() != null ? entity.getName().firstName() : null,
                 entity.getName() != null ? entity.getName().lastName() : null,
                 entity.getDocument() != null ? entity.getDocument().getDocumentType().name() : null,
                 entity.getDocument() != null ? entity.getDocument().getDocumentNumber() : null,
-                entity.getPhone()
+                entity.getPhone() != null ? entity.getPhone().value() : null
         );
     }
 }

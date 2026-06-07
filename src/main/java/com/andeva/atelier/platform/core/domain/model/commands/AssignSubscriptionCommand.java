@@ -1,12 +1,12 @@
 package com.andeva.atelier.platform.core.domain.model.commands;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BillingCycle;
-
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 
 public record AssignSubscriptionCommand(
-        UUID branchId,
-        UUID planId,
+        BranchId branchId,
+        SubscriptionPlanId planId,
         BillingCycle billingCycle,
         String cardNumber,
         String cardHolderName,
@@ -14,8 +14,6 @@ public record AssignSubscriptionCommand(
         String cvv
 ) {
     public AssignSubscriptionCommand {
-        if (branchId == null) throw new IllegalArgumentException("core.error.branchId.required");
-        if (planId == null) throw new IllegalArgumentException("core.error.planId.required");
         if (billingCycle == null) throw new IllegalArgumentException("core.error.billingCycle.required");
     }
 }

@@ -1,5 +1,8 @@
 package com.andeva.atelier.platform.core.interfaces.rest;
 
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
+
 import com.andeva.atelier.platform.core.domain.model.queries.GetAllBranchesByWorkshopIdQuery;
 import com.andeva.atelier.platform.core.domain.model.queries.GetBranchByIdQuery;
 import com.andeva.atelier.platform.core.application.commandservices.BranchCommandService;
@@ -74,7 +77,7 @@ public class BranchesController {
     @Operation(summary = "Get a branch by ID", description = "Retrieves the details of a specific branch")
     @GetMapping("/{branchId}")
     public ResponseEntity<BranchResource> getBranchById(@PathVariable UUID branchId) {
-        var query = new GetBranchByIdQuery(branchId);
+        var query = new GetBranchByIdQuery(new BranchId(branchId));
         var branch = branchQueryService.handle(query);
         if (branch.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -87,7 +90,7 @@ public class BranchesController {
     @Operation(summary = "Get branches by workshop ID", description = "Retrieves all branches belonging to a specific workshop")
     @GetMapping("/workshop/{workshopId}")
     public ResponseEntity<List<BranchResource>> getBranchesByWorkshopId(@PathVariable UUID workshopId) {
-        var query = new GetAllBranchesByWorkshopIdQuery(workshopId);
+        var query = new GetAllBranchesByWorkshopIdQuery(new WorkshopId(workshopId));
         var branches = branchQueryService.handle(query);
 
         var branchResources = branches.stream()
@@ -115,7 +118,7 @@ public class BranchesController {
     @Operation(summary = "Cancel an active subscription", description = "Cancels the currently active subscription of a branch")
     @DeleteMapping("/{branchId}/subscriptions/active")
     public ResponseEntity<BranchSubscriptionResource> cancelSubscription(@PathVariable UUID branchId) {
-        var command = new CancelSubscriptionCommand(branchId);
+        var command = new CancelSubscriptionCommand(new BranchId(branchId));
         var subscription = subscriptionCommandService.handle(command);
         if (subscription.isEmpty()) {
             return ResponseEntity.badRequest().build();

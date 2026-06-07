@@ -1,15 +1,11 @@
 package com.andeva.atelier.platform.iam.domain.model.commands;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.Password;
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.UserId;
 
 public record UpdateUserPasswordCommand(
-        UUID userId,
-        String currentPassword,
-        String newPassword
+        UserId userId,
+        Password currentPassword,
+        Password newPassword
 ) {
-    public UpdateUserPasswordCommand {
-        if (userId == null) throw new IllegalArgumentException("iam.error.userId.required");
-        if (currentPassword == null || currentPassword.isBlank()) throw new IllegalArgumentException("iam.error.currentPassword.required");
-        if (newPassword == null || newPassword.isBlank()) throw new IllegalArgumentException("iam.error.newPassword.required");
-    }
 }

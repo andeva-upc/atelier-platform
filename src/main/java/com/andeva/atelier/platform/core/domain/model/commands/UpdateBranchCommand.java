@@ -1,16 +1,17 @@
 package com.andeva.atelier.platform.core.domain.model.commands;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.Address;
 
 public record UpdateBranchCommand(
-        UUID id,
+        BranchId id,
         String code,
         String name,
-        String address,
-        String phone
+        Address address,
+        Phone phone
 ) {
     public UpdateBranchCommand {
-        if (id == null) throw new IllegalArgumentException("core.error.branchId.required");
         if (code == null || code.isBlank()) throw new IllegalArgumentException("core.error.code.required");
         if (name == null || name.isBlank()) throw new IllegalArgumentException("core.error.name.required");
     }

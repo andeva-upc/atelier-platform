@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.domain.model.queries;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
 
-public record GetWorkshopByIdQuery(UUID id) {
+public record GetWorkshopByIdQuery(WorkshopId id) {
 }

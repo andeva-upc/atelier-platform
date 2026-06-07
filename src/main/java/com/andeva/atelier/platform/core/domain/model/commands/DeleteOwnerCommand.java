@@ -1,9 +1,6 @@
 package com.andeva.atelier.platform.core.domain.model.commands;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
-public record DeleteOwnerCommand(UUID userId) {
-    public DeleteOwnerCommand {
-        if (userId == null) throw new IllegalArgumentException("core.error.userId.required");
-    }
+public record DeleteOwnerCommand(UserId userId) {
 }

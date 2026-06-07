@@ -5,6 +5,9 @@ import com.andeva.atelier.platform.iam.interfaces.rest.resources.UserResource;
 
 public class UserResourceFromEntityAssembler {
     public static UserResource toResourceFromEntity(User entity) {
-        return new UserResource(entity.getId(), entity.getEmail());
+        return new UserResource(
+                entity.getId().value(),
+                entity.getEmail().value()
+        );
     }
 }

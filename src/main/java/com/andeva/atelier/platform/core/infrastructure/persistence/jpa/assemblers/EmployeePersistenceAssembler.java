@@ -2,7 +2,10 @@ package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemble
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Employee;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.EmployeePersistenceEntity;
 
 public class EmployeePersistenceAssembler {
@@ -11,8 +14,8 @@ public class EmployeePersistenceAssembler {
         if (entity == null) {
             entity = new EmployeePersistenceEntity();
         }
-        entity.setId(employee.getId());
-        entity.setUserId(employee.getUserId());
+        entity.setId(employee.getId() != null ? employee.getId().value() : null);
+        entity.setUserId(employee.getUserId() != null ? employee.getUserId().value() : null);
         
         if (employee.getName() != null) {
             entity.setFirstName(employee.getName().firstName());
@@ -24,7 +27,7 @@ public class EmployeePersistenceAssembler {
             entity.setDocumentNumber(employee.getDocument().getDocumentNumber());
         }
         
-        entity.setPhone(employee.getPhone());
+        entity.setPhone(employee.getPhone() != null ? employee.getPhone().value() : null);
         return entity;
     }
 
@@ -32,14 +35,12 @@ public class EmployeePersistenceAssembler {
         PersonName personName = new PersonName(entity.getFirstName(), entity.getLastName());
         Document document = new Document(entity.getDocumentType(), entity.getDocumentNumber());
 
-        var employee = new Employee(
-                entity.getUserId(),
+        return new Employee(
+                new EmployeeId(entity.getId()),
+                new UserId(entity.getUserId()),
                 personName,
                 document,
-                entity.getPhone()
+                new Phone(entity.getPhone())
         );
-        
-                employee.setId(entity.getId());
-        return employee;
     }
 }

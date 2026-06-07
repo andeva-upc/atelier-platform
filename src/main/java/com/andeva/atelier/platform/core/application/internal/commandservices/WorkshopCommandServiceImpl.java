@@ -23,7 +23,7 @@ public class WorkshopCommandServiceImpl implements WorkshopCommandService {
 
     @Override
     public Optional<Workshop> handle(CreateWorkshopCommand command) {
-        if (!ownerRepository.existsByUserId(command.ownerId())) {
+        if (!ownerRepository.existsById(command.ownerId())) {
             throw new IllegalArgumentException("core.error.owner.notFound");
         }
 
@@ -45,10 +45,12 @@ public class WorkshopCommandServiceImpl implements WorkshopCommandService {
         if (result.isEmpty()) throw new IllegalArgumentException("core.error.workshop.notFound");
 
         var workshop = result.get();
-        workshop.setBusinessName(command.businessName());
-        workshop.setBrandName(command.brandName());
-        workshop.setTaxId(command.taxId());
-        workshop.setMileageIntervalConfig(command.mileageIntervalConfig());
+        workshop.update(
+            command.businessName(),
+            command.brandName(),
+            command.taxId(),
+            command.mileageIntervalConfig()
+        );
 
         workshopRepository.save(workshop);
         return Optional.of(workshop);

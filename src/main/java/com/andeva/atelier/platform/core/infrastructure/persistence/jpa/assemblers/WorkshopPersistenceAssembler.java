@@ -1,6 +1,8 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers;
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Workshop;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.OwnerId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.WorkshopPersistenceEntity;
 
 public class WorkshopPersistenceAssembler {
@@ -9,8 +11,8 @@ public class WorkshopPersistenceAssembler {
         if (entity == null) {
             entity = new WorkshopPersistenceEntity();
         }
-        entity.setId(workshop.getId());
-        entity.setOwnerId(workshop.getOwnerId());
+        entity.setId(workshop.getId() != null ? workshop.getId().value() : null);
+        entity.setOwnerId(workshop.getOwnerId() != null ? workshop.getOwnerId().value() : null);
         entity.setBusinessName(workshop.getBusinessName());
         entity.setBrandName(workshop.getBrandName());
         entity.setTaxId(workshop.getTaxId());
@@ -19,15 +21,13 @@ public class WorkshopPersistenceAssembler {
     }
 
     public static Workshop toDomain(WorkshopPersistenceEntity entity) {
-        var workshop = new Workshop(
-                entity.getOwnerId(),
+        return new Workshop(
+                new WorkshopId(entity.getId()),
+                new OwnerId(entity.getOwnerId()),
                 entity.getBusinessName(),
                 entity.getBrandName(),
                 entity.getTaxId(),
                 entity.getMileageIntervalConfig()
         );
-
-                workshop.setId(entity.getId());
-        return workshop;
     }
 }

@@ -2,7 +2,10 @@ package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemble
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Owner;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.OwnerId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.OwnerPersistenceEntity;
 
 public class OwnerPersistenceAssembler {
@@ -11,8 +14,8 @@ public class OwnerPersistenceAssembler {
         if (entity == null) {
             entity = new OwnerPersistenceEntity();
         }
-        entity.setId(owner.getId());
-        entity.setUserId(owner.getUserId());
+        entity.setId(owner.getId() != null ? owner.getId().value() : null);
+        entity.setUserId(owner.getUserId() != null ? owner.getUserId().value() : null);
         
         if (owner.getName() != null) {
             entity.setFirstName(owner.getName().firstName());
@@ -24,7 +27,7 @@ public class OwnerPersistenceAssembler {
             entity.setDocumentNumber(owner.getDocument().getDocumentNumber());
         }
         
-        entity.setPhone(owner.getPhone());
+        entity.setPhone(owner.getPhone() != null ? owner.getPhone().value() : null);
         return entity;
     }
 
@@ -32,14 +35,12 @@ public class OwnerPersistenceAssembler {
         PersonName personName = new PersonName(entity.getFirstName(), entity.getLastName());
         Document document = new Document(entity.getDocumentType(), entity.getDocumentNumber());
 
-        var owner = new Owner(
-                entity.getUserId(),
+        return new Owner(
+                new OwnerId(entity.getId()),
+                new UserId(entity.getUserId()),
                 personName,
                 document,
-                entity.getPhone()
+                new Phone(entity.getPhone())
         );
-        
-                owner.setId(entity.getId());
-        return owner;
     }
 }

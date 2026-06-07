@@ -1,6 +1,8 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.adapters;
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Customer;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.domain.repositories.CustomerRepository;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.CustomerPersistenceAssembler;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.CustomerPersistenceEntity;
@@ -8,7 +10,6 @@ import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositor
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public class CustomerRepositoryImpl implements CustomerRepository {
@@ -21,28 +22,35 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     @Override
     public void save(Customer customer) {
-        CustomerPersistenceEntity entity = jpaRepository.findById(customer.getId()).orElse(new CustomerPersistenceEntity());
+        CustomerPersistenceEntity entity = null;
+        if (customer.getId() != null) {
+            entity = jpaRepository.findById(customer.getId().value()).orElse(new CustomerPersistenceEntity());
+        } else {
+            entity = new CustomerPersistenceEntity();
+        }
         CustomerPersistenceAssembler.toEntity(customer, entity);
         jpaRepository.save(entity);
     }
 
     @Override
-    public Optional<Customer> findById(UUID id) {
-        return jpaRepository.findById(id).map(CustomerPersistenceAssembler::toDomain);
+    public Optional<Customer> findById(CustomerId id) {
+        return jpaRepository.findById(id.value()).map(CustomerPersistenceAssembler::toDomain);
     }
 
     @Override
-    public Optional<Customer> findByUserId(UUID userId) {
-        return jpaRepository.findByUserId(userId).map(CustomerPersistenceAssembler::toDomain);
+    public Optional<Customer> findByUserId(UserId userId) {
+        return jpaRepository.findByUserId(userId.value()).map(CustomerPersistenceAssembler::toDomain);
     }
 
     @Override
-    public boolean existsByUserId(UUID userId) {
-        return jpaRepository.existsByUserId(userId);
+    public boolean existsByUserId(UserId userId) {
+        return jpaRepository.existsByUserId(userId.value());
     }
 
     @Override
     public void delete(Customer customer) {
-        jpaRepository.findById(customer.getId()).ifPresent(jpaRepository::delete);
+        if (customer.getId() != null) {
+            jpaRepository.findById(customer.getId().value()).ifPresent(jpaRepository::delete);
+        }
     }
 }

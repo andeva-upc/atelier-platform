@@ -35,10 +35,10 @@ public class PasswordRecoveryCommandServiceImpl implements PasswordRecoveryComma
                 .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
         String rawToken = UUID.randomUUID().toString();
-        var token = new PasswordRecoveryToken(rawToken, user.getId(), 60); // 60 minutes
+        var token = new PasswordRecoveryToken(rawToken, user.getId().value(), 60); // 60 minutes
         tokenRepository.save(token);
 
-        emailService.sendPasswordRecoveryEmail(user.getEmail(), rawToken);
+        emailService.sendPasswordRecoveryEmail(user.getEmail().value(), rawToken);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class PasswordRecoveryCommandServiceImpl implements PasswordRecoveryComma
         var user = userRepository.findById(tokenEntity.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
-        user.updatePassword(hashingService.encode(command.newPassword()));
+        user.changePassword(new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(hashingService.encode(command.newPassword())));
         userRepository.save(user);
 
         tokenEntity.markAsUsed();

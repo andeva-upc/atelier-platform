@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.domain.model.queries;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
 
-public record GetBranchByIdQuery(UUID id) {
+public record GetBranchByIdQuery(BranchId id) {
 }

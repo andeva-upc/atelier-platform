@@ -5,8 +5,6 @@ import com.andeva.atelier.platform.core.domain.model.aggregates.Owner;
 import com.andeva.atelier.platform.core.domain.model.commands.CreateOwnerCommand;
 import com.andeva.atelier.platform.core.domain.model.commands.DeleteOwnerCommand;
 import com.andeva.atelier.platform.core.domain.model.commands.UpdateOwnerCommand;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
 import com.andeva.atelier.platform.core.domain.repositories.OwnerRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +25,10 @@ public class OwnerCommandServiceImpl implements OwnerCommandService {
             throw new IllegalArgumentException("core.error.owner.profileAlreadyExists");
         }
 
-        var document = new Document(command.documentType(), command.documentNumber());
-        var personName = new PersonName(command.firstName(), command.lastName());
-
         var owner = new Owner(
                 command.userId(),
-                personName,
-                document,
+                command.name(),
+                command.document(),
                 command.phone()
         );
 
@@ -49,10 +44,8 @@ public class OwnerCommandServiceImpl implements OwnerCommandService {
         var owner = result.get();
         
         owner.update(
-            command.firstName(),
-            command.lastName(),
-            command.documentType(),
-            command.documentNumber(),
+            command.name(),
+            command.document(),
             command.phone()
         );
 

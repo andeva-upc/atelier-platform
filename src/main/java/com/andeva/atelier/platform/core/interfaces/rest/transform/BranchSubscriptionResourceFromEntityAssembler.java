@@ -6,9 +6,9 @@ import com.andeva.atelier.platform.core.interfaces.rest.resources.BranchSubscrip
 public class BranchSubscriptionResourceFromEntityAssembler {
     public static BranchSubscriptionResource toResourceFromEntity(BranchSubscription entity) {
         return new BranchSubscriptionResource(
-                entity.getId(),
-                entity.getBranchId(),
-                entity.getPlanId(),
+                entity.getId() != null ? entity.getId().value() : null,
+                entity.getBranchId() != null ? entity.getBranchId().value() : null,
+                entity.getPlanId() != null ? entity.getPlanId().value() : null,
                 entity.getBillingCycle().name(),
                 entity.getStatus().name(),
                 entity.getStartDate(),

@@ -1,39 +1,38 @@
 package com.andeva.atelier.platform.core.domain.model.aggregates;
 
+import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.UUID;
 
 @Getter
 public class SubscriptionPlan extends AbstractDomainAggregateRoot<SubscriptionPlan> {
 
-    @Setter
-    private UUID id;
-
-    @Setter
+    private SubscriptionPlanId id;
     private String name;
-
-    @Setter
     private double monthlyPrice;
-
-    @Setter
     private int maxObd2Devices;
-
-    @Setter
     private int maxMonthlySnapshotsPerVehicle;
-
-    @Setter
     private int maxCustomers;
-
-    @Setter
     private int maxStaffAccounts;
-
-    @Setter
     private boolean isActive;
 
     public SubscriptionPlan() {
         this.isActive = true;
+    }
+
+    public SubscriptionPlan(String name, double monthlyPrice, int maxObd2Devices, int maxMonthlySnapshotsPerVehicle, int maxCustomers, int maxStaffAccounts, boolean isActive) {
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("core.error.name.required");
+        this.name = name;
+        this.monthlyPrice = monthlyPrice;
+        this.maxObd2Devices = maxObd2Devices;
+        this.maxMonthlySnapshotsPerVehicle = maxMonthlySnapshotsPerVehicle;
+        this.maxCustomers = maxCustomers;
+        this.maxStaffAccounts = maxStaffAccounts;
+        this.isActive = isActive;
+    }
+
+    public SubscriptionPlan(SubscriptionPlanId id, String name, double monthlyPrice, int maxObd2Devices, int maxMonthlySnapshotsPerVehicle, int maxCustomers, int maxStaffAccounts, boolean isActive) {
+        this(name, monthlyPrice, maxObd2Devices, maxMonthlySnapshotsPerVehicle, maxCustomers, maxStaffAccounts, isActive);
+        this.id = id;
     }
 }

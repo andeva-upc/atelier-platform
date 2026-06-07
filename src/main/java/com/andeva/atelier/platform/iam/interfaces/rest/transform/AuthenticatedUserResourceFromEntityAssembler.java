@@ -5,6 +5,10 @@ import com.andeva.atelier.platform.iam.interfaces.rest.resources.AuthenticatedUs
 
 public class AuthenticatedUserResourceFromEntityAssembler {
     public static AuthenticatedUserResource toResourceFromEntity(AuthenticatedUser entity) {
-        return new AuthenticatedUserResource(entity.user().getId(), entity.user().getEmail(), entity.token());
+        return new AuthenticatedUserResource(
+                entity.user().getId().value(),
+                entity.user().getEmail().value(),
+                entity.token()
+        );
     }
 }

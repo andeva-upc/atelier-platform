@@ -5,6 +5,11 @@ import com.andeva.atelier.platform.iam.infrastructure.persistence.jpa.entities.U
 
 import java.util.UUID;
 
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress;
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.GoogleId;
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.Password;
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.UserId;
+
 public class UserPersistenceAssembler {
 
     public static UserPersistenceEntity toEntity(User user, UserPersistenceEntity entity) {
@@ -12,23 +17,23 @@ public class UserPersistenceAssembler {
             entity = new UserPersistenceEntity();
         }
         if (user.getId() == null) {
-            user.setId(UUID.randomUUID());
+            user.setUserId(new UserId(UUID.randomUUID()));
         }
-        entity.setId(user.getId());
-        entity.setEmail(user.getEmail());
-        entity.setPasswordHash(user.getPassword());
-        entity.setGoogleId(user.getGoogleId());
+        entity.setId(user.getId().value());
+        entity.setEmail(user.getEmail().value());
+        entity.setPasswordHash(user.getPassword().value());
+        entity.setGoogleId(user.getGoogleId() != null ? user.getGoogleId().value() : null);
         entity.setStatus(user.getStatus());
         return entity;
     }
 
     public static User toDomain(UserPersistenceEntity entity) {
-        User user = new User();
-        user.setId(entity.getId());
-        user.setEmail(entity.getEmail());
-        user.setPassword(entity.getPasswordHash());
-        user.setGoogleId(entity.getGoogleId());
-        user.setStatus(entity.getStatus());
-        return user;
+        return new User(
+                new UserId(entity.getId()),
+                new EmailAddress(entity.getEmail()),
+                new Password(entity.getPasswordHash()),
+                entity.getGoogleId() != null ? new GoogleId(entity.getGoogleId()) : null,
+                entity.getStatus()
+        );
     }
 }

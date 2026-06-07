@@ -1,13 +1,6 @@
 package com.andeva.atelier.platform.iam.domain.model.commands;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress;
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.UserId;
 
-public record UpdateUserEmailCommand(
-        UUID userId,
-        String newEmail
-) {
-    public UpdateUserEmailCommand {
-        if (userId == null) throw new IllegalArgumentException("iam.error.userId.required");
-        if (newEmail == null || newEmail.isBlank()) throw new IllegalArgumentException("iam.error.email.required");
-    }
-}
+public record UpdateUserEmailCommand(UserId userId, EmailAddress newEmail) {}

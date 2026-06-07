@@ -1,52 +1,40 @@
 package com.andeva.atelier.platform.core.domain.model.aggregates;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.UUID;
 
 @Getter
 public class Employee extends AbstractDomainAggregateRoot<Employee> {
 
-    @Setter
-    private UUID id;
-
-    @Setter
-    private UUID userId;
-
-    @Setter
+    private EmployeeId id;
+    private UserId userId;
     private PersonName name;
-
-    @Setter
     private Document document;
-
-    @Setter
-    private String phone;
+    private Phone phone;
 
     public Employee() {
     }
 
-    public Employee(UUID userId, PersonName name, Document document, String phone) {
-        if (userId == null) throw new IllegalArgumentException("core.error.userId.required");
-        if (name == null) throw new IllegalArgumentException("core.error.personName.required");
-        if (document == null) throw new IllegalArgumentException("core.error.document.required");
-        if (phone == null || phone.isBlank()) throw new IllegalArgumentException("core.error.phone.required");
-
+    public Employee(UserId userId, PersonName name, Document document, Phone phone) {
         this.userId = userId;
         this.name = name;
         this.document = document;
         this.phone = phone;
     }
 
-    public void update(String firstName, String lastName, String documentType, String documentNumber, String phone) {
-        if (firstName == null || firstName.isBlank() || lastName == null || lastName.isBlank()) {
-            throw new IllegalArgumentException("core.error.personName.required");
-        }
-        this.name = new PersonName(firstName, lastName);
-        this.document = new Document(documentType, documentNumber);
+    public Employee(EmployeeId id, UserId userId, PersonName name, Document document, Phone phone) {
+        this(userId, name, document, phone);
+        this.id = id;
+    }
+
+    public void update(PersonName name, Document document, Phone phone) {
+        this.name = name;
+        this.document = document;
         this.phone = phone;
     }
 }

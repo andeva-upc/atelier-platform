@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.domain.model.queries;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.CustomerId;
 
-public record GetCustomerByIdQuery(UUID id) {
+public record GetCustomerByIdQuery(CustomerId id) {
 }
