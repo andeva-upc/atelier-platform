@@ -68,4 +68,23 @@ public class ProductsController {
                 .toList();
         return ResponseEntity.ok(resources);
     }
+
+    @PostMapping("/{productId}/batches")
+    @Operation(summary = "Add a batch to a product", description = "Adds a physical batch to an existing product, increasing its current stock")
+    public ResponseEntity<com.andeva.atelier.platform.inventory.interfaces.rest.resources.ProductBatchResource> addBatchToProduct(
+            @PathVariable UUID productId,
+            @RequestBody com.andeva.atelier.platform.inventory.interfaces.rest.resources.AddBatchToProductResource resource) {
+
+        var command = new com.andeva.atelier.platform.inventory.domain.model.commands.AddBatchToProductCommand(
+                productId,
+                new InventoryQuantity(resource.quantity()),
+                new Money(java.math.BigDecimal.valueOf(resource.acquisitionCost()))
+        );
+
+        var productBatch = productCommandService.handle(command);
+        return productBatch.map(batch -> new ResponseEntity<>(
+                com.andeva.atelier.platform.inventory.interfaces.rest.transform.ProductBatchResourceFromEntityAssembler.toResourceFromEntity(batch),
+                HttpStatus.CREATED
+        )).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }
