@@ -87,4 +87,15 @@ public class ProductsController {
                 HttpStatus.CREATED
         )).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/{productId}")
+    @Operation(summary = "Get product details by ID", description = "Retrieves all details for a product including its associated batches")
+    public ResponseEntity<com.andeva.atelier.platform.inventory.interfaces.rest.resources.ProductDetailsResource> getProductById(@PathVariable UUID productId) {
+        var query = new com.andeva.atelier.platform.inventory.domain.model.queries.GetProductByIdQuery(productId);
+        var product = productQueryService.handle(query);
+        
+        return product.map(p -> ResponseEntity.ok(
+                com.andeva.atelier.platform.inventory.interfaces.rest.transform.ProductDetailsResourceFromAggregateAssembler.toResourceFromAggregate(p)
+        )).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

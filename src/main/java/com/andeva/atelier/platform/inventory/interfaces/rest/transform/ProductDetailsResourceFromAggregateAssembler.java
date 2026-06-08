@@ -15,11 +15,8 @@ public class ProductDetailsResourceFromAggregateAssembler {
                 aggregate.getCategory().name(),
                 aggregate.getName().name(),
                 aggregate.getSku().value(),
-                aggregate.getDescription(),
-                aggregate.getSalePrice().amount().doubleValue(),
                 aggregate.getCurrentStock().value(),
                 aggregate.getReservedStock().value(),
-                aggregate.getMinimumStock().value(),
                 batches
         );
     }
