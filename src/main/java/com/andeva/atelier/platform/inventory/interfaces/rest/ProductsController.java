@@ -98,4 +98,24 @@ public class ProductsController {
                 com.andeva.atelier.platform.inventory.interfaces.rest.transform.ProductDetailsResourceFromAggregateAssembler.toResourceFromAggregate(p)
         )).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{productId}")
+    @Operation(summary = "Update product details", description = "Updates the basic details of a product (Name, Category, SKU)")
+    public ResponseEntity<ProductResource> updateProduct(
+            @PathVariable UUID productId,
+            @RequestBody com.andeva.atelier.platform.inventory.interfaces.rest.resources.UpdateProductResource resource) {
+            
+        var command = new com.andeva.atelier.platform.inventory.domain.model.commands.UpdateProductCommand(
+                productId,
+                new com.andeva.atelier.platform.inventory.domain.model.valueobjects.ProductName(resource.name()),
+                com.andeva.atelier.platform.inventory.domain.model.valueobjects.ProductCategory.valueOf(resource.category().toUpperCase()),
+                new com.andeva.atelier.platform.inventory.domain.model.valueobjects.Sku(resource.sku())
+        );
+        
+        var updatedProduct = productCommandService.handle(command);
+        
+        return updatedProduct.map(product -> ResponseEntity.ok(
+                ProductResourceFromAggregateAssembler.toResourceFromAggregate(product)
+        )).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }
