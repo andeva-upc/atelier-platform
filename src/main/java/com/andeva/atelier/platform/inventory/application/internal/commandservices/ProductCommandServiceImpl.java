@@ -23,4 +23,20 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         productRepository.save(product);
         return Optional.of(product);
     }
+
+    @Override
+    public Optional<com.andeva.atelier.platform.inventory.domain.model.entities.ProductBatch> handle(com.andeva.atelier.platform.inventory.domain.model.commands.AddBatchToProductCommand command) {
+        var product = productRepository.findById(command.productId());
+        if (product.isEmpty()) {
+            return Optional.empty();
+        }
+        var batch = new com.andeva.atelier.platform.inventory.domain.model.entities.ProductBatch(
+                UUID.randomUUID(),
+                command.quantity(),
+                command.acquisitionCost()
+        );
+        product.get().addBatch(batch);
+        productRepository.save(product.get());
+        return Optional.of(batch);
+    }
 }
