@@ -1,9 +1,11 @@
 package com.andeva.atelier.platform.inventory.application.queryservices;
 
 import com.andeva.atelier.platform.inventory.domain.model.aggregates.Product;
+import com.andeva.atelier.platform.inventory.domain.model.queries.GetProductByIdQuery;
 import com.andeva.atelier.platform.inventory.domain.model.queries.GetProductsByBranchIdQuery;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Application service contract providing read access to Products.
@@ -20,4 +22,5 @@ public interface ProductQueryService {
      * @return A list of Products associated with the specified Branch ID.
      */
     List<Product> handle(GetProductsByBranchIdQuery query);
+    Optional<Product> handle(GetProductByIdQuery query);
 }

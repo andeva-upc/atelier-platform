@@ -2,12 +2,14 @@ package com.andeva.atelier.platform.inventory.application.internal.queryservices
 
 import com.andeva.atelier.platform.inventory.application.queryservices.ProductQueryService;
 import com.andeva.atelier.platform.inventory.domain.model.aggregates.Product;
+import com.andeva.atelier.platform.inventory.domain.model.queries.GetProductByIdQuery;
 import com.andeva.atelier.platform.inventory.domain.model.queries.GetProductsByBranchIdQuery;
 import com.andeva.atelier.platform.inventory.domain.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Internal application service implementing {@link ProductQueryService}.
@@ -41,5 +43,10 @@ public class ProductQueryServiceImpl implements ProductQueryService {
             throw new IllegalArgumentException("inventory.error.query.branchId.required");
         }
         return productRepository.findAllByBranchId(query.branchId());
+    }
+
+    @Override
+    public Optional<Product> handle(GetProductByIdQuery query) {
+        return productRepository.findById(query.productId());
     }
 }
