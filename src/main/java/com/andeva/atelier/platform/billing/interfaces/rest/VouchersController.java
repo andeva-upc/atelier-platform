@@ -3,7 +3,6 @@ package com.andeva.atelier.platform.billing.interfaces.rest;
 import com.andeva.atelier.platform.billing.application.commandservices.VoucherCommandFailure;
 import com.andeva.atelier.platform.billing.application.commandservices.VoucherCommandService;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.GenerateVoucherResource;
-import com.andeva.atelier.platform.billing.interfaces.rest.resources.VoucherResource;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.GenerateVoucherCommandFromResourceAssembler;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.VoucherResourceFromAggregateAssembler;
 import io.swagger.v3.oas.annotations.Operation;
