@@ -27,7 +27,7 @@ public class ProductsController {
     @PostMapping
     public ResponseEntity<ProductResource> createProduct(@RequestBody CreateProductResource resource) {
         CreateProductCommand command = new CreateProductCommand(
-                new BranchId(resource.branchId()),
+                new BranchId(java.util.UUID.fromString(resource.branchId())),
                 ProductCategory.valueOf(resource.category()),
                 new ProductName(resource.name()),
                 new Sku(resource.sku()),

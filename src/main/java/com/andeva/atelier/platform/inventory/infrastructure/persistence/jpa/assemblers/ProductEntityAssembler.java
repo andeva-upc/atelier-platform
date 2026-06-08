@@ -15,7 +15,7 @@ public class ProductEntityAssembler {
         if (product == null) return null;
         ProductJpaEntity entity = new ProductJpaEntity();
         entity.setId(product.getId());
-        entity.setBranchId(product.getBranchId().value());
+        entity.setBranchId(product.getBranchId().value().toString());
         entity.setCategory(product.getCategory().name());
         entity.setName(product.getName().name());
         entity.setSku(product.getSku().value());
@@ -44,6 +44,6 @@ public class ProductEntityAssembler {
                 batches.add(ProductBatch.reconstitute(be.getBatchId(), new InventoryQuantity(be.getInitialQuantity()), new InventoryQuantity(be.getAvailableQuantity()), new Money(be.getAcquisitionCost())));
             }
         }
-        return Product.reconstitute(entity.getId(), new BranchId(entity.getBranchId()), ProductCategory.valueOf(entity.getCategory()), new ProductName(entity.getName()), new Sku(entity.getSku()), new InventoryQuantity(entity.getCurrentStock()), new InventoryQuantity(entity.getReservedStock()), batches);
+        return Product.reconstitute(entity.getId(), new BranchId(java.util.UUID.fromString(entity.getBranchId())), ProductCategory.valueOf(entity.getCategory()), new ProductName(entity.getName()), new Sku(entity.getSku()), new InventoryQuantity(entity.getCurrentStock()), new InventoryQuantity(entity.getReservedStock()), batches);
     }
 }

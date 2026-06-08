@@ -7,7 +7,7 @@ public class ProductResourceFromAggregateAssembler {
     public static ProductResource toResourceFromAggregate(Product aggregate) {
         return new ProductResource(
                 aggregate.getId(),
-                aggregate.getBranchId().value(),
+                aggregate.getBranchId().value().toString(),
                 aggregate.getCategory().name(),
                 aggregate.getName().name(),
                 aggregate.getSku().value(),
