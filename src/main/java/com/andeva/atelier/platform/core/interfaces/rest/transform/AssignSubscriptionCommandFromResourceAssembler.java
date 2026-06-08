@@ -2,7 +2,7 @@ package com.andeva.atelier.platform.core.interfaces.rest.transform;
 
 import com.andeva.atelier.platform.core.domain.model.commands.AssignSubscriptionCommand;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BillingCycle;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 import com.andeva.atelier.platform.core.interfaces.rest.resources.AssignSubscriptionResource;
 
@@ -23,3 +23,4 @@ public class AssignSubscriptionCommandFromResourceAssembler {
         );
     }
 }
+

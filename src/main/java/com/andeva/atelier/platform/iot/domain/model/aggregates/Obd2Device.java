@@ -1,0 +1,64 @@
+package com.andeva.atelier.platform.iot.domain.model.aggregates;
+
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceStatus;
+import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import lombok.Getter;
+
+import java.time.Instant;
+
+/**
+ * Domain Aggregate Root representing an OBD2 device registered in a branch.
+ */
+@Getter
+public class Obd2Device extends AbstractDomainAggregateRoot<Obd2Device> {
+
+    private Obd2DeviceId id;
+    private BranchId branchId;
+    private String macAddress;
+    private Instant lastPing;
+    private Obd2DeviceStatus status;
+
+    public Obd2Device() {
+    }
+
+    public Obd2Device(BranchId branchId, String macAddress) {
+        this.id = Obd2DeviceId.random();
+        this.branchId = branchId;
+        this.macAddress = macAddress;
+        this.status = Obd2DeviceStatus.AVAILABLE;
+    }
+
+    public Obd2Device(Obd2DeviceId id, BranchId branchId, String macAddress, Instant lastPing, Obd2DeviceStatus status) {
+        this.id = id;
+        this.branchId = branchId;
+        this.macAddress = macAddress;
+        this.lastPing = lastPing;
+        this.status = status;
+    }
+
+    /**
+     * Updates the last ping timestamp of the device.
+     */
+    public void ping() {
+        this.lastPing = Instant.now();
+    }
+
+    /**
+     * Marks the device as linked to a vehicle.
+     */
+    public void markAsLinked() {
+        if (this.status == Obd2DeviceStatus.LINKED) {
+            throw new IllegalStateException("iot.error.obd2Device.alreadyLinked");
+        }
+        this.status = Obd2DeviceStatus.LINKED;
+    }
+
+    /**
+     * Marks the device as available for linking.
+     */
+    public void markAsAvailable() {
+        this.status = Obd2DeviceStatus.AVAILABLE;
+    }
+}

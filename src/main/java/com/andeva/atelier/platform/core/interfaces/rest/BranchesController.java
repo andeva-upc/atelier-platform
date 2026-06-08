@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.interfaces.rest;
 
-import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
 
 import com.andeva.atelier.platform.core.domain.model.queries.GetAllBranchesByWorkshopIdQuery;
@@ -128,3 +128,4 @@ public class BranchesController {
         return ResponseEntity.ok(subscriptionResource);
     }
 }
+

@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.domain.model.aggregates;
 
-import com.andeva.atelier.platform.core.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
@@ -63,3 +63,4 @@ public class Customer extends AbstractDomainAggregateRoot<Customer> {
         this.phone = phone;
     }
 }
+

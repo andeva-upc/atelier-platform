@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.domain.model.commands;
 
-import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Address;
 
@@ -16,3 +16,4 @@ public record UpdateBranchCommand(
         if (name == null || name.isBlank()) throw new IllegalArgumentException("core.error.name.required");
     }
 }
+

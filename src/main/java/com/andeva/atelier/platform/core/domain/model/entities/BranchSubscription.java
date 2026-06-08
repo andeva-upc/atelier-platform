@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.core.domain.model.entities;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BillingCycle;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchSubscriptionId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionStatus;
@@ -49,3 +49,4 @@ public class BranchSubscription {
         this.canceledAt = canceledAt;
     }
 }
+

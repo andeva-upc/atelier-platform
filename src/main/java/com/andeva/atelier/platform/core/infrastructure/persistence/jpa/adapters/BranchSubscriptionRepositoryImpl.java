@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.adapters;
 
 import com.andeva.atelier.platform.core.domain.model.entities.BranchSubscription;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchSubscriptionId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionStatus;
 import com.andeva.atelier.platform.core.domain.repositories.BranchSubscriptionRepository;
@@ -54,3 +54,4 @@ public class BranchSubscriptionRepositoryImpl implements BranchSubscriptionRepos
                 .map(BranchSubscriptionPersistenceAssembler::toDomain);
     }
 }
+
