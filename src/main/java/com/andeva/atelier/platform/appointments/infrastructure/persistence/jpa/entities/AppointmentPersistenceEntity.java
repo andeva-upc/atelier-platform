@@ -1,37 +1,88 @@
 package com.andeva.atelier.platform.appointments.infrastructure.persistence.jpa.entities;
 
+import com.andeva.atelier.platform.appointments.domain.model.valueobjects.AppointmentStatus;
+import com.andeva.atelier.platform.appointments.domain.model.valueobjects.AppointmentsSummary;
+import com.andeva.atelier.platform.appointments.infrastructure.persistence.jpa.converters.AppointmentsSummaryAttributeConverter;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "appointments")
 @Getter
 @Setter
-@lombok.NoArgsConstructor
-public class AppointmentPersistenceEntity extends AuditableAbstractPersistenceEntity {
+@NoArgsConstructor
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "appointments")
+@SQLDelete(sql = "UPDATE appointments SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?")
+@SQLRestriction("deleted_at IS NULL")
+public class AppointmentPersistenceEntity extends AuditableAbstractPersistenceEntity implements Persistable<UUID> {
 
-    @Column(nullable = false, columnDefinition = "uuid")
-    private UUID workshopId;
+    @Override
+    public boolean isNew() {
+        return getCreatedAt() == null;
+    }
 
-    @Column(nullable = false, columnDefinition = "uuid")
-    private UUID branchId;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "branch_id", nullable = false))
+    private BranchId branchId;
 
-    @Column(nullable = false, columnDefinition = "uuid")
-    private UUID customerId;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "customer_id", nullable = false))
+    private CustomerId customerId;
 
-    @Column(nullable = false, columnDefinition = "uuid")
-    private UUID vehicleId;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "vehicle_id", nullable = false))
+    private VehicleId vehicleId;
 
-    @Column(nullable = false)
-    private LocalDateTime appointmentDate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private AppointmentStatus status;
 
-    @Column(nullable = false, length = 20)
-    private String status;
+    @Column(name = "scheduled_start", nullable = false)
+    private LocalDateTime scheduledStart;
+
+    @Column(name = "scheduled_end", nullable = false)
+    private LocalDateTime scheduledEnd;
+
+    @Column(name = "notes", columnDefinition = "TEXT")
+    @Convert(converter = AppointmentsSummaryAttributeConverter.class)
+    private AppointmentsSummary notes;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
+    @CreatedBy
+    @Column(name = "created_by", updatable = false)
+    private UUID createdBy;
+
+    @LastModifiedBy
+    @Column(name = "updated_by")
+    private UUID updatedBy;
+
+    @Version
+    private Long version;
 }

@@ -7,23 +7,34 @@ public class AppointmentPersistenceAssembler {
 
     public static AppointmentPersistenceEntity toEntityFromAggregate(Appointment aggregate) {
         var entity = new AppointmentPersistenceEntity();
-        entity.setWorkshopId(aggregate.getWorkshopId());
+
         entity.setBranchId(aggregate.getBranchId());
         entity.setCustomerId(aggregate.getCustomerId());
         entity.setVehicleId(aggregate.getVehicleId());
-        entity.setAppointmentDate(aggregate.getAppointmentDate());
         entity.setStatus(aggregate.getStatus());
+        entity.setScheduledStart(aggregate.getScheduledStart());
+        entity.setScheduledEnd(aggregate.getScheduledEnd());
+        entity.setNotes(aggregate.getNotes());
+
         return entity;
     }
 
     public static Appointment toAggregateFromEntity(AppointmentPersistenceEntity entity) {
         return new Appointment(
-                entity.getWorkshopId(),
+                entity.getId(),
                 entity.getBranchId(),
                 entity.getCustomerId(),
                 entity.getVehicleId(),
-                entity.getAppointmentDate(),
-                entity.getStatus()
+                entity.getScheduledStart(),
+                entity.getScheduledEnd(),
+                entity.getStatus(),
+                entity.getNotes(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getCreatedBy(),
+                entity.getUpdatedBy(),
+                entity.getVersion()
         );
     }
 }

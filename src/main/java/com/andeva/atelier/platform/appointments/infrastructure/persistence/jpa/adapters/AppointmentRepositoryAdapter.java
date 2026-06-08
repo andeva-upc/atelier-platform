@@ -6,6 +6,8 @@ import com.andeva.atelier.platform.appointments.infrastructure.persistence.jpa.a
 import com.andeva.atelier.platform.appointments.infrastructure.persistence.jpa.repositories.AppointmentJpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 @Repository
 public class AppointmentRepositoryAdapter implements AppointmentRepository {
 
@@ -20,5 +22,16 @@ public class AppointmentRepositoryAdapter implements AppointmentRepository {
         var entity = AppointmentPersistenceAssembler.toEntityFromAggregate(appointment);
         var savedEntity = appointmentJpaRepository.save(entity);
         return AppointmentPersistenceAssembler.toAggregateFromEntity(savedEntity);
+    }
+
+    @Override
+    public boolean existsByScheduledStartLessThanAndScheduledEndGreaterThan(
+            LocalDateTime scheduledEnd,
+            LocalDateTime scheduledStart
+    ) {
+        return appointmentJpaRepository.existsByScheduledStartLessThanAndScheduledEndGreaterThan(
+                scheduledEnd,
+                scheduledStart
+        );
     }
 }

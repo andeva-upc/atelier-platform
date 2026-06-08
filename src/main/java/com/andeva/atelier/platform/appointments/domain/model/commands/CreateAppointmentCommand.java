@@ -1,20 +1,23 @@
 package com.andeva.atelier.platform.appointments.domain.model.commands;
 
+import com.andeva.atelier.platform.appointments.domain.model.valueobjects.AppointmentsSummary;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
+
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public record CreateAppointmentCommand(
-        UUID workshopId,
-        UUID branchId,
-        UUID customerId,
-        UUID vehicleId,
-        LocalDateTime appointmentDate
+        BranchId branchId,
+        CustomerId customerId,
+        VehicleId vehicleId,
+        LocalDateTime scheduledStart,
+        AppointmentsSummary notes
 ) {
     public CreateAppointmentCommand {
-        if (workshopId == null) throw new IllegalArgumentException("Workshop ID cannot be null");
-        if (branchId == null) throw new IllegalArgumentException("Branch ID cannot be null");
-        if (customerId == null) throw new IllegalArgumentException("Customer ID cannot be null");
-        if (vehicleId == null) throw new IllegalArgumentException("Vehicle ID cannot be null");
-        if (appointmentDate == null) throw new IllegalArgumentException("Appointment date cannot be null");
+        if (branchId == null) throw new IllegalArgumentException("Branch ID is required");
+        if (customerId == null) throw new IllegalArgumentException("Customer ID is required");
+        if (vehicleId == null) throw new IllegalArgumentException("Vehicle ID is required");
+        if (scheduledStart == null) throw new IllegalArgumentException("Scheduled start is required");
     }
 }
