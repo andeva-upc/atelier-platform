@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.interfaces.rest;
 
-import com.andeva.atelier.platform.core.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
 import com.andeva.atelier.platform.core.domain.model.queries.GetCustomerByIdQuery;
@@ -82,3 +82,4 @@ public class CustomersController {
         return ResponseEntity.ok().build();
     }
 }
+

@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers;
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Customer;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
@@ -56,3 +56,4 @@ public class CustomerPersistenceAssembler {
         );
     }
 }
+

@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.domain.model.aggregates;
 
-import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
 import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
@@ -46,3 +46,4 @@ public class Branch extends AbstractDomainAggregateRoot<Branch> {
         this.phone = phone;
     }
 }
+

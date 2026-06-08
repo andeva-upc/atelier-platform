@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.core.domain.repositories;
 
 import com.andeva.atelier.platform.core.domain.model.entities.BranchSubscription;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchSubscriptionId;
 
 import java.util.List;
@@ -13,3 +13,4 @@ public interface BranchSubscriptionRepository {
     List<BranchSubscription> findAllByBranchId(BranchId branchId);
     Optional<BranchSubscription> findActiveByBranchId(BranchId branchId);
 }
+
