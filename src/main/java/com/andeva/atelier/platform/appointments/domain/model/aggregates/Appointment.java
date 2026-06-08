@@ -17,6 +17,15 @@ public class Appointment extends AbstractDomainAggregateRoot<Appointment> {
     private LocalDateTime appointmentDate;
     private String status;
 
+    public Appointment(CreateAppointmentCommand command) {
+        this.workshopId = command.workshopId();
+        this.branchId = command.branchId();
+        this.customerId = command.customerId();
+        this.vehicleId = command.vehicleId();
+        this.appointmentDate = command.appointmentDate();
+        this.status = "SCHEDULED";
+    }
+
     public Appointment(UUID workshopId, UUID branchId, UUID customerId, UUID vehicleId,
                        LocalDateTime appointmentDate, String status) {
         this.workshopId = workshopId;
