@@ -36,4 +36,13 @@ public interface QuoteCommandService {
      * @return A Result containing the approved Quote if successful, or a failure reason otherwise.
      */
     Result<Quote, QuoteCommandFailure> handle(com.andeva.atelier.platform.billing.domain.model.commands.ApproveQuoteCommand command);
+
+    /**
+     * Cancels an existing Quote.
+     * Validates that the Quote exists and is not in APPROVED state.
+     * 
+     * @param command The command object containing the quote ID to cancel.
+     * @return A Result containing the canceled Quote if successful, or a failure reason otherwise.
+     */
+    Result<Quote, QuoteCommandFailure> handle(com.andeva.atelier.platform.billing.domain.model.commands.CancelQuoteCommand command);
 }

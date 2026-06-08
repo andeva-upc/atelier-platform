@@ -26,8 +26,15 @@ public class QuoteRepositoryImpl implements QuoteRepository {
 
     @Override
     public Quote save(Quote quote) {
-        var existingEntityOpt = persistenceRepository.findById(quote.getId());
-        var entity = existingEntityOpt.orElseGet(com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.entities.QuotePersistenceEntity::new);
+        boolean exists = persistenceRepository.existsById(quote.getId());
+        
+        com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.entities.QuotePersistenceEntity entity;
+        if (exists) {
+            entity = persistenceRepository.findById(quote.getId()).orElseThrow();
+        } else {
+            entity = new com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.entities.QuotePersistenceEntity();
+        }
+        
         QuotePersistenceAssembler.updateEntityFromAggregate(entity, quote);
         
         var savedEntity = persistenceRepository.save(entity);

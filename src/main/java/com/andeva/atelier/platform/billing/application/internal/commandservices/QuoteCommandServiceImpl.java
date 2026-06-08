@@ -86,4 +86,23 @@ public class QuoteCommandServiceImpl implements QuoteCommandService {
             return Result.failure(QuoteCommandFailure.INVALID_QUOTE_STATE);
         }
     }
+
+    @Override
+    public Result<Quote, QuoteCommandFailure> handle(com.andeva.atelier.platform.billing.domain.model.commands.CancelQuoteCommand command) {
+        var quoteOpt = quoteRepository.findById(command.quoteId());
+        
+        if (quoteOpt.isEmpty()) {
+            return Result.failure(QuoteCommandFailure.QUOTE_NOT_FOUND);
+        }
+
+        var quote = quoteOpt.get();
+
+        try {
+            quote.cancel();
+            var savedQuote = quoteRepository.save(quote);
+            return Result.success(savedQuote);
+        } catch (IllegalStateException e) {
+            return Result.failure(QuoteCommandFailure.INVALID_QUOTE_STATE);
+        }
+    }
 }
