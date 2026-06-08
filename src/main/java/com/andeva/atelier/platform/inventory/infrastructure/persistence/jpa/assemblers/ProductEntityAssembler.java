@@ -27,7 +27,7 @@ public class ProductEntityAssembler {
             be.setBatchId(b.getBatchId());
             be.setInitialQuantity(b.getInitialQuantity().value()); 
             be.setAvailableQuantity(b.getAvailableQuantity().value());
-            be.setAcquisitionCost(b.getAcquisitionCost().amount());
+            be.setAcquisitionCost(b.getAcquisitionCost().amount().doubleValue());
             be.setProduct(entity);
             return be;
         }).collect(Collectors.toList());
@@ -41,7 +41,7 @@ public class ProductEntityAssembler {
         java.util.List<ProductBatch> batches = new java.util.ArrayList<>();
         if (entity.getBatches() != null) {
             for (ProductBatchJpaEntity be : entity.getBatches()) {
-                batches.add(ProductBatch.reconstitute(be.getBatchId(), new InventoryQuantity(be.getInitialQuantity()), new InventoryQuantity(be.getAvailableQuantity()), new Money(be.getAcquisitionCost())));
+                batches.add(ProductBatch.reconstitute(be.getBatchId(), new InventoryQuantity(be.getInitialQuantity()), new InventoryQuantity(be.getAvailableQuantity()), new Money(java.math.BigDecimal.valueOf(be.getAcquisitionCost()))));
             }
         }
         return Product.reconstitute(entity.getId(), new BranchId(java.util.UUID.fromString(entity.getBranchId())), ProductCategory.valueOf(entity.getCategory()), new ProductName(entity.getName()), new Sku(entity.getSku()), new InventoryQuantity(entity.getCurrentStock()), new InventoryQuantity(entity.getReservedStock()), batches);

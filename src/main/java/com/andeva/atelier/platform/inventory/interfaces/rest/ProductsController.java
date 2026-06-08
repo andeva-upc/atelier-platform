@@ -32,7 +32,7 @@ public class ProductsController {
                 new ProductName(resource.name()),
                 new Sku(resource.sku()),
                 resource.description(),
-                new Money(resource.salePrice()),
+                new Money(java.math.BigDecimal.valueOf(resource.salePrice())),
                 new InventoryQuantity(resource.minimumStock())
         );
 
