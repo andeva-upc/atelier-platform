@@ -8,12 +8,16 @@ public class WorkOrderTaskProductPersistenceAssembler {
     public static WorkOrderTaskProductPersistenceEntity toPersistenceEntity(WorkOrderTaskProduct domainEntity) {
         if (domainEntity == null) return null;
         WorkOrderTaskProductPersistenceEntity persistenceEntity = new WorkOrderTaskProductPersistenceEntity();
-        persistenceEntity.setId(domainEntity.getId());
+        if (domainEntity.getVersion() != null) {
+            persistenceEntity.setId(domainEntity.getId());
+        }
         persistenceEntity.setProductId(domainEntity.getProductId());
         persistenceEntity.setBranchId(domainEntity.getBranchId());
         persistenceEntity.setQuantity(domainEntity.getQuantity());
         persistenceEntity.setUnitPrice(domainEntity.getUnitPrice());
         persistenceEntity.setTotalAmount(domainEntity.getTotalAmount());
+        persistenceEntity.setCreatedAt(domainEntity.getCreatedAt());
+        persistenceEntity.setUpdatedAt(domainEntity.getUpdatedAt());
         persistenceEntity.setDeletedAt(domainEntity.getDeletedAt());
         persistenceEntity.setVersion(domainEntity.getVersion());
         return persistenceEntity;

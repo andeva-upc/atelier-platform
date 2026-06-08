@@ -40,8 +40,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
 
             workOrder.updateDetails(command.diagnosticSummary(), command.mileageIn());
 
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
         } catch (IllegalStateException e) {
@@ -75,8 +75,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
                     command.mileageIn()
             );
 
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
 
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
@@ -96,8 +96,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
             workOrder.addTask(command.serviceId(), command.mechanicId(), command.description(), command.laborPrice());
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
 
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
@@ -117,8 +117,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
             workOrder.addProductToTask(command.taskId(), command.productId(), command.quantity(), command.unitPrice());
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
 
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
@@ -139,8 +139,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
 
             workOrder.removeProductFromTask(command.taskId(), command.productId());
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
 
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
@@ -160,8 +160,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
             workOrder.removeTask(command.taskId());
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
 
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
@@ -181,8 +181,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
             workOrder.startTask(command.taskId());
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
 
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
@@ -202,8 +202,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
             workOrder.completeTask(command.taskId());
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
 
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
@@ -224,8 +224,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
 
             workOrder.reopenTask(command.taskId());
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
 
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
@@ -245,8 +245,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
             workOrder.markAsPaid();
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
 
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
@@ -272,8 +272,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
                     command.description(),
                     command.laborPrice()
             );
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
         } catch (IllegalStateException e) {
@@ -296,8 +296,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
                     command.productId(),
                     command.newQuantity()
             );
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
         } catch (IllegalStateException e) {
@@ -316,8 +316,8 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
             workOrder.delete();
-            workOrderRepository.save(workOrder);
-            return Result.success(workOrder);
+            WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
+            return Result.success(savedWorkOrder);
         } catch (IllegalArgumentException e) {
             return Result.failure(new WorkOrderCommandFailure.NotFound(e.getMessage()));
         } catch (IllegalStateException e) {

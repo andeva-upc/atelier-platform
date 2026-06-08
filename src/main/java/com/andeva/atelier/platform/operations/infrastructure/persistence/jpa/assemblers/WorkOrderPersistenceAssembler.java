@@ -11,7 +11,9 @@ public class WorkOrderPersistenceAssembler {
     public static WorkOrderPersistenceEntity toPersistenceEntity(WorkOrder domainEntity) {
         if (domainEntity == null) return null;
         WorkOrderPersistenceEntity persistenceEntity = new WorkOrderPersistenceEntity();
-        persistenceEntity.setId(domainEntity.getId());
+        if (domainEntity.getVersion() != null) {
+            persistenceEntity.setId(domainEntity.getId());
+        }
         persistenceEntity.setAppointmentId(domainEntity.getAppointmentId());
         persistenceEntity.setBranchId(domainEntity.getBranchId());
         persistenceEntity.setVehicleId(domainEntity.getVehicleId());
@@ -24,6 +26,10 @@ public class WorkOrderPersistenceAssembler {
         persistenceEntity.setTasks(domainEntity.getTasks() != null ? domainEntity.getTasks().stream()
                 .map(WorkOrderTaskPersistenceAssembler::toPersistenceEntity)
                 .collect(Collectors.toList()) : Collections.emptyList());
+        persistenceEntity.setCreatedAt(domainEntity.getCreatedAt());
+        persistenceEntity.setUpdatedAt(domainEntity.getUpdatedAt());
+        persistenceEntity.setCreatedBy(domainEntity.getCreatedBy());
+        persistenceEntity.setUpdatedBy(domainEntity.getUpdatedBy());
         persistenceEntity.setDeletedAt(domainEntity.getDeletedAt());
         persistenceEntity.setVersion(domainEntity.getVersion());
         return persistenceEntity;

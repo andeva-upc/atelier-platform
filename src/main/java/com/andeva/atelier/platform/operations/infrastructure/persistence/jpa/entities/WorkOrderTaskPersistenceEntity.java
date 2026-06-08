@@ -1,5 +1,7 @@
 package com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.entities;
 
+import org.springframework.data.domain.Persistable;
+import java.util.UUID;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.MechanicId;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.ServiceId;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.TaskDescription;
@@ -28,9 +30,14 @@ import java.util.List;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "work_order_tasks")
-@SQLDelete(sql = "UPDATE work_order_tasks SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLDelete(sql = "UPDATE work_order_tasks SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?")
 @SQLRestriction("deleted_at IS NULL")
-public class WorkOrderTaskPersistenceEntity extends AuditableAbstractPersistenceEntity {
+public class WorkOrderTaskPersistenceEntity extends AuditableAbstractPersistenceEntity implements Persistable<UUID> {
+
+    @Override
+    public boolean isNew() {
+        return getCreatedAt() == null;
+    }
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "service_id", nullable = false))
@@ -61,14 +68,14 @@ public class WorkOrderTaskPersistenceEntity extends AuditableAbstractPersistence
     private Instant completedAt;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "work_order_task_id")
+    @JoinColumn(name = "work_order_task_id", nullable = false)
     private List<WorkOrderTaskProductPersistenceEntity> products = new ArrayList<>();
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
     @CreatedBy
-    @Column(name = "created_by")
+    @Column(name = "created_by", updatable = false)
     private java.util.UUID createdBy;
 
     @LastModifiedBy

@@ -15,6 +15,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
+import org.springframework.data.domain.Persistable;
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,9 +25,14 @@ import java.time.Instant;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "work_order_task_products")
-@SQLDelete(sql = "UPDATE work_order_task_products SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLDelete(sql = "UPDATE work_order_task_products SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?")
 @SQLRestriction("deleted_at IS NULL")
-public class WorkOrderTaskProductPersistenceEntity extends AuditableAbstractPersistenceEntity {
+public class WorkOrderTaskProductPersistenceEntity extends AuditableAbstractPersistenceEntity implements Persistable<UUID> {
+
+    @Override
+    public boolean isNew() {
+        return getCreatedAt() == null;
+    }
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "product_id", nullable = false))

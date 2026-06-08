@@ -32,10 +32,12 @@ public abstract class AuditableAbstractPersistenceEntity {
     private UUID id;
 
     @CreatedDate
+    @Setter
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @LastModifiedDate
+    @Setter
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 }
