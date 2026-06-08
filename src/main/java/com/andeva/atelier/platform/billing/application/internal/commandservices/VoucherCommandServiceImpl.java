@@ -12,7 +12,7 @@ import com.andeva.atelier.platform.core.application.queryservices.BranchQuerySer
 import com.andeva.atelier.platform.core.application.queryservices.WorkshopQueryService;
 import com.andeva.atelier.platform.core.domain.model.queries.GetBranchByIdQuery;
 import com.andeva.atelier.platform.core.domain.model.queries.GetWorkshopByIdQuery;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
