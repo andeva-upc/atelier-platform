@@ -21,15 +21,17 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     }
 
     @Override
-    public void save(Employee employee) {
+    public Employee save(Employee employee) {
         EmployeePersistenceEntity entity = null;
         if (employee.getId() != null) {
             entity = jpaRepository.findById(employee.getId().value()).orElse(new EmployeePersistenceEntity());
         } else {
             entity = new EmployeePersistenceEntity();
         }
+        
         EmployeePersistenceAssembler.toEntity(employee, entity);
-        jpaRepository.save(entity);
+        EmployeePersistenceEntity savedEntity = jpaRepository.save(entity);
+        return EmployeePersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override

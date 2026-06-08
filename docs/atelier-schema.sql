@@ -55,6 +55,7 @@ CREATE TABLE branches
     updated_at  timestamp    NOT NULL,
     deleted_at  timestamp   ,
     created_by  uuid         NOT NULL,
+    updated_by  uuid        ,
     version     bigint      ,
     PRIMARY KEY (id)
 );

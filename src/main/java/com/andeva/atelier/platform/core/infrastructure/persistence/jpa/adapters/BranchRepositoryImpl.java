@@ -23,7 +23,7 @@ public class BranchRepositoryImpl implements BranchRepository {
     }
 
     @Override
-    public void save(Branch branch) {
+    public Branch save(Branch branch) {
         BranchPersistenceEntity entity = null;
         if (branch.getId() != null) {
             entity = jpaRepository.findById(branch.getId().value()).orElse(new BranchPersistenceEntity());
@@ -31,7 +31,8 @@ public class BranchRepositoryImpl implements BranchRepository {
             entity = new BranchPersistenceEntity();
         }
         BranchPersistenceAssembler.toEntity(branch, entity);
-        jpaRepository.save(entity);
+        BranchPersistenceEntity savedEntity = jpaRepository.save(entity);
+        return BranchPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override

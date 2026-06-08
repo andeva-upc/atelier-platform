@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BranchSubscriptionRepository {
-    void save(BranchSubscription branchSubscription);
+    BranchSubscription save(BranchSubscription branchSubscription);
     Optional<BranchSubscription> findById(BranchSubscriptionId id);
     List<BranchSubscription> findAllByBranchId(BranchId branchId);
     Optional<BranchSubscription> findActiveByBranchId(BranchId branchId);

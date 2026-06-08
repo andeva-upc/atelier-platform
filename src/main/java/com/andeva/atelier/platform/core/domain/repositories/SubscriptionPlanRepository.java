@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SubscriptionPlanRepository {
+    SubscriptionPlan save(SubscriptionPlan subscriptionPlan);
     Optional<SubscriptionPlan> findById(SubscriptionPlanId id);
     Optional<SubscriptionPlan> findByName(String name);
     List<SubscriptionPlan> findAll();

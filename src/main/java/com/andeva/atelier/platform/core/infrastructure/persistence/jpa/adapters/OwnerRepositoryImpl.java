@@ -21,15 +21,17 @@ public class OwnerRepositoryImpl implements OwnerRepository {
     }
 
     @Override
-    public void save(Owner owner) {
+    public Owner save(Owner owner) {
         OwnerPersistenceEntity entity = null;
         if (owner.getId() != null) {
             entity = jpaRepository.findById(owner.getId().value()).orElse(new OwnerPersistenceEntity());
         } else {
             entity = new OwnerPersistenceEntity();
         }
+        
         OwnerPersistenceAssembler.toEntity(owner, entity);
-        jpaRepository.save(entity);
+        OwnerPersistenceEntity savedEntity = jpaRepository.save(entity);
+        return OwnerPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override

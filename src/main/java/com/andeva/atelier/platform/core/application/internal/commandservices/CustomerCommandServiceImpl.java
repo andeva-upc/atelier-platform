@@ -34,8 +34,8 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
                 command.phone()
         );
 
-        customerRepository.save(customer);
-        return customerRepository.findByUserId(command.userId());
+        var savedCustomer = customerRepository.save(customer);
+        return Optional.of(savedCustomer);
     }
 
     @Override
@@ -52,8 +52,8 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
             command.phone()
         );
         
-        customerRepository.save(customer);
-        return Optional.of(customer);
+        var savedCustomer = customerRepository.save(customer);
+        return Optional.of(savedCustomer);
     }
 
     @Override

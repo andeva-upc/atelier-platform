@@ -7,7 +7,7 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import java.util.Optional;
 
 public interface EmployeeRepository {
-    void save(Employee employee);
+    Employee save(Employee employee);
     Optional<Employee> findById(EmployeeId id);
     Optional<Employee> findByUserId(UserId userId);
     boolean existsByUserId(UserId userId);

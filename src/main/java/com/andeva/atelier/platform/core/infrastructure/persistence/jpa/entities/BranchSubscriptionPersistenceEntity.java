@@ -11,12 +11,22 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.UUID;
 
+import java.util.UUID;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+
 @Entity
 @Table(name = "branch_subscriptions")
 @Getter
 @Setter
 @NoArgsConstructor
-public class BranchSubscriptionPersistenceEntity extends AuditableAbstractPersistenceEntity {
+public class BranchSubscriptionPersistenceEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    private UUID id;
 
     @Column(name = "branch_id", nullable = false)
     private UUID branchId;

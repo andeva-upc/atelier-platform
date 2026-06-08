@@ -21,15 +21,17 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     @Override
-    public void save(Customer customer) {
+    public Customer save(Customer customer) {
         CustomerPersistenceEntity entity = null;
         if (customer.getId() != null) {
             entity = jpaRepository.findById(customer.getId().value()).orElse(new CustomerPersistenceEntity());
         } else {
             entity = new CustomerPersistenceEntity();
         }
+        
         CustomerPersistenceAssembler.toEntity(customer, entity);
-        jpaRepository.save(entity);
+        CustomerPersistenceEntity savedEntity = jpaRepository.save(entity);
+        return CustomerPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.core.domain.model.aggregates.SubscriptionPlan
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 import com.andeva.atelier.platform.core.domain.repositories.SubscriptionPlanRepository;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.SubscriptionPlanPersistenceAssembler;
+import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.SubscriptionPlanPersistenceEntity;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.SubscriptionPlanPersistenceRepository;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,19 @@ public class SubscriptionPlanRepositoryImpl implements SubscriptionPlanRepositor
 
     public SubscriptionPlanRepositoryImpl(SubscriptionPlanPersistenceRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
+    }
+
+    @Override
+    public SubscriptionPlan save(SubscriptionPlan subscriptionPlan) {
+        SubscriptionPlanPersistenceEntity entity = null;
+        if (subscriptionPlan.getId() != null) {
+            entity = jpaRepository.findById(subscriptionPlan.getId().value()).orElse(new SubscriptionPlanPersistenceEntity());
+        } else {
+            entity = new SubscriptionPlanPersistenceEntity();
+        }
+        SubscriptionPlanPersistenceAssembler.toEntity(subscriptionPlan, entity);
+        SubscriptionPlanPersistenceEntity savedEntity = jpaRepository.save(entity);
+        return SubscriptionPlanPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override

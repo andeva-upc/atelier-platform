@@ -14,10 +14,12 @@ public class AssignSubscriptionCommandFromResourceAssembler {
                 new BranchId(branchId),
                 new SubscriptionPlanId(resource.planId()),
                 BillingCycle.valueOf(resource.billingCycle()),
-                resource.cardNumber(),
-                resource.cardHolderName(),
-                resource.expirationDate(),
-                resource.cvv()
+                new com.andeva.atelier.platform.core.domain.model.valueobjects.CreditCard(
+                        resource.cardNumber(),
+                        resource.cardHolderName(),
+                        resource.expirationDate(),
+                        resource.cvv()
+                )
         );
     }
 }

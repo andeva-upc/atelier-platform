@@ -32,8 +32,8 @@ public class OwnerCommandServiceImpl implements OwnerCommandService {
                 command.phone()
         );
 
-        ownerRepository.save(owner);
-        return ownerRepository.findByUserId(command.userId());
+        var savedOwner = ownerRepository.save(owner);
+        return Optional.of(savedOwner);
     }
 
     @Override
@@ -49,8 +49,8 @@ public class OwnerCommandServiceImpl implements OwnerCommandService {
             command.phone()
         );
 
-        ownerRepository.save(owner);
-        return Optional.of(owner);
+        var savedOwner = ownerRepository.save(owner);
+        return Optional.of(savedOwner);
     }
 
     @Override

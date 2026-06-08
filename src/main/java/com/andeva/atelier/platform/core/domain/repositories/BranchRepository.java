@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BranchRepository {
-    void save(Branch branch);
+    Branch save(Branch branch);
     Optional<Branch> findById(BranchId id);
     List<Branch> findAllByWorkshopId(WorkshopId workshopId);
     boolean existsById(BranchId id);

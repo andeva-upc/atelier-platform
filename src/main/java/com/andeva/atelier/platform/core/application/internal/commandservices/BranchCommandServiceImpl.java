@@ -39,8 +39,8 @@ public class BranchCommandServiceImpl implements BranchCommandService {
                 command.phone()
         );
 
-        branchRepository.save(branch);
-        return Optional.of(branch);
+        var savedBranch = branchRepository.save(branch);
+        return Optional.of(savedBranch);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class BranchCommandServiceImpl implements BranchCommandService {
             command.phone()
         );
 
-        branchRepository.save(branch);
-        return Optional.of(branch);
+        var savedBranch = branchRepository.save(branch);
+        return Optional.of(savedBranch);
     }
 }

@@ -8,12 +8,6 @@ public record AssignSubscriptionCommand(
         BranchId branchId,
         SubscriptionPlanId planId,
         BillingCycle billingCycle,
-        String cardNumber,
-        String cardHolderName,
-        String expirationDate,
-        String cvv
+        com.andeva.atelier.platform.core.domain.model.valueobjects.CreditCard creditCard
 ) {
-    public AssignSubscriptionCommand {
-        if (billingCycle == null) throw new IllegalArgumentException("core.error.billingCycle.required");
-    }
 }

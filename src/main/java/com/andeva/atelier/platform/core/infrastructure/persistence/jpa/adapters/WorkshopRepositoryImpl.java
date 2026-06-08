@@ -23,7 +23,7 @@ public class WorkshopRepositoryImpl implements WorkshopRepository {
     }
 
     @Override
-    public void save(Workshop workshop) {
+    public Workshop save(Workshop workshop) {
         WorkshopPersistenceEntity entity = null;
         if (workshop.getId() != null) {
             entity = jpaRepository.findById(workshop.getId().value()).orElse(new WorkshopPersistenceEntity());
@@ -31,7 +31,8 @@ public class WorkshopRepositoryImpl implements WorkshopRepository {
             entity = new WorkshopPersistenceEntity();
         }
         WorkshopPersistenceAssembler.toEntity(workshop, entity);
-        jpaRepository.save(entity);
+        WorkshopPersistenceEntity savedEntity = jpaRepository.save(entity);
+        return WorkshopPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override

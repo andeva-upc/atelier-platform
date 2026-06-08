@@ -35,8 +35,8 @@ public class WorkshopCommandServiceImpl implements WorkshopCommandService {
                 command.mileageIntervalConfig()
         );
 
-        workshopRepository.save(workshop);
-        return Optional.of(workshop); // Requires fetch back or relying on JPA's entity update. 
+        var savedWorkshop = workshopRepository.save(workshop);
+        return Optional.of(savedWorkshop); // Requires fetch back or relying on JPA's entity update. 
     }
 
     @Override
@@ -52,7 +52,7 @@ public class WorkshopCommandServiceImpl implements WorkshopCommandService {
             command.mileageIntervalConfig()
         );
 
-        workshopRepository.save(workshop);
-        return Optional.of(workshop);
+        var savedWorkshop = workshopRepository.save(workshop);
+        return Optional.of(savedWorkshop);
     }
 }

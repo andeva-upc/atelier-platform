@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WorkshopRepository {
-    void save(Workshop workshop);
+    Workshop save(Workshop workshop);
     Optional<Workshop> findById(WorkshopId id);
     List<Workshop> findAllByOwnerId(OwnerId ownerId);
     boolean existsById(WorkshopId id);

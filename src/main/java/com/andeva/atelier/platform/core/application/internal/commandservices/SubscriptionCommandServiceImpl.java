@@ -44,9 +44,9 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
                 .orElseThrow(() -> new IllegalArgumentException("Subscription plan does not exist."));
 
         // Mock Payment Processing
-        if (command.cardNumber() != null && !command.cardNumber().isBlank()) {
+        if (command.creditCard() != null && command.creditCard().cardNumber() != null && !command.creditCard().cardNumber().isBlank()) {
             log.info("Simulating payment processing via Stripe for card ending in {}", 
-                command.cardNumber().substring(Math.max(0, command.cardNumber().length() - 4)));
+                command.creditCard().cardNumber().substring(Math.max(0, command.creditCard().cardNumber().length() - 4)));
             log.info("Payment successful for Branch ID: {}", command.branchId());
         }
 
@@ -70,8 +70,8 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
                 endDate
         );
 
-        subscriptionRepository.save(newSubscription);
-        return Optional.of(newSubscription);
+        var savedSubscription = subscriptionRepository.save(newSubscription);
+        return Optional.of(savedSubscription);
     }
 
     @Override

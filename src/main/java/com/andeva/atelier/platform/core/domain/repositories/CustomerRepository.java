@@ -7,7 +7,7 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import java.util.Optional;
 
 public interface CustomerRepository {
-    void save(Customer customer);
+    Customer save(Customer customer);
     Optional<Customer> findById(CustomerId id);
     Optional<Customer> findByUserId(UserId userId);
     boolean existsByUserId(UserId userId);

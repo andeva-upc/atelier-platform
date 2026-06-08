@@ -40,4 +40,12 @@ public class BranchPersistenceEntity extends AuditableAbstractPersistenceEntity 
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @org.springframework.data.annotation.CreatedBy
+    @Column(name = "created_by", updatable = false)
+    private UUID createdBy;
+
+    @org.springframework.data.annotation.LastModifiedBy
+    @Column(name = "updated_by")
+    private UUID updatedBy;
 }

@@ -32,8 +32,8 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
                 command.phone()
         );
 
-        employeeRepository.save(employee);
-        return employeeRepository.findByUserId(command.userId());
+        var savedEmployee = employeeRepository.save(employee);
+        return Optional.of(savedEmployee);
     }
 
     @Override
@@ -49,8 +49,8 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
             command.phone()
         );
 
-        employeeRepository.save(employee);
-        return Optional.of(employee);
+        var savedEmployee = employeeRepository.save(employee);
+        return Optional.of(savedEmployee);
     }
 
     @Override

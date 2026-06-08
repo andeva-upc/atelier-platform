@@ -24,7 +24,7 @@ public class BranchSubscriptionRepositoryImpl implements BranchSubscriptionRepos
     }
 
     @Override
-    public void save(BranchSubscription branchSubscription) {
+    public BranchSubscription save(BranchSubscription branchSubscription) {
         BranchSubscriptionPersistenceEntity entity = null;
         if (branchSubscription.getId() != null) {
             entity = jpaRepository.findById(branchSubscription.getId().value()).orElse(new BranchSubscriptionPersistenceEntity());
@@ -32,7 +32,8 @@ public class BranchSubscriptionRepositoryImpl implements BranchSubscriptionRepos
             entity = new BranchSubscriptionPersistenceEntity();
         }
         BranchSubscriptionPersistenceAssembler.toEntity(branchSubscription, entity);
-        jpaRepository.save(entity);
+        BranchSubscriptionPersistenceEntity savedEntity = jpaRepository.save(entity);
+        return BranchSubscriptionPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override

@@ -8,12 +8,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+
 @Entity
 @Table(name = "subscription_plans")
 @Getter
 @Setter
 @NoArgsConstructor
-public class SubscriptionPlanPersistenceEntity extends AuditableAbstractPersistenceEntity {
+public class SubscriptionPlanPersistenceEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String name;
