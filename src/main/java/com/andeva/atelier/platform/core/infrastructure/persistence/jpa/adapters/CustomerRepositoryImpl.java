@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.adapters;
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Customer;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.domain.repositories.CustomerRepository;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.CustomerPersistenceAssembler;
@@ -56,3 +56,4 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         }
     }
 }
+

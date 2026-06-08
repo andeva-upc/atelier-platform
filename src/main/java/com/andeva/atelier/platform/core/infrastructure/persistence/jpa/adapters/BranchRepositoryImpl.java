@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.adapters;
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Branch;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
 import com.andeva.atelier.platform.core.domain.repositories.BranchRepository;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.BranchPersistenceAssembler;
@@ -57,3 +57,4 @@ public class BranchRepositoryImpl implements BranchRepository {
         return jpaRepository.existsByCode(code);
     }
 }
+
