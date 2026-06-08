@@ -1,4 +1,6 @@
 package com.andeva.atelier.platform.iam.domain.model.commands;
 
-public record ResetPasswordCommand(String token, String newPassword) {
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.Password;
+
+public record ResetPasswordCommand(String token, Password newPassword) {
 }

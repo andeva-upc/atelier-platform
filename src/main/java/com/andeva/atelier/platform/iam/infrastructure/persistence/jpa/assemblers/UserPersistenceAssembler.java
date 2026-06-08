@@ -16,10 +16,9 @@ public class UserPersistenceAssembler {
         if (entity == null) {
             entity = new UserPersistenceEntity();
         }
-        if (user.getId() == null) {
-            user.setUserId(new UserId(UUID.randomUUID()));
+        if (user.getId() != null && entity.getVersion() != null) {
+            entity.setId(user.getId().value());
         }
-        entity.setId(user.getId().value());
         entity.setEmail(user.getEmail().value());
         entity.setPasswordHash(user.getPassword().value());
         entity.setGoogleId(user.getGoogleId() != null ? user.getGoogleId().value() : null);

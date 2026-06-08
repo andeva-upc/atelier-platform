@@ -32,7 +32,7 @@ public class PasswordRecoveryCommandServiceImpl implements PasswordRecoveryComma
 
     @Override
     public void handle(GeneratePasswordRecoveryTokenCommand command) {
-        var user = userRepository.findByEmail(command.email())
+        var user = userRepository.findByEmail(command.email().value())
                 .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
         String rawToken = UUID.randomUUID().toString();
@@ -54,7 +54,7 @@ public class PasswordRecoveryCommandServiceImpl implements PasswordRecoveryComma
         var user = userRepository.findById(tokenEntity.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
-        user.changePassword(new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(hashingService.encode(command.newPassword())));
+        user.changePassword(new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(hashingService.encode(command.newPassword().value())));
         userRepository.save(user);
 
         tokenEntity.markAsUsed();

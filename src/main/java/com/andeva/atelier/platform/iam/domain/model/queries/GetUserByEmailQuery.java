@@ -1,4 +1,6 @@
 package com.andeva.atelier.platform.iam.domain.model.queries;
 
-public record GetUserByEmailQuery(String email) {
+import com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress;
+
+public record GetUserByEmailQuery(EmailAddress email) {
 }

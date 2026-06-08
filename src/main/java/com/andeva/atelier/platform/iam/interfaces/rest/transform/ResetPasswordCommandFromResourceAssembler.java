@@ -5,6 +5,6 @@ import com.andeva.atelier.platform.iam.interfaces.rest.resources.ResetPasswordRe
 
 public class ResetPasswordCommandFromResourceAssembler {
     public static ResetPasswordCommand toCommandFromResource(ResetPasswordResource resource) {
-        return new ResetPasswordCommand(resource.token(), resource.newPassword());
+        return new ResetPasswordCommand(resource.token(), new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(resource.newPassword()));
     }
 }

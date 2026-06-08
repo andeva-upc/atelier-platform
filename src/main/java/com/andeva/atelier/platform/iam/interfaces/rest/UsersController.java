@@ -32,7 +32,7 @@ public class UsersController {
     @Operation(summary = "Get user by ID", description = "Retrieves the details of a specific user")
     @GetMapping("/{userId}")
     public ResponseEntity<UserResource> getUserById(@PathVariable UUID userId) {
-        var query = new GetUserByIdQuery(userId);
+        var query = new GetUserByIdQuery(new com.andeva.atelier.platform.iam.domain.model.valueobjects.UserId(userId));
         var user = userQueryService.handle(query);
 
         if (user.isEmpty()) {

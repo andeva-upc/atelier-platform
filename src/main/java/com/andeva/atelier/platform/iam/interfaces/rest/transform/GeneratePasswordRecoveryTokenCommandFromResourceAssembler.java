@@ -5,6 +5,6 @@ import com.andeva.atelier.platform.iam.interfaces.rest.resources.PasswordRecover
 
 public class GeneratePasswordRecoveryTokenCommandFromResourceAssembler {
     public static GeneratePasswordRecoveryTokenCommand toCommandFromResource(PasswordRecoveryResource resource) {
-        return new GeneratePasswordRecoveryTokenCommand(resource.email());
+        return new GeneratePasswordRecoveryTokenCommand(new com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress(resource.email()));
     }
 }
