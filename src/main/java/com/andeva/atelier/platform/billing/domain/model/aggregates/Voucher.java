@@ -6,8 +6,13 @@ import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomain
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 import lombok.Getter;
 
+import com.andeva.atelier.platform.billing.domain.model.entities.Payment;
+import com.andeva.atelier.platform.billing.domain.model.valueobjects.PaymentMethod;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
-
 /**
  * Aggregate root representing a Voucher (Invoice or Receipt) in the billing context.
  * A Voucher is generated from an APPROVED Quote and represents the financial obligation
@@ -25,7 +30,7 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
     private Money totalAmount;
     private VoucherStatus status;
     private UUID externalInvoiceId; // ID returned by the Facthub service
-
+    private List<Payment> payments = new ArrayList<>();
     public Voucher() {
         // Required by persistence assembler
     }
@@ -61,5 +66,57 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
         this.totalAmount = totalAmount;
         this.status = status;
         this.externalInvoiceId = externalInvoiceId;
+    }
+
+    // For persistence rebuilding with payments
+    public Voucher(UUID id, UUID quoteId, VoucherType type, String customerDocumentType, 
+                   String customerDocumentNumber, String customerName, 
+                   Money totalAmount, VoucherStatus status, UUID externalInvoiceId, List<Payment> payments) {
+        this.id = id;
+        this.quoteId = quoteId;
+        this.type = type;
+        this.customerDocumentType = customerDocumentType;
+        this.customerDocumentNumber = customerDocumentNumber;
+        this.customerName = customerName;
+        this.totalAmount = totalAmount;
+        this.status = status;
+        this.externalInvoiceId = externalInvoiceId;
+        if (payments != null) {
+            this.payments = payments;
+        }
+    }
+
+    public List<Payment> getPayments() {
+        return Collections.unmodifiableList(payments);
+    }
+
+    public BigDecimal getTotalPaidAmount() {
+        return payments.stream()
+                .map(p -> p.getAmount().amount())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void addPayment(Money amount, PaymentMethod method) {
+        if (this.status == VoucherStatus.CANCELED) {
+            throw new IllegalStateException("Cannot add payment to a canceled voucher");
+        }
+        if (this.status == VoucherStatus.PAID) {
+            throw new IllegalStateException("Voucher is already paid in full");
+        }
+
+        BigDecimal currentTotalPaid = getTotalPaidAmount();
+        BigDecimal newTotalPaid = currentTotalPaid.add(amount.amount());
+
+        if (newTotalPaid.compareTo(this.totalAmount.amount()) > 0) {
+            throw new IllegalStateException("Payment exceeds the total debt of the voucher");
+        }
+
+        this.payments.add(new Payment(amount, method));
+
+        if (newTotalPaid.compareTo(this.totalAmount.amount()) == 0) {
+            this.status = VoucherStatus.PAID;
+        } else {
+            this.status = VoucherStatus.PARTIALLY_PAID;
+        }
     }
 }
