@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.converters;
 
-import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentsSummary;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentSummary;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -10,7 +10,7 @@ import jakarta.persistence.Converter;
  * @author Joel Huamani Estefanero
  */
 @Converter(autoApply = true)
-public class AppointmentsSummaryAttributeConverter implements AttributeConverter<AppointmentsSummary, String> {
+public class AppointmentsSummaryAttributeConverter implements AttributeConverter<AppointmentSummary, String> {
 
     /**
      * Converts a AppointmentsSummary entity attribute to its String representation for database storage. If the attribute is null, it returns null; otherwise, it returns the value of the AppointmentsSummary.
@@ -18,7 +18,7 @@ public class AppointmentsSummaryAttributeConverter implements AttributeConverter
      * @return the String representation of the AppointmentsSummary for database storage, or null if the attribute is null
      */
     @Override
-    public String convertToDatabaseColumn(AppointmentsSummary attribute) {
+    public String convertToDatabaseColumn(AppointmentSummary attribute) {
         return (attribute == null) ? null : attribute.value();
     }
 
@@ -28,7 +28,7 @@ public class AppointmentsSummaryAttributeConverter implements AttributeConverter
      * @return a AppointmentsSummary instance created from the database String value, or null if the database value is null or blank
      */
     @Override
-    public AppointmentsSummary convertToEntityAttribute(String dbData) {
-        return (dbData == null || dbData.isBlank()) ? null : new AppointmentsSummary(dbData);
+    public AppointmentSummary convertToEntityAttribute(String dbData) {
+        return (dbData == null || dbData.isBlank()) ? null : new AppointmentSummary(dbData);
     }
 }
