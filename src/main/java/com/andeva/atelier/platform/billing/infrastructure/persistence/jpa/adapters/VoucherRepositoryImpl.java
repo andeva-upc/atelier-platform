@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 
 @Component
 public class VoucherRepositoryImpl implements VoucherRepository {
@@ -40,5 +42,13 @@ public class VoucherRepositoryImpl implements VoucherRepository {
     public Optional<Voucher> findById(UUID id) {
         return persistenceRepository.findById(id)
                 .map(VoucherPersistenceAssembler::toAggregate);
+    }
+
+    @Override
+    public List<Voucher> findByBranchId(BranchId branchId) {
+        return persistenceRepository.findByBranchId(branchId.id())
+                .stream()
+                .map(VoucherPersistenceAssembler::toAggregate)
+                .toList();
     }
 }

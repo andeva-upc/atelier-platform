@@ -6,6 +6,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import java.util.List;
+
 @Repository
 public interface VoucherJpaRepository extends JpaRepository<VoucherPersistenceEntity, UUID> {
+    
+    @Query("SELECT v FROM VoucherPersistenceEntity v WHERE v.quoteId IN (SELECT q.id FROM QuotePersistenceEntity q WHERE q.branchId = :branchId)")
+    List<VoucherPersistenceEntity> findByBranchId(@Param("branchId") UUID branchId);
 }
