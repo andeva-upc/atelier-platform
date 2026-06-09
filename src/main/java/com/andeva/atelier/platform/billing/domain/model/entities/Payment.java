@@ -1,14 +1,13 @@
 package com.andeva.atelier.platform.billing.domain.model.entities;
 
 import com.andeva.atelier.platform.billing.domain.model.valueobjects.PaymentMethod;
-import com.andeva.atelier.platform.shared.domain.model.entities.AuditableModel;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 import lombok.Getter;
 
 import java.util.UUID;
 
 @Getter
-public class Payment extends AuditableModel {
+public class Payment {
     private UUID id;
     private Money amount;
     private PaymentMethod method;
