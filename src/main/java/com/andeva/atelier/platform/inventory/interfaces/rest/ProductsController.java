@@ -118,4 +118,16 @@ public class ProductsController {
                 ProductResourceFromAggregateAssembler.toResourceFromAggregate(product)
         )).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @DeleteMapping("/{productId}")
+    @Operation(summary = "Delete a product", description = "Deletes a product and all its associated batches")
+    public ResponseEntity<?> deleteProduct(@PathVariable UUID productId) {
+        var command = new com.andeva.atelier.platform.inventory.domain.model.commands.DeleteProductCommand(productId);
+        try {
+            productCommandService.handle(command);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

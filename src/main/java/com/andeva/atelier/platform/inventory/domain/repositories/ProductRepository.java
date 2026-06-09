@@ -22,4 +22,7 @@ public interface ProductRepository {
      * @return list of products for that branch, may be empty
      */
     List<Product> findAllByBranchId(BranchId branchId);
+    
+    boolean existsById(UUID id);
+    void deleteById(UUID id);
 }
