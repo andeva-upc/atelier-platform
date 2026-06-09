@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.fleet.interfaces.rest.transform;
 
 import com.andeva.atelier.platform.fleet.domain.model.commands.CreateAppointmentCommand;
-import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentsSummary;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentSummary;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.CreateAppointmentResource;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
@@ -17,7 +17,7 @@ public class CreateAppointmentCommandFromResourceAssembler {
                 resource.scheduledStart(),
                 resource.notes() == null || resource.notes().isBlank()
                         ? null
-                        : new AppointmentsSummary(resource.notes())
+                        : new AppointmentSummary(resource.notes())
         );
     }
 }
