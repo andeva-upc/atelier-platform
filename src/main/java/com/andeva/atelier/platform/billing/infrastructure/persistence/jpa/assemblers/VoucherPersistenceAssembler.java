@@ -1,0 +1,44 @@
+package com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.assemblers;
+
+import com.andeva.atelier.platform.billing.domain.model.aggregates.Voucher;
+import com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.entities.VoucherPersistenceEntity;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
+
+public class VoucherPersistenceAssembler {
+
+    public static VoucherPersistenceEntity toEntity(Voucher aggregate) {
+        if (aggregate == null) return null;
+        var entity = new VoucherPersistenceEntity();
+        updateEntityFromAggregate(entity, aggregate);
+        return entity;
+    }
+
+    public static void updateEntityFromAggregate(VoucherPersistenceEntity entity, Voucher aggregate) {
+        if (aggregate == null || entity == null) return;
+        
+        // ID is managed by JPA for new entities. We don't set it manually to avoid detached entity exceptions.
+        entity.setQuoteId(aggregate.getQuoteId());
+        entity.setType(aggregate.getType());
+        entity.setCustomerDocumentType(aggregate.getCustomerDocumentType());
+        entity.setCustomerDocumentNumber(aggregate.getCustomerDocumentNumber());
+        entity.setCustomerName(aggregate.getCustomerName());
+        entity.setTotalAmount(aggregate.getTotalAmount().amount());
+        entity.setStatus(aggregate.getStatus());
+        entity.setExternalInvoiceId(aggregate.getExternalInvoiceId());
+    }
+
+    public static Voucher toAggregate(VoucherPersistenceEntity entity) {
+        if (entity == null) return null;
+        return new Voucher(
+                entity.getId(),
+                entity.getQuoteId(),
+                entity.getType(),
+                entity.getCustomerDocumentType(),
+                entity.getCustomerDocumentNumber(),
+                entity.getCustomerName(),
+                new Money(entity.getTotalAmount()),
+                entity.getStatus(),
+                entity.getExternalInvoiceId()
+        );
+    }
+}

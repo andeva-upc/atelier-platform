@@ -2,7 +2,6 @@ package com.andeva.atelier.platform.billing.interfaces.rest;
 
 import com.andeva.atelier.platform.billing.application.commandservices.QuoteCommandFailure;
 import com.andeva.atelier.platform.billing.application.commandservices.QuoteCommandService;
-import com.andeva.atelier.platform.billing.domain.model.aggregates.Quote;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.CreateQuoteResource;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.UpdateQuoteResource;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.CreateQuoteCommandFromResourceAssembler;
@@ -15,9 +14,7 @@ import com.andeva.atelier.platform.billing.domain.model.commands.CancelQuoteComm
 import com.andeva.atelier.platform.billing.domain.model.queries.GetQuotesByBranchIdQuery;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.QuoteResource;
-import com.andeva.atelier.platform.shared.application.result.Result;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import io.swagger.v3.oas.annotations.Operation;
