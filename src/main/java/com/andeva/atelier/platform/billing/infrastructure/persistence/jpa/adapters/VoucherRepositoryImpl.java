@@ -46,7 +46,7 @@ public class VoucherRepositoryImpl implements VoucherRepository {
 
     @Override
     public List<Voucher> findByBranchId(BranchId branchId) {
-        return persistenceRepository.findByBranchId(branchId.id())
+        return persistenceRepository.findByBranchId(branchId)
                 .stream()
                 .map(VoucherPersistenceAssembler::toAggregate)
                 .toList();

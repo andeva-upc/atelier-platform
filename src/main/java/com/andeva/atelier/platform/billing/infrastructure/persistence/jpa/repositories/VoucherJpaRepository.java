@@ -14,5 +14,5 @@ import java.util.List;
 public interface VoucherJpaRepository extends JpaRepository<VoucherPersistenceEntity, UUID> {
     
     @Query("SELECT v FROM VoucherPersistenceEntity v WHERE v.quoteId IN (SELECT q.id FROM QuotePersistenceEntity q WHERE q.branchId = :branchId)")
-    List<VoucherPersistenceEntity> findByBranchId(@Param("branchId") UUID branchId);
+    List<VoucherPersistenceEntity> findByBranchId(@Param("branchId") com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId branchId);
 }
