@@ -4,8 +4,10 @@ import com.andeva.atelier.platform.appointments.application.commandservices.Appo
 import com.andeva.atelier.platform.appointments.application.commandservices.AppointmentCommandService;
 import com.andeva.atelier.platform.appointments.domain.model.commands.DeleteAppointmentCommand;
 import com.andeva.atelier.platform.appointments.interfaces.rest.resources.CreateAppointmentResource;
+import com.andeva.atelier.platform.appointments.interfaces.rest.resources.UpdateAppointmentResource;
 import com.andeva.atelier.platform.appointments.interfaces.rest.transform.AppointmentResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.appointments.interfaces.rest.transform.CreateAppointmentCommandFromResourceAssembler;
+import com.andeva.atelier.platform.appointments.interfaces.rest.transform.UpdateAppointmentCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -75,5 +77,21 @@ public class AppointmentsController {
         return ResponseEntity
                 .status(status)
                 .body(ProblemDetail.forStatusAndDetail(status, detail));
+    }
+    @PutMapping("/{appointmentId}")
+    @Operation(summary = "Update an appointment", description = "Updates an existing appointment by ID")
+    public ResponseEntity<?> updateAppointment(
+            @PathVariable UUID appointmentId,
+            @Valid @RequestBody UpdateAppointmentResource resource
+    ) {
+        var command = UpdateAppointmentCommandFromResourceAssembler.toCommandFromResource(appointmentId, resource);
+        var result = commandService.handle(command);
+
+        return result.fold(
+                appointment -> ResponseEntity.ok(
+                        AppointmentResourceFromAggregateAssembler.toResourceFromAggregate(appointment)
+                ),
+                this::handleFailure
+        );
     }
 }
