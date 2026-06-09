@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.billing.interfaces.rest;
 
-import com.andeva.atelier.platform.billing.application.commandservices.QuoteCommandFailure;
+import com.andeva.atelier.platform.billing.domain.model.valueobjects.QuoteCommandFailure;
 import com.andeva.atelier.platform.billing.application.commandservices.QuoteCommandService;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.CreateQuoteResource;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.UpdateQuoteResource;
