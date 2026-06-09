@@ -44,4 +44,14 @@ public class ProductRepositoryAdapter implements ProductRepository {
                 .map(ProductEntityAssembler::toAggregate)
                 .toList();
     }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return jpaRepository.existsById(id);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
+    }
 }

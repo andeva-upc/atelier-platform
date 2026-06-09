@@ -50,4 +50,12 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         productRepository.save(product.get());
         return product;
     }
+
+    @Override
+    public void handle(com.andeva.atelier.platform.inventory.domain.model.commands.DeleteProductCommand command) {
+        if (!productRepository.existsById(command.productId())) {
+            throw new IllegalArgumentException("Product not found");
+        }
+        productRepository.deleteById(command.productId());
+    }
 }
