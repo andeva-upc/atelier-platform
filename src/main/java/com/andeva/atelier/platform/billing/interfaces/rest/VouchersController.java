@@ -15,15 +15,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.andeva.atelier.platform.billing.application.queryservices.VoucherQueryService;
+import com.andeva.atelier.platform.billing.domain.model.queries.GetVoucherByIdQuery;
+import com.andeva.atelier.platform.billing.interfaces.rest.resources.VoucherResource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import java.util.UUID;
+
 @RestController
 @RequestMapping(value = "/api/v1/vouchers", produces = "application/json")
 @Tag(name = "Vouchers", description = "Endpoints for generating and managing billing vouchers (invoices and receipts)")
 public class VouchersController {
 
     private final VoucherCommandService commandService;
+    private final VoucherQueryService queryService;
 
-    public VouchersController(VoucherCommandService commandService) {
+    public VouchersController(VoucherCommandService commandService, VoucherQueryService queryService) {
         this.commandService = commandService;
+        this.queryService = queryService;
     }
 
     @PostMapping
@@ -38,6 +47,20 @@ public class VouchersController {
         }
         
         return toErrorResponse(result.failure().get());
+    }
+
+    @GetMapping("/{voucherId}")
+    @Operation(summary = "Get voucher by ID", description = "Retrieves a voucher using its unique identifier")
+    public ResponseEntity<VoucherResource> getVoucherById(@PathVariable UUID voucherId) {
+        var query = new GetVoucherByIdQuery(voucherId);
+        var voucher = queryService.handle(query);
+        
+        if (voucher.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        var voucherResource = VoucherResourceFromAggregateAssembler.toResourceFromAggregate(voucher.get());
+        return ResponseEntity.ok(voucherResource);
     }
 
     private ResponseEntity<?> toErrorResponse(VoucherCommandFailure failure) {
