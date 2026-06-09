@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.fleet.domain.model.commands;
 
-import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentsSummary;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentSummary;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
@@ -8,15 +8,15 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record UpdateAppointmentCommand(
+public record UpdateFleetCommand(
         UUID appointmentId,
         BranchId branchId,
         CustomerId customerId,
         VehicleId vehicleId,
         LocalDateTime scheduledStart,
-        AppointmentsSummary notes
+        AppointmentSummary notes
 ) {
-    public UpdateAppointmentCommand {
+    public UpdateFleetCommand {
         if (appointmentId == null) {
             throw new IllegalArgumentException("Appointment ID is required");
         }
