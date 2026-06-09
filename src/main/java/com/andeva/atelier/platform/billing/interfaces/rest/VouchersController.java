@@ -20,7 +20,9 @@ import com.andeva.atelier.platform.billing.domain.model.queries.GetVoucherByIdQu
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.VoucherResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.UUID;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/vouchers", produces = "application/json")
@@ -61,6 +63,19 @@ public class VouchersController {
         
         var voucherResource = VoucherResourceFromAggregateAssembler.toResourceFromAggregate(voucher.get());
         return ResponseEntity.ok(voucherResource);
+    }
+
+    @GetMapping(params = "branchId")
+    @Operation(summary = "Get vouchers by branch", description = "Retrieves all vouchers emitted in a specific branch")
+    public ResponseEntity<List<VoucherResource>> getVouchersByBranch(@RequestParam UUID branchId) {
+        var query = new com.andeva.atelier.platform.billing.domain.model.queries.GetVouchersByBranchIdQuery(new com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId(branchId));
+        var vouchers = queryService.handle(query);
+        
+        var voucherResources = vouchers.stream()
+                .map(VoucherResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+                
+        return ResponseEntity.ok(voucherResources);
     }
 
     private ResponseEntity<?> toErrorResponse(VoucherCommandFailure failure) {
