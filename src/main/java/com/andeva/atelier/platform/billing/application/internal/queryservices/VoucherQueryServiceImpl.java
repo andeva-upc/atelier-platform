@@ -1,0 +1,26 @@
+package com.andeva.atelier.platform.billing.application.internal.queryservices;
+
+import com.andeva.atelier.platform.billing.application.queryservices.VoucherQueryService;
+import com.andeva.atelier.platform.billing.domain.model.aggregates.Voucher;
+import com.andeva.atelier.platform.billing.domain.model.queries.GetVoucherByIdQuery;
+import com.andeva.atelier.platform.billing.domain.repositories.VoucherRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Service
+public class VoucherQueryServiceImpl implements VoucherQueryService {
+
+    private final VoucherRepository voucherRepository;
+
+    public VoucherQueryServiceImpl(VoucherRepository voucherRepository) {
+        this.voucherRepository = voucherRepository;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Voucher> handle(GetVoucherByIdQuery query) {
+        return voucherRepository.findById(query.voucherId());
+    }
+}
