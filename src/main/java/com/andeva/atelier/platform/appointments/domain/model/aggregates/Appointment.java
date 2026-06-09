@@ -72,13 +72,53 @@ public class Appointment extends AbstractDomainAggregateRoot<Appointment> {
             LocalDateTime scheduledStart,
             AppointmentsSummary notes
     ) {
-        this.id = UUID.randomUUID();
+        if (branchId == null) {
+            throw new IllegalArgumentException("Branch ID is required");
+        }
+        if (customerId == null) {
+            throw new IllegalArgumentException("Customer ID is required");
+        }
+        if (vehicleId == null) {
+            throw new IllegalArgumentException("Vehicle ID is required");
+        }
+        if (scheduledStart == null) {
+            throw new IllegalArgumentException("Scheduled start is required");
+        }
+
         this.branchId = branchId;
         this.customerId = customerId;
         this.vehicleId = vehicleId;
         this.scheduledStart = scheduledStart;
         this.scheduledEnd = scheduledStart.plusHours(1);
         this.status = AppointmentStatus.PENDING;
+        this.notes = notes;
+    }
+
+    public void update(
+            BranchId branchId,
+            CustomerId customerId,
+            VehicleId vehicleId,
+            LocalDateTime scheduledStart,
+            AppointmentsSummary notes
+    ) {
+        if (branchId == null) {
+            throw new IllegalArgumentException("Branch ID is required");
+        }
+        if (customerId == null) {
+            throw new IllegalArgumentException("Customer ID is required");
+        }
+        if (vehicleId == null) {
+            throw new IllegalArgumentException("Vehicle ID is required");
+        }
+        if (scheduledStart == null) {
+            throw new IllegalArgumentException("Scheduled start is required");
+        }
+
+        this.branchId = branchId;
+        this.customerId = customerId;
+        this.vehicleId = vehicleId;
+        this.scheduledStart = scheduledStart;
+        this.scheduledEnd = scheduledStart.plusHours(1);
         this.notes = notes;
     }
 }
