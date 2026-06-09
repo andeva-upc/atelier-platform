@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.entities;
 
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentStatus;
-import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentsSummary;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentSummary;
 import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.converters.AppointmentsSummaryAttributeConverter;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
@@ -70,7 +70,7 @@ public class AppointmentPersistenceEntity extends AuditableAbstractPersistenceEn
 
     @Column(name = "notes", columnDefinition = "TEXT")
     @Convert(converter = AppointmentsSummaryAttributeConverter.class)
-    private AppointmentsSummary notes;
+    private AppointmentSummary notes;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
