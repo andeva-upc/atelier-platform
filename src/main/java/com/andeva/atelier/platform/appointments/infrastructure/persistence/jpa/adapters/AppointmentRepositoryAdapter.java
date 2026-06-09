@@ -7,6 +7,7 @@ import com.andeva.atelier.platform.appointments.infrastructure.persistence.jpa.r
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -44,5 +45,23 @@ public class AppointmentRepositoryAdapter implements AppointmentRepository {
     public void deleteById(UUID appointmentId) {
         appointmentJpaRepository.findById(appointmentId)
                 .ifPresent(appointmentJpaRepository::delete);
+    }
+    @Override
+    public Optional<Appointment> findById(UUID appointmentId) {
+        return appointmentJpaRepository.findById(appointmentId)
+                .map(AppointmentPersistenceAssembler::toAggregateFromEntity);
+    }
+
+    @Override
+    public boolean existsByIdNotAndScheduledStartLessThanAndScheduledEndGreaterThan(
+            UUID appointmentId,
+            LocalDateTime scheduledEnd,
+            LocalDateTime scheduledStart
+    ) {
+        return appointmentJpaRepository.existsByIdNotAndScheduledStartLessThanAndScheduledEndGreaterThan(
+                appointmentId,
+                scheduledEnd,
+                scheduledStart
+        );
     }
 }
