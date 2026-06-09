@@ -4,10 +4,13 @@ import com.andeva.atelier.platform.appointments.application.commandservices.Appo
 import com.andeva.atelier.platform.appointments.application.commandservices.AppointmentCommandService;
 import com.andeva.atelier.platform.appointments.domain.model.aggregates.Appointment;
 import com.andeva.atelier.platform.appointments.domain.model.commands.CreateAppointmentCommand;
+import com.andeva.atelier.platform.appointments.domain.model.commands.DeleteAppointmentCommand;
 import com.andeva.atelier.platform.appointments.domain.repositories.AppointmentRepository;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class AppointmentCommandServiceImpl implements AppointmentCommandService {
@@ -45,6 +48,21 @@ public class AppointmentCommandServiceImpl implements AppointmentCommandService 
             var savedAppointment = appointmentRepository.save(appointment);
 
             return Result.success(savedAppointment);
+
+        } catch (IllegalArgumentException exception) {
+            return Result.failure(AppointmentCommandFailure.INVALID_APPOINTMENT_DATA);
+        }
+    }
+    @Override
+    public Result<UUID, AppointmentCommandFailure> handle(DeleteAppointmentCommand command) {
+        try {
+            if (!appointmentRepository.existsById(command.appointmentId())) {
+                return Result.failure(AppointmentCommandFailure.APPOINTMENT_NOT_FOUND);
+            }
+
+            appointmentRepository.deleteById(command.appointmentId());
+
+            return Result.success(command.appointmentId());
 
         } catch (IllegalArgumentException exception) {
             return Result.failure(AppointmentCommandFailure.INVALID_APPOINTMENT_DATA);
