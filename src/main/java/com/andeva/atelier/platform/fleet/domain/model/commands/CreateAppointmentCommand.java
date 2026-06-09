@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.fleet.domain.model.commands;
 
-import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentsSummary;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentSummary;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
@@ -12,7 +12,7 @@ public record CreateAppointmentCommand(
         CustomerId customerId,
         VehicleId vehicleId,
         LocalDateTime scheduledStart,
-        AppointmentsSummary notes
+        AppointmentSummary notes
 ) {
     public CreateAppointmentCommand {
         if (branchId == null) throw new IllegalArgumentException("Branch ID is required");
