@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.billing.application.internal.commandservices;
 
-import com.andeva.atelier.platform.billing.application.commandservices.VoucherCommandFailure;
+import com.andeva.atelier.platform.billing.domain.model.valueobjects.VoucherCommandFailure;
 import com.andeva.atelier.platform.billing.application.commandservices.VoucherCommandService;
 import com.andeva.atelier.platform.billing.application.outboundservices.FacthubGateway;
 import com.andeva.atelier.platform.billing.domain.model.aggregates.Voucher;

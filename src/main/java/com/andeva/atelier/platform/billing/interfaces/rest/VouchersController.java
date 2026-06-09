@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.billing.interfaces.rest;
 
-import com.andeva.atelier.platform.billing.application.commandservices.VoucherCommandFailure;
+import com.andeva.atelier.platform.billing.domain.model.valueobjects.VoucherCommandFailure;
 import com.andeva.atelier.platform.billing.application.commandservices.VoucherCommandService;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.GenerateVoucherResource;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.GenerateVoucherCommandFromResourceAssembler;

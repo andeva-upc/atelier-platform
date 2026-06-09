@@ -1,4 +1,4 @@
-package com.andeva.atelier.platform.billing.application.commandservices;
+package com.andeva.atelier.platform.billing.domain.model.valueobjects;
 
 public enum QuoteCommandFailure {
     WORK_ORDER_NOT_FOUND,

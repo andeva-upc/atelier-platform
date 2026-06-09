@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.billing.application.internal.commandservices;
 
-import com.andeva.atelier.platform.billing.application.commandservices.QuoteCommandFailure;
+import com.andeva.atelier.platform.billing.domain.model.valueobjects.QuoteCommandFailure;
 import com.andeva.atelier.platform.billing.application.commandservices.QuoteCommandService;
 import com.andeva.atelier.platform.billing.domain.model.aggregates.Quote;
 import com.andeva.atelier.platform.billing.domain.model.commands.CreateQuoteCommand;
