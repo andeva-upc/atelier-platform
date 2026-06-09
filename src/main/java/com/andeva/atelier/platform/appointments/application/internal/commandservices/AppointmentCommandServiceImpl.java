@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.appointments.application.commandservices.Appo
 import com.andeva.atelier.platform.appointments.domain.model.aggregates.Appointment;
 import com.andeva.atelier.platform.appointments.domain.model.commands.CreateAppointmentCommand;
 import com.andeva.atelier.platform.appointments.domain.model.commands.DeleteAppointmentCommand;
+import com.andeva.atelier.platform.appointments.domain.model.commands.UpdateAppointmentCommand;
 import com.andeva.atelier.platform.appointments.domain.repositories.AppointmentRepository;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,51 @@ public class AppointmentCommandServiceImpl implements AppointmentCommandService 
             return Result.failure(AppointmentCommandFailure.INVALID_APPOINTMENT_DATA);
         }
     }
+
     @Override
+    @Transactional
+    public Result<Appointment, AppointmentCommandFailure> handle(UpdateAppointmentCommand command) {
+        try {
+            var appointmentOptional = appointmentRepository.findById(command.appointmentId());
+
+            if (appointmentOptional.isEmpty()) {
+                return Result.failure(AppointmentCommandFailure.APPOINTMENT_NOT_FOUND);
+            }
+
+            var scheduledStart = command.scheduledStart();
+            var scheduledEnd = scheduledStart.plusHours(1);
+
+            boolean overlap = appointmentRepository.existsByIdNotAndScheduledStartLessThanAndScheduledEndGreaterThan(
+                    command.appointmentId(),
+                    scheduledEnd,
+                    scheduledStart
+            );
+
+            if (overlap) {
+                return Result.failure(AppointmentCommandFailure.APPOINTMENT_ALREADY_EXISTS);
+            }
+
+            var appointment = appointmentOptional.get();
+
+            appointment.update(
+                    command.branchId(),
+                    command.customerId(),
+                    command.vehicleId(),
+                    scheduledStart,
+                    command.notes()
+            );
+
+            var updatedAppointment = appointmentRepository.save(appointment);
+
+            return Result.success(updatedAppointment);
+
+        } catch (IllegalArgumentException exception) {
+            return Result.failure(AppointmentCommandFailure.INVALID_APPOINTMENT_DATA);
+        }
+    }
+
+    @Override
+    @Transactional
     public Result<UUID, AppointmentCommandFailure> handle(DeleteAppointmentCommand command) {
         try {
             if (!appointmentRepository.existsById(command.appointmentId())) {

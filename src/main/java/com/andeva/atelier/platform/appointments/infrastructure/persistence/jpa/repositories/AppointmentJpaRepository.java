@@ -12,4 +12,10 @@ public interface AppointmentJpaRepository extends JpaRepository<AppointmentPersi
             LocalDateTime scheduledEnd,
             LocalDateTime scheduledStart
     );
+
+    boolean existsByIdNotAndScheduledStartLessThanAndScheduledEndGreaterThan(
+            UUID appointmentId,
+            LocalDateTime scheduledEnd,
+            LocalDateTime scheduledStart
+    );
 }
