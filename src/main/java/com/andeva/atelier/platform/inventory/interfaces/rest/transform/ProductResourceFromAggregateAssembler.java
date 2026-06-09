@@ -8,11 +8,13 @@ public class ProductResourceFromAggregateAssembler {
         return new ProductResource(
                 aggregate.getId(),
                 aggregate.getBranchId().value().toString(),
-                aggregate.getCategory().name(),
+                aggregate.getCategory().value(),
                 aggregate.getName().name(),
                 aggregate.getSku().value(),
-                aggregate.getCurrentStock().value(),
-                aggregate.getReservedStock().value()
+                aggregate.getDescription(),
+                aggregate.getCurrentSellingPrice().amount().doubleValue(),
+                aggregate.getMinimumStock(),
+                aggregate.getCurrentStock().value()
         );
     }
 }

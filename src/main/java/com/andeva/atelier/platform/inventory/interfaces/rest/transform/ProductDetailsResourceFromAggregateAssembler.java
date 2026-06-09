@@ -12,11 +12,13 @@ public class ProductDetailsResourceFromAggregateAssembler {
         return new ProductDetailsResource(
                 aggregate.getId().toString(),
                 aggregate.getBranchId().value().toString(),
-                aggregate.getCategory().name(),
+                aggregate.getCategory().value(),
                 aggregate.getName().name(),
                 aggregate.getSku().value(),
+                aggregate.getDescription(),
+                aggregate.getCurrentSellingPrice().amount().doubleValue(),
+                aggregate.getMinimumStock(),
                 aggregate.getCurrentStock().value(),
-                aggregate.getReservedStock().value(),
                 batches
         );
     }

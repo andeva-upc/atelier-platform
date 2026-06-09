@@ -6,7 +6,6 @@ import com.andeva.atelier.platform.inventory.domain.model.valueobjects.*;
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductBatchJpaEntity;
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductJpaEntity;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 
 import java.util.stream.Collectors;
 
@@ -14,20 +13,31 @@ public class ProductEntityAssembler {
     public static ProductJpaEntity toEntity(Product product) {
         if (product == null) return null;
         ProductJpaEntity entity = new ProductJpaEntity();
-        entity.setId(product.getId());
-        entity.setBranchId(product.getBranchId().value().toString());
-        entity.setCategory(product.getCategory().name());
+        
+        if (product.getVersion() != null) {
+            entity.setId(product.getId());
+            entity.setVersion(product.getVersion());
+        }
+        
+        entity.setBranchId(product.getBranchId());
+        entity.setCategory(product.getCategory().value());
         entity.setName(product.getName().name());
         entity.setSku(product.getSku().value());
+        entity.setDescription(product.getDescription());
+        entity.setCurrentSellingPrice(product.getCurrentSellingPrice());
         entity.setCurrentStock(product.getCurrentStock().value());
-        entity.setReservedStock(product.getReservedStock().value());
+        entity.setMinimumStock(product.getMinimumStock());
 
         var batchEntities = product.getBatches().stream().map(b -> {
             ProductBatchJpaEntity be = new ProductBatchJpaEntity();
-            be.setBatchId(b.getBatchId());
+            if (b.getVersion() != null) {
+                be.setId(b.getBatchId());
+                be.setVersion(b.getVersion());
+            }
+            be.setBranchId(product.getBranchId());
             be.setInitialQuantity(b.getInitialQuantity().value()); 
             be.setAvailableQuantity(b.getAvailableQuantity().value());
-            be.setAcquisitionCost(b.getAcquisitionCost().amount().doubleValue());
+            be.setAcquisitionCost(b.getAcquisitionCost());
             be.setProduct(entity);
             return be;
         }).collect(Collectors.toList());
@@ -41,9 +51,27 @@ public class ProductEntityAssembler {
         java.util.List<ProductBatch> batches = new java.util.ArrayList<>();
         if (entity.getBatches() != null) {
             for (ProductBatchJpaEntity be : entity.getBatches()) {
-                batches.add(ProductBatch.reconstitute(be.getBatchId(), new InventoryQuantity(be.getInitialQuantity()), new InventoryQuantity(be.getAvailableQuantity()), new Money(java.math.BigDecimal.valueOf(be.getAcquisitionCost()))));
+                batches.add(ProductBatch.reconstitute(
+                    be.getId(), 
+                    new InventoryQuantity(be.getInitialQuantity()), 
+                    new InventoryQuantity(be.getAvailableQuantity()), 
+                    be.getAcquisitionCost(),
+                    be.getVersion()
+                ));
             }
         }
-        return Product.reconstitute(entity.getId(), new BranchId(java.util.UUID.fromString(entity.getBranchId())), ProductCategory.valueOf(entity.getCategory()), new ProductName(entity.getName()), new Sku(entity.getSku()), new InventoryQuantity(entity.getCurrentStock()), new InventoryQuantity(entity.getReservedStock()), batches);
+        return Product.reconstitute(
+            entity.getId(), 
+            entity.getBranchId(), 
+            new ProductCategory(entity.getCategory()), 
+            new ProductName(entity.getName()), 
+            new Sku(entity.getSku()), 
+            new InventoryQuantity(entity.getCurrentStock()), 
+            entity.getCurrentSellingPrice(),
+            entity.getDescription(),
+            entity.getMinimumStock(),
+            entity.getVersion(),
+            batches
+        );
     }
 }

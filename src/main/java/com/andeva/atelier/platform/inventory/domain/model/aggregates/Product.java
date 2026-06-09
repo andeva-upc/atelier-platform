@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.inventory.domain.model.entities.ProductBatch;
 import com.andeva.atelier.platform.inventory.domain.model.events.ProductCreatedEvent;
 import com.andeva.atelier.platform.inventory.domain.model.valueobjects.*;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.util.ArrayList;
@@ -19,34 +20,42 @@ public class Product extends AbstractAggregateRoot<Product> {
     private ProductName name;
     private Sku sku;
     private InventoryQuantity currentStock;
-    private InventoryQuantity reservedStock;
+    private Money currentSellingPrice;
+    private String description;
+    private Integer minimumStock;
+    private Long version;
     private final List<ProductBatch> batches;
 
-    public Product(UUID id, BranchId branchId, ProductCategory category, ProductName name, Sku sku) {
+    public Product(UUID id, BranchId branchId, ProductCategory category, ProductName name, Sku sku, Money currentSellingPrice, String description, Integer minimumStock) {
         this.id = id != null ? id : UUID.randomUUID();
         this.branchId = branchId;
         this.category = category;
         this.name = name;
         this.sku = sku;
+        this.currentSellingPrice = currentSellingPrice;
+        this.description = description;
+        this.minimumStock = minimumStock;
         this.currentStock = new InventoryQuantity(0);
-        this.reservedStock = new InventoryQuantity(0);
         this.batches = new ArrayList<>();
         this.registerEvent(new ProductCreatedEvent(this, this.branchId, this.id));
     }
 
-    private Product(UUID id, BranchId branchId, ProductCategory category, ProductName name, Sku sku, InventoryQuantity currentStock, InventoryQuantity reservedStock) {
+    private Product(UUID id, BranchId branchId, ProductCategory category, ProductName name, Sku sku, InventoryQuantity currentStock, Money currentSellingPrice, String description, Integer minimumStock, Long version) {
         this.id = id;
         this.branchId = branchId;
         this.category = category;
         this.name = name;
         this.sku = sku;
         this.currentStock = currentStock;
-        this.reservedStock = reservedStock;
+        this.currentSellingPrice = currentSellingPrice;
+        this.description = description;
+        this.minimumStock = minimumStock;
+        this.version = version;
         this.batches = new ArrayList<>();
     }
 
-    public static Product reconstitute(UUID id, BranchId branchId, ProductCategory category, ProductName name, Sku sku, InventoryQuantity currentStock, InventoryQuantity reservedStock, List<ProductBatch> batches) {
-        Product p = new Product(id, branchId, category, name, sku, currentStock, reservedStock);
+    public static Product reconstitute(UUID id, BranchId branchId, ProductCategory category, ProductName name, Sku sku, InventoryQuantity currentStock, Money currentSellingPrice, String description, Integer minimumStock, Long version, List<ProductBatch> batches) {
+        Product p = new Product(id, branchId, category, name, sku, currentStock, currentSellingPrice, description, minimumStock, version);
         if (batches != null) {
             p.batches.addAll(batches);
         }
@@ -59,7 +68,10 @@ public class Product extends AbstractAggregateRoot<Product> {
     public ProductName getName() { return name; }
     public Sku getSku() { return sku; }
     public InventoryQuantity getCurrentStock() { return currentStock; }
-    public InventoryQuantity getReservedStock() { return reservedStock; }
+    public Money getCurrentSellingPrice() { return currentSellingPrice; }
+    public String getDescription() { return description; }
+    public Integer getMinimumStock() { return minimumStock; }
+    public Long getVersion() { return version; }
     public List<ProductBatch> getBatches() { return Collections.unmodifiableList(batches); }
 
     public void addBatch(ProductBatch batch) {
@@ -67,25 +79,18 @@ public class Product extends AbstractAggregateRoot<Product> {
         this.currentStock = this.currentStock.add(batch.getAvailableQuantity());
     }
 
-    public void updateDetails(ProductName name, ProductCategory category, Sku sku) {
+    public void updateDetails(ProductName name, ProductCategory category, Sku sku, Money currentSellingPrice, String description, Integer minimumStock) {
         this.name = name;
         this.category = category;
         this.sku = sku;
+        this.currentSellingPrice = currentSellingPrice;
+        this.description = description;
+        this.minimumStock = minimumStock;
     }
 
     public void reserveStock(InventoryQuantity amount) {
         if (this.currentStock.value() < amount.value()) throw new InsufficientStockException("Not enough stock available");
-        this.currentStock = this.currentStock.subtract(amount);
-        this.reservedStock = this.reservedStock.add(amount);
-    }
-
-    public void releaseStock(InventoryQuantity amount) {
-        this.reservedStock = this.reservedStock.subtract(amount);
-        this.currentStock = this.currentStock.add(amount);
-    }
-
-    public void dispatchStock(InventoryQuantity amount) {
-        this.reservedStock = this.reservedStock.subtract(amount);
+        
         int remainingToDeduct = amount.value();
         for (ProductBatch batch : this.batches) {
             if (remainingToDeduct <= 0) break;
@@ -96,5 +101,20 @@ public class Product extends AbstractAggregateRoot<Product> {
                 remainingToDeduct -= deduct;
             }
         }
+        this.currentStock = this.currentStock.subtract(amount);
+    }
+
+    public void releaseStock(InventoryQuantity amount) {
+        int remainingToAdd = amount.value();
+        for (ProductBatch batch : this.batches) {
+            if (remainingToAdd <= 0) break;
+            int capacity = batch.getInitialQuantity().value() - batch.getAvailableQuantity().value();
+            if (capacity > 0) {
+                int add = Math.min(capacity, remainingToAdd);
+                batch.addQuantity(new InventoryQuantity(add));
+                remainingToAdd -= add;
+            }
+        }
+        this.currentStock = this.currentStock.add(amount);
     }
 }
