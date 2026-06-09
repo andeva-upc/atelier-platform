@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.fleet.domain.model.aggregates;
 
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentStatus;
-import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentsSummary;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentSummary;
 import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
@@ -22,7 +22,7 @@ public class Appointment extends AbstractDomainAggregateRoot<Appointment> {
     private LocalDateTime scheduledStart;
     private LocalDateTime scheduledEnd;
     private AppointmentStatus status;
-    private AppointmentsSummary notes;
+    private AppointmentSummary notes;
     private Instant createdAt;
     private Instant updatedAt;
     private Instant deletedAt;
@@ -41,7 +41,7 @@ public class Appointment extends AbstractDomainAggregateRoot<Appointment> {
             LocalDateTime scheduledStart,
             LocalDateTime scheduledEnd,
             AppointmentStatus status,
-            AppointmentsSummary notes,
+            AppointmentSummary notes,
             Instant createdAt,
             Instant updatedAt,
             Instant deletedAt,
@@ -70,7 +70,7 @@ public class Appointment extends AbstractDomainAggregateRoot<Appointment> {
             CustomerId customerId,
             VehicleId vehicleId,
             LocalDateTime scheduledStart,
-            AppointmentsSummary notes
+            AppointmentSummary notes
     ) {
         if (branchId == null) {
             throw new IllegalArgumentException("Branch ID is required");
@@ -99,7 +99,7 @@ public class Appointment extends AbstractDomainAggregateRoot<Appointment> {
             CustomerId customerId,
             VehicleId vehicleId,
             LocalDateTime scheduledStart,
-            AppointmentsSummary notes
+            AppointmentSummary notes
     ) {
         if (branchId == null) {
             throw new IllegalArgumentException("Branch ID is required");
