@@ -35,26 +35,26 @@ public class VhTelemetryBatchesController {
     }
 
 
-    @PostMapping
-    @Operation(summary = "Ingest a batch of telemetry snapshots", description = "Stores a list of telemetry readings collected by an OBD2 device")
-    public ResponseEntity<?> ingestTelemetryBatch(@Valid @RequestBody IngestTelemetryBatchResource resource) {
-        var command = TelemetryCommandFromResourceAssembler.toCommandFromResource(resource);
-        var result = commandService.handle(command);
+    @GetMapping("/latest/{deviceId}")
+    @Operation(summary = "Get the latest telemetry snapshot for a device", description = "Retrieves the most recent telemetry capture from a specific OBD2 device")
+    public ResponseEntity<?> getLatestTelemetrySnapshot(@PathVariable UUID deviceId) {
+        var query = new GetLatestTelemetrySnapshotQuery(new Obd2DeviceId(deviceId));
+        var result = queryService.handle(query);
 
-        return result.fold(
-                snapshots -> {
-                    var resources = snapshots.stream()
-                            .map(TelemetrySnapshotResourceFromAggregateAssembler::toResourceFromAggregate)
-                            .toList();
-                    return ResponseEntity.status(HttpStatus.CREATED).body(resources);
-                },
-                failure -> {
-                    if (failure instanceof TelemetryCommandFailure.NotFound) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure.message());
-                    } else {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failure.message());
-                    }
-                }
-        );
+        return result.map(snapshot -> ResponseEntity.ok(TelemetrySnapshotResourceFromAggregateAssembler.toResourceFromAggregate(snapshot)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @GetMapping("/history/{deviceId}")
+    @Operation(summary = "Get the historical telemetry snapshots for a device", description = "Retrieves a history of all telemetry snapshots recorded for a specific OBD2 device ordered descending by date")
+    public ResponseEntity<?> getTelemetrySnapshotHistory(@PathVariable UUID deviceId) {
+        var query = new GetTelemetrySnapshotHistoryQuery(new Obd2DeviceId(deviceId));
+        var list = queryService.handle(query);
+
+        var resources = list.stream()
+                .map(TelemetrySnapshotResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+
+        return ResponseEntity.ok(resources);
     }
 }
