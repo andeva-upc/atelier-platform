@@ -1,0 +1,84 @@
+package com.andeva.atelier.platform.appointments.domain.model.aggregates;
+
+import com.andeva.atelier.platform.appointments.domain.model.valueobjects.AppointmentStatus;
+import com.andeva.atelier.platform.appointments.domain.model.valueobjects.AppointmentsSummary;
+import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
+import lombok.Getter;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
+public class Appointment extends AbstractDomainAggregateRoot<Appointment> {
+
+    private UUID id;
+    private BranchId branchId;
+    private CustomerId customerId;
+    private VehicleId vehicleId;
+    private LocalDateTime scheduledStart;
+    private LocalDateTime scheduledEnd;
+    private AppointmentStatus status;
+    private AppointmentsSummary notes;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private Instant deletedAt;
+    private UUID createdBy;
+    private UUID updatedBy;
+    private Long version;
+
+    public Appointment() {
+    }
+
+    public Appointment(
+            UUID id,
+            BranchId branchId,
+            CustomerId customerId,
+            VehicleId vehicleId,
+            LocalDateTime scheduledStart,
+            LocalDateTime scheduledEnd,
+            AppointmentStatus status,
+            AppointmentsSummary notes,
+            Instant createdAt,
+            Instant updatedAt,
+            Instant deletedAt,
+            UUID createdBy,
+            UUID updatedBy,
+            Long version
+    ) {
+        this.id = id;
+        this.branchId = branchId;
+        this.customerId = customerId;
+        this.vehicleId = vehicleId;
+        this.scheduledStart = scheduledStart;
+        this.scheduledEnd = scheduledEnd;
+        this.status = status;
+        this.notes = notes;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+        this.version = version;
+    }
+
+    public Appointment(
+            BranchId branchId,
+            CustomerId customerId,
+            VehicleId vehicleId,
+            LocalDateTime scheduledStart,
+            AppointmentsSummary notes
+    ) {
+        this.id = UUID.randomUUID();
+        this.branchId = branchId;
+        this.customerId = customerId;
+        this.vehicleId = vehicleId;
+        this.scheduledStart = scheduledStart;
+        this.scheduledEnd = scheduledStart.plusHours(1);
+        this.status = AppointmentStatus.PENDING;
+        this.notes = notes;
+    }
+}
