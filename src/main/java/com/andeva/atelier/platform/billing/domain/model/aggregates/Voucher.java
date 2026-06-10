@@ -95,6 +95,8 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
         return payments.stream()
                 .map(p -> p.getAmount().amount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     public void addPayment(Money amount, PaymentMethod method, UUID branchId) {
         if (this.status == VoucherStatus.CANCELED) {
             throw new IllegalStateException("Cannot add payment to a canceled voucher");
