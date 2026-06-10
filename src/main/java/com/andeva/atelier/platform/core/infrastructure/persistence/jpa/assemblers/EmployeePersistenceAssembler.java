@@ -8,7 +8,9 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.EmployeePersistenceEntity;
 
-public class EmployeePersistenceAssembler {
+public final class EmployeePersistenceAssembler {
+
+    public EmployeePersistenceAssembler() {}
 
     public static EmployeePersistenceEntity toEntity(Employee employee, EmployeePersistenceEntity entity) {
         if (entity == null) {

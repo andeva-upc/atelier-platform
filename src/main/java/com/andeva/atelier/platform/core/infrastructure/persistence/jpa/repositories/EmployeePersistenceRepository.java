@@ -1,6 +1,7 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories;
 
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.EmployeePersistenceEntity;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

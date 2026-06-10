@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.domain.repositories;
 
-import com.andeva.atelier.platform.core.domain.model.entities.BranchSubscription;
+import com.andeva.atelier.platform.core.domain.model.aggregates.BranchSubscription;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchSubscriptionId;
 
