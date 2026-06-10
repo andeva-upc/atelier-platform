@@ -10,7 +10,7 @@ import java.util.UUID;
 public record CancelQuoteCommand(UUID quoteId) {
     public CancelQuoteCommand {
         if (quoteId == null) {
-            throw new IllegalArgumentException("quoteId cannot be null");
+            throw new IllegalArgumentException("billing.error.command.quoteIdRequired");
         }
     }
 }

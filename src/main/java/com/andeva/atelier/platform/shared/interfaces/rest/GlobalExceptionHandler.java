@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
                         .map(error -> "%s %s: %s".formatted(
                                 validationPrefix,
                                 error.getField(),
-                                error.getDefaultMessage()
+                                resolveMessageOrDefault(error.getDefaultMessage(), error.getDefaultMessage())
                         ))
                         .reduce((a, b) -> a + "; " + b)
                         .orElse(resolveMessageOrDefault("validation.request.failed", "Request validation failed"));

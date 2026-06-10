@@ -10,7 +10,7 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 public record GetQuotesByBranchIdQuery(BranchId branchId) {
     public GetQuotesByBranchIdQuery {
         if (branchId == null) {
-            throw new IllegalArgumentException("branchId cannot be null");
+            throw new IllegalArgumentException("billing.error.query.branchIdRequired");
         }
     }
 }

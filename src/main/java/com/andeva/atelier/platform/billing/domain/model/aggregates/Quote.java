@@ -60,7 +60,7 @@ public class Quote extends AbstractDomainAggregateRoot<Quote> {
      */
     public void approve() {
         if (this.status != QuoteStatus.DRAFT) {
-            throw new IllegalStateException("Only DRAFT quotes can be approved.");
+            throw new IllegalStateException("billing.error.quote.invalidStateForApproval");
         }
         this.status = QuoteStatus.APPROVED;
     }
@@ -72,17 +72,17 @@ public class Quote extends AbstractDomainAggregateRoot<Quote> {
      */
     public void cancel() {
         if (this.status == QuoteStatus.APPROVED) {
-            throw new IllegalStateException("APPROVED quotes cannot be canceled directly. Revert them first.");
+            throw new IllegalStateException("billing.error.quote.cannotCancelDirectly");
         }
         this.status = QuoteStatus.CANCELED;
     }
     
     public void updateDiscount(Double newDiscount) {
         if (this.status != QuoteStatus.DRAFT) {
-            throw new IllegalStateException("Only DRAFT quotes can be updated.");
+            throw new IllegalStateException("billing.error.quote.invalidStateForUpdate");
         }
         if (newDiscount < 0 || newDiscount > 100) {
-            throw new IllegalArgumentException("Discount must be between 0 and 100.");
+            throw new IllegalArgumentException("billing.error.quote.invalidDiscount");
         }
         this.discountPercentage = newDiscount;
         calculateTotal();

@@ -56,7 +56,7 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
                    String customerDocumentNumber, String customerName, 
                    Money totalAmount, UUID externalInvoiceId) {
         if (totalAmount == null || totalAmount.amount().compareTo(java.math.BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Voucher total amount must be greater than zero");
+            throw new IllegalArgumentException("billing.error.voucher.invalidTotalAmount");
         }
         
         this.id = UUID.randomUUID();
@@ -135,17 +135,17 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
      */
     public void addPayment(Money amount, PaymentMethod method, UUID branchId) {
         if (this.status == VoucherStatus.CANCELED) {
-            throw new IllegalStateException("Cannot add payment to a canceled voucher");
+            throw new IllegalStateException("billing.error.voucher.cannotAddPaymentCanceled");
         }
         if (this.status == VoucherStatus.PAID) {
-            throw new IllegalStateException("Voucher is already paid in full");
+            throw new IllegalStateException("billing.error.voucher.alreadyPaidInFull");
         }
 
         BigDecimal currentTotalPaid = getTotalPaidAmount();
         BigDecimal newTotalPaid = currentTotalPaid.add(amount.amount());
 
         if (newTotalPaid.compareTo(this.totalAmount.amount()) > 0) {
-            throw new IllegalStateException("Payment exceeds the total debt of the voucher");
+            throw new IllegalStateException("billing.error.voucher.paymentExceedsDebt");
         }
 
         this.payments.add(new Payment(amount, method, branchId));
@@ -168,13 +168,13 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
      */
     public void removePayment(UUID paymentId) {
         if (this.status == VoucherStatus.CANCELED) {
-            throw new IllegalStateException("Cannot remove payment from a canceled voucher");
+            throw new IllegalStateException("billing.error.voucher.cannotRemovePaymentCanceled");
         }
 
         Payment paymentToRemove = this.payments.stream()
                 .filter(p -> p.getId().equals(paymentId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+                .orElseThrow(() -> new IllegalArgumentException("billing.error.payment.notFound"));
 
         this.payments.remove(paymentToRemove);
 

@@ -11,10 +11,10 @@ import java.util.UUID;
 public record UpdateQuoteDiscountCommand(UUID quoteId, Double discountPercentage) {
     public UpdateQuoteDiscountCommand {
         if (quoteId == null) {
-            throw new IllegalArgumentException("quoteId cannot be null");
+            throw new IllegalArgumentException("billing.error.command.quoteIdRequired");
         }
         if (discountPercentage == null) {
-            throw new IllegalArgumentException("discountPercentage cannot be null");
+            throw new IllegalArgumentException("billing.error.command.discountRequired");
         }
     }
 }

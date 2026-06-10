@@ -34,13 +34,13 @@ public class Payment {
      */
     public Payment(Money amount, PaymentMethod method, UUID branchId) {
         if (amount == null || amount.amount().compareTo(java.math.BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Payment amount must be greater than zero");
+            throw new IllegalArgumentException("billing.error.payment.invalidAmount");
         }
         if (method == null) {
-            throw new IllegalArgumentException("Payment method is required");
+            throw new IllegalArgumentException("billing.error.payment.methodRequired");
         }
         if (branchId == null) {
-            throw new IllegalArgumentException("Branch ID is required for a payment");
+            throw new IllegalArgumentException("billing.error.payment.branchIdRequired");
         }
         
         this.id = UUID.randomUUID();
