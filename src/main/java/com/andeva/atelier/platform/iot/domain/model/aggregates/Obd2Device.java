@@ -19,6 +19,7 @@ public class Obd2Device extends AbstractDomainAggregateRoot<Obd2Device> {
     private String macAddress;
     private Instant lastPing;
     private Obd2DeviceStatus status;
+    private Long version;
 
     public Obd2Device() {
     }
@@ -28,14 +29,16 @@ public class Obd2Device extends AbstractDomainAggregateRoot<Obd2Device> {
         this.branchId = branchId;
         this.macAddress = macAddress;
         this.status = Obd2DeviceStatus.AVAILABLE;
+        this.version = null;
     }
 
-    public Obd2Device(Obd2DeviceId id, BranchId branchId, String macAddress, Instant lastPing, Obd2DeviceStatus status) {
+    public Obd2Device(Obd2DeviceId id, BranchId branchId, String macAddress, Instant lastPing, Obd2DeviceStatus status, Long version) {
         this.id = id;
         this.branchId = branchId;
         this.macAddress = macAddress;
         this.lastPing = lastPing;
         this.status = status;
+        this.version = version;
     }
 
     /**
