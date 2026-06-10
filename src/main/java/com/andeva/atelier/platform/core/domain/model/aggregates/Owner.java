@@ -6,7 +6,9 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
+
 import lombok.Getter;
+import java.util.UUID;
 
 @Getter
 public class Owner extends AbstractDomainAggregateRoot<Owner> {
@@ -17,19 +19,22 @@ public class Owner extends AbstractDomainAggregateRoot<Owner> {
     private Document document;
     private Phone phone;
 
-    public Owner() {
-    }
+    public Owner() {}
 
-    public Owner(UserId userId, PersonName name, Document document, Phone phone) {
+    public Owner(OwnerId id, UserId userId, PersonName name, Document document, Phone phone) {
+        this.id = id;
         this.userId = userId;
         this.name = name;
         this.document = document;
         this.phone = phone;
     }
 
-    public Owner(OwnerId id, UserId userId, PersonName name, Document document, Phone phone) {
-        this(userId, name, document, phone);
-        this.id = id;
+    public Owner(UserId userId, PersonName name, Document document, Phone phone) {
+        this.id = new OwnerId(UUID.randomUUID());
+        this.userId = userId;
+        this.name = name;
+        this.document = document;
+        this.phone = phone;
     }
 
     public void update(PersonName name, Document document, Phone phone) {

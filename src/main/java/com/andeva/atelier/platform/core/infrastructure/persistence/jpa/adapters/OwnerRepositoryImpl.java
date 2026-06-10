@@ -7,57 +7,57 @@ import com.andeva.atelier.platform.core.domain.repositories.OwnerRepository;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.OwnerPersistenceAssembler;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.OwnerPersistenceEntity;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.OwnerPersistenceRepository;
-import org.springframework.stereotype.Component;
 
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
-@Component
+@Repository
 public class OwnerRepositoryImpl implements OwnerRepository {
 
-    private final OwnerPersistenceRepository jpaRepository;
+    private final OwnerPersistenceRepository ownerPersistenceRepository;
 
-    public OwnerRepositoryImpl(OwnerPersistenceRepository jpaRepository) {
-        this.jpaRepository = jpaRepository;
+    public OwnerRepositoryImpl(OwnerPersistenceRepository ownerPersistenceRepository) {
+        this.ownerPersistenceRepository = ownerPersistenceRepository;
     }
 
     @Override
     public Owner save(Owner owner) {
         OwnerPersistenceEntity entity = null;
         if (owner.getId() != null) {
-            entity = jpaRepository.findById(owner.getId().value()).orElse(new OwnerPersistenceEntity());
+            entity = ownerPersistenceRepository.findById(owner.getId().value()).orElse(new OwnerPersistenceEntity());
         } else {
             entity = new OwnerPersistenceEntity();
         }
         
         OwnerPersistenceAssembler.toEntity(owner, entity);
-        OwnerPersistenceEntity savedEntity = jpaRepository.save(entity);
+        OwnerPersistenceEntity savedEntity = ownerPersistenceRepository.save(entity);
         return OwnerPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Owner> findById(OwnerId id) {
-        return jpaRepository.findById(id.value()).map(OwnerPersistenceAssembler::toDomain);
+        return ownerPersistenceRepository.findById(id.value()).map(OwnerPersistenceAssembler::toDomain);
     }
 
     @Override
     public Optional<Owner> findByUserId(UserId userId) {
-        return jpaRepository.findByUserId(userId.value()).map(OwnerPersistenceAssembler::toDomain);
+        return ownerPersistenceRepository.findByUserId(userId.value()).map(OwnerPersistenceAssembler::toDomain);
     }
 
     @Override
     public boolean existsByUserId(UserId userId) {
-        return jpaRepository.existsByUserId(userId.value());
+        return ownerPersistenceRepository.existsByUserId(userId.value());
     }
 
     @Override
     public boolean existsById(OwnerId id) {
-        return jpaRepository.existsById(id.value());
+        return ownerPersistenceRepository.existsById(id.value());
     }
 
     @Override
     public void delete(Owner owner) {
         if (owner.getId() != null) {
-            jpaRepository.findById(owner.getId().value()).ifPresent(jpaRepository::delete);
+            ownerPersistenceRepository.findById(owner.getId().value()).ifPresent(ownerPersistenceRepository::delete);
         }
     }
 }
