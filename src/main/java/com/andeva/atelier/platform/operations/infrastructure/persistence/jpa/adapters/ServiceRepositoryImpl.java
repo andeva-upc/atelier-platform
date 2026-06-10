@@ -1,8 +1,5 @@
 package com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.adapters;
 
-import com.andeva.atelier.platform.core.domain.model.aggregates.Branch;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.BranchPersistenceAssembler;
 import com.andeva.atelier.platform.operations.domain.model.aggregates.Service;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.ServiceId;
 import com.andeva.atelier.platform.operations.domain.repositories.ServiceRepository;

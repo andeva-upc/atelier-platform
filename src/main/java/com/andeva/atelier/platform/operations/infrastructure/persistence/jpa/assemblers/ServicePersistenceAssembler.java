@@ -1,6 +1,5 @@
 package com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.assemblers;
 
-import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.operations.domain.model.aggregates.Service;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.ServiceId;
 import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.entities.ServicePersistenceEntity;
