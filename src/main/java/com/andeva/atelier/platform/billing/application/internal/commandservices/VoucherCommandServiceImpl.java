@@ -214,9 +214,7 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
             // 6. Save the fully paid Voucher
             var savedVoucher = voucherRepository.save(voucher);
             return Result.success(savedVoucher);
-        } catch (IllegalArgumentException e) {
-            return Result.failure(VoucherCommandFailure.INVALID_VOUCHER_DATA);
-        } catch (IllegalStateException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return Result.failure(VoucherCommandFailure.INVALID_VOUCHER_DATA);
         }
     }
