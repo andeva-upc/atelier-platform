@@ -9,12 +9,12 @@ import java.math.BigDecimal;
 
 @Schema(description = "Request resource to add a payment to a voucher")
 public record AddPaymentResource(
-        @NotNull(message = "Payment amount is required")
-        @DecimalMin(value = "0.01", message = "Payment amount must be greater than zero")
+        @NotNull(message = "billing.error.resource.amount.required")
+        @DecimalMin(value = "0.01", message = "billing.error.resource.amount.min")
         @Schema(description = "Payment amount", example = "50.00")
         BigDecimal amount,
 
-        @NotBlank(message = "Payment method is required")
+        @NotBlank(message = "billing.error.resource.method.required")
         @Schema(description = "Payment method (e.g. CASH, CREDIT_CARD, DEBIT_CARD, BANK_TRANSFER)", example = "CASH")
         String method
 ) {}

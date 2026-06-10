@@ -5,11 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record ProcessCheckoutResource(
-        @NotNull(message = "Quote ID is required") UUID quoteId,
-        @NotBlank(message = "Voucher type is required") String type,
-        @NotBlank(message = "Customer document type is required") String customerDocumentType,
-        @NotBlank(message = "Customer document number is required") String customerDocumentNumber,
-        @NotBlank(message = "Customer name is required") String customerName,
-        @NotBlank(message = "Payment method is required") String method
+        @NotNull(message = "billing.error.resource.quoteId.required") UUID quoteId,
+        @NotBlank(message = "billing.error.resource.type.required") String type,
+        @NotBlank(message = "billing.error.resource.customerDocumentType.required") String customerDocumentType,
+        @NotBlank(message = "billing.error.resource.customerDocumentNumber.required") String customerDocumentNumber,
+        @NotBlank(message = "billing.error.resource.customerName.required") String customerName,
+        @NotBlank(message = "billing.error.resource.method.required") String method
 ) {
 }

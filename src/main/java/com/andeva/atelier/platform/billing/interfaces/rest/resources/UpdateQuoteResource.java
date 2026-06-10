@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
  * @param discountPercentage The new discount percentage to apply (must be between 0 and 100).
  */
 public record UpdateQuoteResource(
-        @NotNull(message = "Discount percentage is required")
-        @Min(value = 0, message = "Discount cannot be less than 0")
-        @Max(value = 100, message = "Discount cannot be greater than 100") Double discountPercentage
+        @NotNull(message = "billing.error.resource.discount.required")
+        @Min(value = 0, message = "billing.error.resource.discount.min")
+        @Max(value = 100, message = "billing.error.resource.discount.max") Double discountPercentage
 ) {}
