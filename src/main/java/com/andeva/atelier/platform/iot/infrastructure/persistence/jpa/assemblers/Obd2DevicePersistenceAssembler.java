@@ -17,6 +17,7 @@ public class Obd2DevicePersistenceAssembler {
         entity.setMacAddress(domain.getMacAddress());
         entity.setLastPing(domain.getLastPing());
         entity.setStatus(domain.getStatus() != null ? domain.getStatus().value() : null);
+        entity.setVersion(domain.getVersion());
         return entity;
     }
 
@@ -29,7 +30,8 @@ public class Obd2DevicePersistenceAssembler {
                 entity.getBranchId(),
                 entity.getMacAddress(),
                 entity.getLastPing(),
-                entity.getStatus() != null ? new Obd2DeviceStatus(entity.getStatus()) : null
+                entity.getStatus() != null ? new Obd2DeviceStatus(entity.getStatus()) : null,
+                entity.getVersion()
         );
     }
 }
