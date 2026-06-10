@@ -8,7 +8,9 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.OwnerPersistenceEntity;
 
-public class OwnerPersistenceAssembler {
+public final class OwnerPersistenceAssembler {
+
+    public OwnerPersistenceAssembler() {}
 
     public static OwnerPersistenceEntity toEntity(Owner owner, OwnerPersistenceEntity entity) {
         if (entity == null) {

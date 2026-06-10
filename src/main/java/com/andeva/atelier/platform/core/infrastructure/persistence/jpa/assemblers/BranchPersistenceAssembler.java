@@ -7,7 +7,9 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.BranchPersistenceEntity;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Address;
 
-public class BranchPersistenceAssembler {
+public final class BranchPersistenceAssembler {
+
+    private BranchPersistenceAssembler() {}
 
     public static BranchPersistenceEntity toEntity(Branch branch, BranchPersistenceEntity entity) {
         if (entity == null) {

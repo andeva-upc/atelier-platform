@@ -49,8 +49,7 @@ public class BranchCommandServiceImpl implements BranchCommandService {
         if (result.isEmpty()) throw new IllegalArgumentException("core.error.branch.notFound");
 
         var branch = result.get();
-        
-        // If they change the code, we must ensure it's not taken by someone else
+
         if (!branch.getCode().equals(command.code()) && branchRepository.existsByCode(command.code())) {
             throw new IllegalArgumentException("core.error.branch.codeMustBeUnique");
         }

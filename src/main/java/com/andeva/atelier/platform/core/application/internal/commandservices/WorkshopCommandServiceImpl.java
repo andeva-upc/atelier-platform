@@ -36,7 +36,7 @@ public class WorkshopCommandServiceImpl implements WorkshopCommandService {
         );
 
         var savedWorkshop = workshopRepository.save(workshop);
-        return Optional.of(savedWorkshop); // Requires fetch back or relying on JPA's entity update. 
+        return Optional.of(savedWorkshop);
     }
 
     @Override

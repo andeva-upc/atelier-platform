@@ -65,7 +65,7 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
             return Result.failure(VoucherCommandFailure.ISSUER_NOT_FOUND);
         }
         
-        String issuerRuc = workshopOpt.get().getTaxId();
+        String issuerRuc = String.valueOf(workshopOpt.get().getTaxId());
 
         // 3. Issue Voucher via Facthub
         var externalInvoiceIdOpt = facthubGateway.issueVoucher(

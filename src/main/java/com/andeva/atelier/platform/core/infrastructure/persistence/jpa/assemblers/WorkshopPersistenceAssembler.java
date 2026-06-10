@@ -2,10 +2,13 @@ package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemble
 
 import com.andeva.atelier.platform.core.domain.model.aggregates.Workshop;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.OwnerId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.TaxId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.WorkshopPersistenceEntity;
 
-public class WorkshopPersistenceAssembler {
+public final class WorkshopPersistenceAssembler {
+
+    public WorkshopPersistenceAssembler() {}
 
     public static WorkshopPersistenceEntity toEntity(Workshop workshop, WorkshopPersistenceEntity entity) {
         if (entity == null) {
@@ -15,7 +18,7 @@ public class WorkshopPersistenceAssembler {
         entity.setOwnerId(workshop.getOwnerId() != null ? workshop.getOwnerId().value() : null);
         entity.setBusinessName(workshop.getBusinessName());
         entity.setBrandName(workshop.getBrandName());
-        entity.setTaxId(workshop.getTaxId());
+        entity.setTaxId(workshop.getTaxId() != null ? workshop.getTaxId().value() : null);
         entity.setMileageIntervalConfig(workshop.getMileageIntervalConfig());
         return entity;
     }
@@ -26,7 +29,7 @@ public class WorkshopPersistenceAssembler {
                 new OwnerId(entity.getOwnerId()),
                 entity.getBusinessName(),
                 entity.getBrandName(),
-                entity.getTaxId(),
+                new TaxId(entity.getTaxId()),
                 entity.getMileageIntervalConfig()
         );
     }
