@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.andeva.atelier.platform.billing.domain.model.events.VoucherPaidEvent;
 import java.util.UUID;
 /**
  * Aggregate root representing a Voucher (Invoice or Receipt) in the billing context.
@@ -115,6 +116,7 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
 
         if (newTotalPaid.compareTo(this.totalAmount.amount()) == 0) {
             this.status = VoucherStatus.PAID;
+            this.registerDomainEvent(new VoucherPaidEvent(this, this.id, this.quoteId));
         } else {
             this.status = VoucherStatus.PARTIALLY_PAID;
         }
