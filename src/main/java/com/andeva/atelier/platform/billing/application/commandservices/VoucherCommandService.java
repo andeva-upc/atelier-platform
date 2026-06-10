@@ -4,7 +4,9 @@ import com.andeva.atelier.platform.billing.domain.model.aggregates.Voucher;
 import com.andeva.atelier.platform.billing.domain.model.commands.GenerateVoucherCommand;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import com.andeva.atelier.platform.billing.domain.model.valueobjects.VoucherCommandFailure;
+import com.andeva.atelier.platform.billing.domain.model.commands.AddPaymentCommand;
 
 public interface VoucherCommandService {
     Result<Voucher, VoucherCommandFailure> handle(GenerateVoucherCommand command);
+    Result<Voucher, VoucherCommandFailure> handle(AddPaymentCommand command);
 }
