@@ -34,11 +34,12 @@ public class VoucherPersistenceAssembler {
         if (aggregate.getPayments() != null) {
             var paymentEntities = aggregate.getPayments().stream().map(payment -> {
                 var paymentEntity = new PaymentPersistenceEntity();
-                // We don't set ID if it's a new payment, but for updates we might need to match them.
-                // Since this is an append-only collection for payments, new payments won't have a DB ID yet.
-                // Assuming we just map properties:
-                paymentEntity.setAmount(payment.getAmount());
+                paymentEntity.setId(payment.getId());
+                paymentEntity.setAmount(payment.getAmount().amount());
+                paymentEntity.setCurrency("PEN");
                 paymentEntity.setMethod(payment.getMethod());
+                paymentEntity.setPaidAt(java.time.LocalDateTime.now());
+                paymentEntity.setBranchId(payment.getBranchId());
                 paymentEntity.setVoucher(entity);
                 return paymentEntity;
             }).collect(Collectors.toList());
@@ -50,8 +51,9 @@ public class VoucherPersistenceAssembler {
 
     public static Voucher toAggregate(VoucherPersistenceEntity entity) {
         if (entity == null) return null;
+        
         var payments = entity.getPayments() != null ? entity.getPayments().stream()
-                .map(pEntity -> new Payment(pEntity.getId(), pEntity.getAmount(), pEntity.getMethod()))
+                .map(pEntity -> new Payment(pEntity.getId(), new Money(pEntity.getAmount()), pEntity.getMethod(), pEntity.getBranchId()))
                 .collect(Collectors.toList()) : new java.util.ArrayList<Payment>();
 
         return new Voucher(

@@ -109,9 +109,14 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
         }
 
         var voucher = voucherOpt.get();
+        var quoteOpt = quoteRepository.findById(voucher.getQuoteId());
+        if (quoteOpt.isEmpty()) {
+            return Result.failure(VoucherCommandFailure.QUOTE_NOT_FOUND);
+        }
+        var branchId = quoteOpt.get().getBranchId().value();
 
         try {
-            voucher.addPayment(command.amount(), command.method());
+            voucher.addPayment(command.amount(), command.method(), branchId);
             var savedVoucher = voucherRepository.save(voucher);
             return Result.success(savedVoucher);
         } catch (IllegalStateException e) {

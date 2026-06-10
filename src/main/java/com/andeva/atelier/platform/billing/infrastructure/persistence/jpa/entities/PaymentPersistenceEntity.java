@@ -1,25 +1,37 @@
 package com.andeva.atelier.platform.billing.infrastructure.persistence.jpa.entities;
 
-import com.andeva.atelier.platform.billing.domain.model.valueobjects.PaymentMethod;
-import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.UUID;
+import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "payments")
 @Getter
 @Setter
 @lombok.NoArgsConstructor
-public class PaymentPersistenceEntity extends AuditableAbstractPersistenceEntity {
+public class PaymentPersistenceEntity {
+
+    @Id
+    private UUID id;
 
     @Column(nullable = false)
-    @Convert(converter = com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MoneyAttributeConverter.class)
-    private com.andeva.atelier.platform.shared.domain.model.valueobjects.Money amount;
+    private BigDecimal amount;
+
+    @Column(length = 3)
+    private String currency;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private PaymentMethod method;
+    private com.andeva.atelier.platform.billing.domain.model.valueobjects.PaymentMethod method;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
+
+    @Column(name = "branch_id")
+    private UUID branchId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "voucher_id", nullable = false)

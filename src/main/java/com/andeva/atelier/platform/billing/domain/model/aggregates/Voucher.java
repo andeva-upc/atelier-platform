@@ -96,7 +96,7 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void addPayment(Money amount, PaymentMethod method) {
+    public void addPayment(Money amount, PaymentMethod method, UUID branchId) {
         if (this.status == VoucherStatus.CANCELED) {
             throw new IllegalStateException("Cannot add payment to a canceled voucher");
         }
@@ -111,7 +111,7 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
             throw new IllegalStateException("Payment exceeds the total debt of the voucher");
         }
 
-        this.payments.add(new Payment(amount, method));
+        this.payments.add(new Payment(amount, method, branchId));
 
         if (newTotalPaid.compareTo(this.totalAmount.amount()) == 0) {
             this.status = VoucherStatus.PAID;
