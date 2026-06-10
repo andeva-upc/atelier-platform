@@ -156,7 +156,7 @@ public class VouchersController {
             }
             case QUOTE_NOT_APPROVED -> {
                 String message = messageSource.getMessage("billing.error.voucher.notApproved", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
-                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("voucher", message));
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.conflict("voucher", message));
             }
             case INVALID_VOUCHER_DATA -> {
                 String message = messageSource.getMessage("billing.error.voucher.invalidData", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
@@ -176,11 +176,11 @@ public class VouchersController {
             }
             case VOUCHER_ALREADY_PAID -> {
                 String message = messageSource.getMessage("billing.error.voucher.alreadyPaidInFull", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
-                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("voucher", message));
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.conflict("voucher", message));
             }
             case VOUCHER_CANCELED -> {
                 String message = messageSource.getMessage("billing.error.voucher.cannotAddPaymentCanceled", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
-                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("voucher", message));
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.conflict("voucher", message));
             }
             case PAYMENT_EXCEEDS_TOTAL_DEBT -> {
                 String message = messageSource.getMessage("billing.error.voucher.paymentExceedsDebt", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());

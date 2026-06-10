@@ -169,7 +169,7 @@ public class QuotesController {
             }
             case QUOTE_ALREADY_EXISTS_FOR_WORK_ORDER -> {
                 String message = messageSource.getMessage("billing.error.quote.alreadyExistsForWorkOrder", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
-                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("quote", message));
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.conflict("quote", message));
             }
             case QUOTE_NOT_FOUND -> {
                 String message = messageSource.getMessage("billing.error.quote.notFound", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
@@ -177,7 +177,7 @@ public class QuotesController {
             }
             case INVALID_QUOTE_STATE -> {
                 String message = messageSource.getMessage("billing.error.quote.invalidStateForUpdate", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
-                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("quote", message));
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.conflict("quote", message));
             }
         };
     }
