@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -41,11 +43,11 @@ public class BranchPersistenceEntity extends AuditableAbstractPersistenceEntity 
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
-    @org.springframework.data.annotation.CreatedBy
+    @CreatedBy
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
 
-    @org.springframework.data.annotation.LastModifiedBy
+    @LastModifiedBy
     @Column(name = "updated_by")
     private UUID updatedBy;
 }

@@ -7,54 +7,54 @@ import com.andeva.atelier.platform.core.domain.repositories.BranchRepository;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.BranchPersistenceAssembler;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.BranchPersistenceEntity;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.BranchPersistenceRepository;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class BranchRepositoryImpl implements BranchRepository {
 
-    private final BranchPersistenceRepository jpaRepository;
+    private final BranchPersistenceRepository branchPersistenceRepository;
 
-    public BranchRepositoryImpl(BranchPersistenceRepository jpaRepository) {
-        this.jpaRepository = jpaRepository;
+    public BranchRepositoryImpl(BranchPersistenceRepository branchPersistenceRepository) {
+        this.branchPersistenceRepository = branchPersistenceRepository;
     }
 
     @Override
     public Branch save(Branch branch) {
-        BranchPersistenceEntity entity = null;
+        BranchPersistenceEntity entity;
         if (branch.getId() != null) {
-            entity = jpaRepository.findById(branch.getId().value()).orElse(new BranchPersistenceEntity());
+            entity = branchPersistenceRepository.findById(branch.getId().value()).orElse(new BranchPersistenceEntity());
         } else {
             entity = new BranchPersistenceEntity();
         }
         BranchPersistenceAssembler.toEntity(branch, entity);
-        BranchPersistenceEntity savedEntity = jpaRepository.save(entity);
+        BranchPersistenceEntity savedEntity = branchPersistenceRepository.save(entity);
         return BranchPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Branch> findById(BranchId id) {
-        return jpaRepository.findById(id.value()).map(BranchPersistenceAssembler::toDomain);
+        return branchPersistenceRepository.findById(id.value()).map(BranchPersistenceAssembler::toDomain);
     }
 
     @Override
     public List<Branch> findAllByWorkshopId(WorkshopId workshopId) {
-        return jpaRepository.findAllByWorkshopId(workshopId.value()).stream()
+        return branchPersistenceRepository.findAllByWorkshopId(workshopId.value()).stream()
                 .map(BranchPersistenceAssembler::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public boolean existsById(BranchId id) {
-        return jpaRepository.existsById(id.value());
+        return branchPersistenceRepository.existsById(id.value());
     }
 
     @Override
     public boolean existsByCode(String code) {
-        return jpaRepository.existsByCode(code);
+        return branchPersistenceRepository.existsByCode(code);
     }
 }
 
