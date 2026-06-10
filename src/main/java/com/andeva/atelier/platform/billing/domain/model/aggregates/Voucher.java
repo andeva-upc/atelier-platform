@@ -32,10 +32,26 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
     private VoucherStatus status;
     private UUID externalInvoiceId; // ID returned by the Facthub service
     private List<Payment> payments = new ArrayList<>();
+    /**
+     * Default constructor required by the persistence assembler and JPA.
+     */
     public Voucher() {
         // Required by persistence assembler
     }
 
+    /**
+     * Creates a new pending Voucher from an approved Quote.
+     * Validates that the total amount is strictly greater than zero.
+     * 
+     * @param quoteId the unique identifier of the approved quote
+     * @param type the type of voucher (e.g., RECEIPT or INVOICE)
+     * @param customerDocumentType the type of the customer's document (e.g., DNI, RUC)
+     * @param customerDocumentNumber the number of the customer's document
+     * @param customerName the full name or legal name of the customer
+     * @param totalAmount the total financial amount required to pay this voucher
+     * @param externalInvoiceId the external tracking ID returned by the billing service (e.g., Facthub)
+     * @throws IllegalArgumentException if the total amount is null or less than or equal to zero
+     */
     public Voucher(UUID quoteId, VoucherType type, String customerDocumentType, 
                    String customerDocumentNumber, String customerName, 
                    Money totalAmount, UUID externalInvoiceId) {
@@ -87,16 +103,36 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
         }
     }
 
+    /**
+     * Retrieves an unmodifiable view of the payments recorded against this voucher.
+     * 
+     * @return a list of current payments
+     */
     public List<Payment> getPayments() {
         return Collections.unmodifiableList(payments);
     }
 
+    /**
+     * Calculates the total amount paid so far by summing all recorded payments.
+     * 
+     * @return the total amount paid as a BigDecimal
+     */
     public BigDecimal getTotalPaidAmount() {
         return payments.stream()
                 .map(p -> p.getAmount().amount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    /**
+     * Records a new payment against this voucher.
+     * If the total paid equals the voucher's total amount, its status transitions to PAID, 
+     * and a {@link VoucherPaidEvent} domain event is registered.
+     * 
+     * @param amount the monetary amount of the payment
+     * @param method the payment method used (e.g., CASH, CREDIT_CARD)
+     * @param branchId the identifier of the branch where the payment is received
+     * @throws IllegalStateException if the voucher is canceled, already paid, or if the payment exceeds the remaining debt
+     */
     public void addPayment(Money amount, PaymentMethod method, UUID branchId) {
         if (this.status == VoucherStatus.CANCELED) {
             throw new IllegalStateException("Cannot add payment to a canceled voucher");
@@ -122,6 +158,14 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
         }
     }
 
+    /**
+     * Removes a previously recorded payment from this voucher.
+     * Recalculates the status (PENDING, PARTIALLY_PAID, or PAID) based on the remaining total paid amount.
+     * 
+     * @param paymentId the unique identifier of the payment to remove
+     * @throws IllegalStateException if the voucher has been canceled
+     * @throws IllegalArgumentException if the specified payment is not found
+     */
     public void removePayment(UUID paymentId) {
         if (this.status == VoucherStatus.CANCELED) {
             throw new IllegalStateException("Cannot remove payment from a canceled voucher");

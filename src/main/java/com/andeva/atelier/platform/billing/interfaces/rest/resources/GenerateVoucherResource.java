@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
+/**
+ * DTO representing the payload required to generate a new Voucher via the REST API.
+ */
 public record GenerateVoucherResource(
         @NotNull
         UUID quoteId,

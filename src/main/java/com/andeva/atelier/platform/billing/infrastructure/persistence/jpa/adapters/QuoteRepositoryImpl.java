@@ -13,7 +13,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of the QuoteRepository interface using Spring Data JPA.
+ * Implementation of the QuoteRepository domain interface using Spring Data JPA.
+ * Responsible for translating between Domain Aggregates and JPA Persistence Entities.
  */
 @Service
 public class QuoteRepositoryImpl implements QuoteRepository {

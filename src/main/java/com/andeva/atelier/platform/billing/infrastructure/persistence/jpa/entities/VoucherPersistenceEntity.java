@@ -10,6 +10,11 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * JPA entity mapping for the Voucher aggregate.
+ * Stores billing document data (Invoices/Receipts) and maintains a one-to-many 
+ * relationship with its associated payments.
+ */
 @Entity
 @Table(name = "vouchers")
 @Getter
