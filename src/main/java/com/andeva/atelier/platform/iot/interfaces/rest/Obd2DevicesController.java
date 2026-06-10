@@ -2,11 +2,15 @@ package com.andeva.atelier.platform.iot.interfaces.rest;
 
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandFailure;
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandService;
+import com.andeva.atelier.platform.iot.application.queryservices.Obd2DeviceQueryService;
 import com.andeva.atelier.platform.iot.domain.model.commands.CreateObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeleteObd2DeviceCommand;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceByIdQuery;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.CreateObd2DeviceResource;
+import com.andeva.atelier.platform.iot.interfaces.rest.resources.Obd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.CreateObd2DeviceCommandFromResourceAssembler;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.Obd2DeviceResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromObd2DeviceCommandResultAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,10 +33,16 @@ import java.util.UUID;
 public class Obd2DevicesController {
 
     private final Obd2DeviceCommandService commandService;
+    private final Obd2DeviceQueryService queryService;
     private final MessageSource messageSource;
 
-    public Obd2DevicesController(Obd2DeviceCommandService commandService, MessageSource messageSource) {
+    public Obd2DevicesController(
+            Obd2DeviceCommandService commandService,
+            Obd2DeviceQueryService queryService,
+            MessageSource messageSource
+    ) {
         this.commandService = commandService;
+        this.queryService = queryService;
         this.messageSource = messageSource;
     }
 
@@ -47,6 +57,21 @@ public class Obd2DevicesController {
         var command = CreateObd2DeviceCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = commandService.handle(command);
         return ResponseEntityFromObd2DeviceCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+    }
+
+    /**
+     * Retrieves the details of a registered OBD2 device by its unique ID.
+     * @param id the unique identifier of the OBD2 device
+     * @return a ResponseEntity containing the device details or 404 if not found
+     */
+    @GetMapping("/{id}")
+    @Operation(summary = "Get OBD2 device by ID", description = "Retrieves the details of a registered OBD2 device by its unique ID")
+    public ResponseEntity<Obd2DeviceResource> getObd2DeviceById(@PathVariable UUID id) {
+        var query = new GetObd2DeviceByIdQuery(new Obd2DeviceId(id));
+        var obd2Device = queryService.handle(query);
+        return obd2Device
+                .map(device -> ResponseEntity.ok(Obd2DeviceResourceFromAggregateAssembler.toResourceFromAggregate(device)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
