@@ -10,6 +10,9 @@ public record UpdateProductCommand(
         UUID productId,
         ProductName name,
         ProductCategory category,
-        Sku sku
+        Sku sku,
+        String description,
+        com.andeva.atelier.platform.shared.domain.model.valueobjects.Money salePrice,
+        com.andeva.atelier.platform.inventory.domain.model.valueobjects.InventoryQuantity minimumStock
 ) {
 }

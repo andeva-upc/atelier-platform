@@ -8,8 +8,10 @@ public record ProductDetailsResource(
         String category,
         String name,
         String sku,
+        String description,
+        Double salePrice,
+        Integer minimumStock,
         Integer currentStock,
-        Integer reservedStock,
         List<ProductBatchResource> batches
 ) {
 }

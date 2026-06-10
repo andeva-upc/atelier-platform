@@ -12,6 +12,7 @@ public class ProductBatch {
     private InventoryQuantity availableQuantity;
     private final Money acquisitionCost;
     private final Date receptionDate;
+    private Long version;
 
     public ProductBatch(UUID batchId, InventoryQuantity initialQuantity, Money acquisitionCost) {
         this.batchId = batchId != null ? batchId : UUID.randomUUID();
@@ -21,21 +22,25 @@ public class ProductBatch {
         this.receptionDate = new Date();
     }
 
-    private ProductBatch(UUID batchId, InventoryQuantity initialQuantity, InventoryQuantity availableQuantity, Money acquisitionCost) {
+    private ProductBatch(UUID batchId, InventoryQuantity initialQuantity, InventoryQuantity availableQuantity, Money acquisitionCost, Long version) {
         this.batchId = batchId;
         this.initialQuantity = initialQuantity;
         this.availableQuantity = availableQuantity;
         this.acquisitionCost = acquisitionCost;
         this.receptionDate = new Date();
+        this.version = version;
     }
 
-    public static ProductBatch reconstitute(UUID batchId, InventoryQuantity initialQuantity, InventoryQuantity availableQuantity, Money acquisitionCost) {
-        return new ProductBatch(batchId, initialQuantity, availableQuantity, acquisitionCost);
+    public static ProductBatch reconstitute(UUID batchId, InventoryQuantity initialQuantity, InventoryQuantity availableQuantity, Money acquisitionCost, Long version) {
+        return new ProductBatch(batchId, initialQuantity, availableQuantity, acquisitionCost, version);
     }
 
     public UUID getBatchId() { return batchId; }
     public InventoryQuantity getInitialQuantity() { return initialQuantity; }
     public InventoryQuantity getAvailableQuantity() { return availableQuantity; }
     public Money getAcquisitionCost() { return acquisitionCost; }
+    public Long getVersion() { return version; }
+    
     public void deductQuantity(InventoryQuantity amount) { this.availableQuantity = this.availableQuantity.subtract(amount); }
+    public void addQuantity(InventoryQuantity amount) { this.availableQuantity = this.availableQuantity.add(amount); }
 }
