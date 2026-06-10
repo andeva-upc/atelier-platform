@@ -1,8 +1,8 @@
 package com.andeva.atelier.platform.operations.interfaces.rest.transform;
 
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
-import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrderTask;
-import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrderTaskProduct;
+import com.andeva.atelier.platform.operations.domain.model.entities.WorkOrderTask;
+import com.andeva.atelier.platform.operations.domain.model.entities.WorkOrderTaskProduct;
 import com.andeva.atelier.platform.operations.interfaces.rest.resources.*;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public final class WorkOrderResourceFromAggregateAssembler {
         String formattedNumber = String.format("%s-%06d", branchCode, workOrder.getInternalNumber());
 
         return new WorkOrderResource(
-                workOrder.getId(),
+                workOrder.getId().value(),
                 workOrder.getAppointmentId().value(),
                 workOrder.getBranchId().value(),
                 workOrder.getVehicleId().value(),
@@ -65,7 +65,7 @@ public final class WorkOrderResourceFromAggregateAssembler {
         }
 
         return new WorkOrderTaskResource(
-                task.getId(),
+                task.getId().value(),
                 task.getServiceId().value(),
                 task.getBranchId().value(),
                 task.getAssignedMechanicId().value(),
@@ -86,7 +86,7 @@ public final class WorkOrderResourceFromAggregateAssembler {
      */
     private static WorkOrderTaskProductResource toResourceFromProduct(WorkOrderTaskProduct product) {
         return new WorkOrderTaskProductResource(
-                product.getId(),
+                product.getId().value(),
                 product.getProductId().value(),
                 product.getBranchId().value(),
                 product.getQuantity().value(),
