@@ -10,7 +10,7 @@ import java.util.UUID;
 public record GetVoucherByIdQuery(UUID voucherId) {
     public GetVoucherByIdQuery {
         if (voucherId == null) {
-            throw new IllegalArgumentException("VoucherId cannot be null");
+            throw new IllegalArgumentException("billing.error.query.voucherIdRequired");
         }
     }
 }

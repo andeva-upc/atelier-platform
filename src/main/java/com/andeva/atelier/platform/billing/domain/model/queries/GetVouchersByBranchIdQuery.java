@@ -10,7 +10,7 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 public record GetVouchersByBranchIdQuery(BranchId branchId) {
     public GetVouchersByBranchIdQuery {
         if (branchId == null) {
-            throw new IllegalArgumentException("BranchId cannot be null");
+            throw new IllegalArgumentException("billing.error.query.branchIdRequired");
         }
     }
 }

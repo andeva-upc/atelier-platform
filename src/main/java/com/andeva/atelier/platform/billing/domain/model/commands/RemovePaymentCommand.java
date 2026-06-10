@@ -5,10 +5,10 @@ import java.util.UUID;
 public record RemovePaymentCommand(UUID voucherId, UUID paymentId) {
     public RemovePaymentCommand {
         if (voucherId == null) {
-            throw new IllegalArgumentException("voucherId cannot be null");
+            throw new IllegalArgumentException("billing.error.command.voucherIdRequired");
         }
         if (paymentId == null) {
-            throw new IllegalArgumentException("paymentId cannot be null");
+            throw new IllegalArgumentException("billing.error.command.paymentIdRequired");
         }
     }
 }
