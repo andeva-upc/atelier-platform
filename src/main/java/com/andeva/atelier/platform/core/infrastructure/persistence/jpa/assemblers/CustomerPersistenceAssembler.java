@@ -8,7 +8,9 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.CustomerPersistenceEntity;
 
-public class CustomerPersistenceAssembler {
+public final class CustomerPersistenceAssembler {
+
+    private CustomerPersistenceAssembler() {}
 
     public static CustomerPersistenceEntity toEntity(Customer customer, CustomerPersistenceEntity entity) {
         if (entity == null) {
