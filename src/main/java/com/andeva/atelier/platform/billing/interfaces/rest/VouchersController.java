@@ -9,6 +9,9 @@ import com.andeva.atelier.platform.billing.domain.model.valueobjects.PaymentMeth
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.GenerateVoucherCommandFromResourceAssembler;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.VoucherResourceFromAggregateAssembler;
+import com.andeva.atelier.platform.billing.interfaces.rest.resources.ProcessCheckoutResource;
+import com.andeva.atelier.platform.billing.domain.model.commands.ProcessCheckoutCommand;
+import com.andeva.atelier.platform.billing.domain.model.valueobjects.VoucherType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -96,6 +99,28 @@ public class VouchersController {
         if (result.isSuccess()) {
             var voucherResource = VoucherResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
             return ResponseEntity.ok(voucherResource);
+        }
+
+        return toErrorResponse(result.failure().get());
+    }
+
+    @PostMapping("/checkout")
+    @Operation(summary = "Process checkout", description = "Generates a voucher and records a full payment in a single transaction")
+    public ResponseEntity<?> checkout(@Valid @RequestBody ProcessCheckoutResource resource) {
+        var command = new ProcessCheckoutCommand(
+                resource.quoteId(),
+                VoucherType.valueOf(resource.type()),
+                resource.customerDocumentType(),
+                resource.customerDocumentNumber(),
+                resource.customerName(),
+                PaymentMethod.valueOf(resource.method())
+        );
+
+        var result = commandService.handle(command);
+
+        if (result.isSuccess()) {
+            var voucherResource = VoucherResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
+            return new ResponseEntity<>(voucherResource, HttpStatus.CREATED);
         }
 
         return toErrorResponse(result.failure().get());

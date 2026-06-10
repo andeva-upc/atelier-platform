@@ -155,4 +155,70 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
             return Result.failure(VoucherCommandFailure.VOUCHER_CANCELED);
         }
     }
+
+    @Override
+    @Transactional
+    public Result<Voucher, VoucherCommandFailure> handle(com.andeva.atelier.platform.billing.domain.model.commands.ProcessCheckoutCommand command) {
+        // 1. Get and validate Quote
+        var quoteOpt = quoteRepository.findById(command.quoteId());
+        if (quoteOpt.isEmpty()) {
+            return Result.failure(VoucherCommandFailure.QUOTE_NOT_FOUND);
+        }
+        var quote = quoteOpt.get();
+        if (quote.getStatus() != QuoteStatus.APPROVED) {
+            return Result.failure(VoucherCommandFailure.QUOTE_NOT_APPROVED);
+        }
+
+        // 2. Query Core context for Issuer RUC (Tax ID)
+        var coreBranchId = new BranchId(quote.getBranchId().value());
+        var branchOpt = branchQueryService.handle(new GetBranchByIdQuery(coreBranchId));
+        if (branchOpt.isEmpty()) {
+            return Result.failure(VoucherCommandFailure.ISSUER_NOT_FOUND);
+        }
+        
+        var workshopOpt = workshopQueryService.handle(new GetWorkshopByIdQuery(branchOpt.get().getWorkshopId()));
+        if (workshopOpt.isEmpty()) {
+            return Result.failure(VoucherCommandFailure.ISSUER_NOT_FOUND);
+        }
+        
+        String issuerRuc = workshopOpt.get().getTaxId();
+
+        // 3. Issue Voucher via Facthub
+        var externalInvoiceIdOpt = facthubGateway.issueVoucher(
+                issuerRuc,
+                command.type(),
+                command.customerDocumentType(),
+                command.customerDocumentNumber(),
+                command.customerName(),
+                quote
+        );
+
+        if (externalInvoiceIdOpt.isEmpty()) {
+            return Result.failure(VoucherCommandFailure.FACTHUB_ISSUANCE_FAILED);
+        }
+
+        // 4. Create Voucher Aggregate
+        try {
+            var voucher = new Voucher(
+                    command.quoteId(),
+                    command.type(),
+                    command.customerDocumentType(),
+                    command.customerDocumentNumber(),
+                    command.customerName(),
+                    quote.getTotalAmount(),
+                    externalInvoiceIdOpt.get()
+            );
+
+            // 5. Add full payment to the Voucher
+            voucher.addPayment(quote.getTotalAmount(), command.method(), quote.getBranchId().value());
+
+            // 6. Save the fully paid Voucher
+            var savedVoucher = voucherRepository.save(voucher);
+            return Result.success(savedVoucher);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(VoucherCommandFailure.INVALID_VOUCHER_DATA);
+        } catch (IllegalStateException e) {
+            return Result.failure(VoucherCommandFailure.INVALID_VOUCHER_DATA);
+        }
+    }
 }
