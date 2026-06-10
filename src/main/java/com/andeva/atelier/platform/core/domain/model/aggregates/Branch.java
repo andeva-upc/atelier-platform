@@ -7,6 +7,8 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.Address;
 import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
 
 import lombok.Getter;
+
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -18,16 +20,28 @@ public class Branch extends AbstractDomainAggregateRoot<Branch> {
     private String name;
     private Address address;
     private Phone phone;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private Instant deletedAt;
+    private UUID createdBy;
+    private UUID updatedBy;
+    private Long version;
 
     public Branch() {}
 
-    public Branch(BranchId id, WorkshopId workshopId, String code, String name, Address address, Phone phone) {
+    public Branch(BranchId id, WorkshopId workshopId, String code, String name, Address address, Phone phone, Instant createdAt, Instant updatedAt, Instant deletedAt, UUID createdBy, UUID updatedBy, Long version) {
         this.id = id;
         this.workshopId = workshopId;
         this.code = code;
         this.name = name;
         this.address = address;
         this.phone = phone;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+        this.version = version;
     }
 
     public Branch(WorkshopId workshopId, String code, String name, Address address, Phone phone) {

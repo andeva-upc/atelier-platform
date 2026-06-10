@@ -7,6 +7,7 @@ import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomain
 
 import lombok.Getter;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -18,18 +19,28 @@ public class Workshop extends AbstractDomainAggregateRoot<Workshop> {
     private String brandName;
     private TaxId taxId;
     private int mileageIntervalConfig;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private Instant deletedAt;
+    private Long version;
 
     public Workshop() {
         this.mileageIntervalConfig = 1;
     }
 
-    public Workshop(WorkshopId id, OwnerId ownerId, String businessName, String brandName, TaxId taxId, int mileageIntervalConfig) {
+    public Workshop(WorkshopId id, OwnerId ownerId, String businessName, String brandName, TaxId taxId, int mileageIntervalConfig, Instant createdAt, Instant updatedAt, Instant deletedAt, Long version) {
+        if (businessName == null || businessName.isBlank()) throw new IllegalArgumentException("core.error.businessName.required");
+        if (brandName == null || brandName.isBlank()) throw new IllegalArgumentException("core.error.brandName.required");
         this.id = id;
         this.ownerId = ownerId;
         this.businessName = businessName;
         this.brandName = brandName;
         this.taxId = taxId;
         this.mileageIntervalConfig = mileageIntervalConfig;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+        this.version = version;
     }
 
     public Workshop(OwnerId ownerId, String businessName, String brandName, TaxId taxId, int mileageIntervalConfig) {

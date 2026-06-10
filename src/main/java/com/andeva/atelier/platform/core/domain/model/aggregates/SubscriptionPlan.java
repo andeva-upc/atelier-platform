@@ -1,14 +1,13 @@
 package com.andeva.atelier.platform.core.domain.model.aggregates;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
-import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
 
 import lombok.Getter;
 
 import java.util.UUID;
 
 @Getter
-public class SubscriptionPlan extends AbstractDomainAggregateRoot<SubscriptionPlan> {
+public class SubscriptionPlan {
 
     private SubscriptionPlanId id;
     private String name;
