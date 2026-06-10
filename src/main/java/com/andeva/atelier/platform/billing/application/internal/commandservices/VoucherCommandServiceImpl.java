@@ -210,7 +210,7 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
             );
 
             // 5. Add full payment to the Voucher
-            voucher.addPayment(quote.getTotalAmount().amount(), command.method(), quote.getBranchId().value());
+            voucher.addPayment(quote.getTotalAmount(), command.method(), quote.getBranchId().value());
 
             // 6. Save the fully paid Voucher
             var savedVoucher = voucherRepository.save(voucher);
