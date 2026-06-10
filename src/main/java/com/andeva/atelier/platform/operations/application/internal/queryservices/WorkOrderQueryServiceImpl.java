@@ -6,9 +6,11 @@ import com.andeva.atelier.platform.operations.domain.model.queries.*;
 import com.andeva.atelier.platform.operations.domain.repositories.WorkOrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Internal application service implementing {@link WorkOrderQueryService}.
@@ -20,14 +22,14 @@ import java.util.Optional;
 public class WorkOrderQueryServiceImpl implements WorkOrderQueryService {
 
     private final WorkOrderRepository workOrderRepository;
-    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     /**
      * Constructor for WorkOrderQueryServiceImpl, injecting the WorkOrderRepository and JdbcTemplate dependency.
      * @param workOrderRepository Repository for accessing work order data from the database.
      * @param jdbcTemplate JdbcTemplate for executing SQL queries directly on organizational tables.
      */
-    public WorkOrderQueryServiceImpl(WorkOrderRepository workOrderRepository, org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
+    public WorkOrderQueryServiceImpl(WorkOrderRepository workOrderRepository, JdbcTemplate jdbcTemplate) {
         this.workOrderRepository = workOrderRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -72,14 +74,7 @@ public class WorkOrderQueryServiceImpl implements WorkOrderQueryService {
     }
 
     @Override
-    public String getBranchCode(java.util.UUID branchId) {
-        if (branchId == null) {
-            return "WO";
-        }
-        try {
-            return jdbcTemplate.queryForObject("SELECT code FROM branches WHERE id = ?", String.class, branchId);
-        } catch (Exception e) {
-            return "WO"; // Fallback to "WO" if database doesn't have the column/record yet
-        }
+    public String getBranchCode(UUID branchId) {
+        return jdbcTemplate.queryForObject("SELECT code FROM branches WHERE id = ?", String.class, branchId);
     }
 }
