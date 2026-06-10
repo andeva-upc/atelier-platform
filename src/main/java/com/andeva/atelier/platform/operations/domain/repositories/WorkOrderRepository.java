@@ -9,7 +9,6 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface WorkOrderRepository {
 

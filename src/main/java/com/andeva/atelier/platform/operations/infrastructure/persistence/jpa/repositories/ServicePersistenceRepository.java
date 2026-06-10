@@ -1,0 +1,15 @@
+package com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.repositories;
+
+import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.entities.ServicePersistenceEntity;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface ServicePersistenceRepository extends JpaRepository<ServicePersistenceEntity, UUID> {
+    List<ServicePersistenceEntity> findAllByBranchId(UUID branchId);
+}
+
