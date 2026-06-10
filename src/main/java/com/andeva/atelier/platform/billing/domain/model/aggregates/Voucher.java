@@ -119,4 +119,27 @@ public class Voucher extends AbstractDomainAggregateRoot<Voucher> {
             this.status = VoucherStatus.PARTIALLY_PAID;
         }
     }
+
+    public void removePayment(UUID paymentId) {
+        if (this.status == VoucherStatus.CANCELED) {
+            throw new IllegalStateException("Cannot remove payment from a canceled voucher");
+        }
+
+        Payment paymentToRemove = this.payments.stream()
+                .filter(p -> p.getId().equals(paymentId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+
+        this.payments.remove(paymentToRemove);
+
+        BigDecimal currentTotalPaid = getTotalPaidAmount();
+
+        if (currentTotalPaid.compareTo(BigDecimal.ZERO) == 0) {
+            this.status = VoucherStatus.PENDING;
+        } else if (currentTotalPaid.compareTo(this.totalAmount.amount()) < 0) {
+            this.status = VoucherStatus.PARTIALLY_PAID;
+        } else {
+            this.status = VoucherStatus.PAID;
+        }
+    }
 }
