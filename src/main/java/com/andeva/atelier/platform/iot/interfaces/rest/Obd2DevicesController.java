@@ -9,9 +9,11 @@ import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceByIdQue
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.CreateObd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.Obd2DeviceResource;
+import com.andeva.atelier.platform.iot.interfaces.rest.resources.UpdateObd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.CreateObd2DeviceCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.Obd2DeviceResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromObd2DeviceCommandResultAssembler;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.UpdateObd2DeviceCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -109,5 +111,19 @@ public class Obd2DevicesController {
                     );
                 }
         );
+    }
+
+    /**
+     * Updates an existing OBD2 device.
+     * @param id the unique identifier of the OBD2 device
+     * @param resource the update request body containing new MAC address
+     * @return a ResponseEntity containing the updated device resource or localized error details
+     */
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an OBD2 device", description = "Updates an existing registered OBD2 device's details (such as MAC address)")
+    public ResponseEntity<?> updateObd2Device(@PathVariable UUID id, @Valid @RequestBody UpdateObd2DeviceResource resource) {
+        var command = UpdateObd2DeviceCommandFromResourceAssembler.toCommandFromResource(id, resource);
+        var result = commandService.handle(command);
+        return ResponseEntityFromObd2DeviceCommandResultAssembler.toResponseEntityFromResult(result, HttpStatus.OK, messageSource);
     }
 }
