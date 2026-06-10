@@ -7,6 +7,11 @@ import java.util.UUID;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
+/**
+ * JPA entity mapping for individual Payments.
+ * Reflects the 'payments' table in the database. Contains a many-to-one mapping 
+ * back to its parent {@link VoucherPersistenceEntity}.
+ */
 @Entity
 @Table(name = "payments")
 @Getter

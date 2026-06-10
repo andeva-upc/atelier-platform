@@ -14,6 +14,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Implementation of the FacthubGateway outbound service interface.
+ * Acts as an Anti-Corruption Layer (ACL) client connecting to the external Facthub REST API.
+ * This integration enables electronic voucher emission to SUNAT.
+ */
 @Service
 public class FacthubGatewayImpl implements FacthubGateway {
 
