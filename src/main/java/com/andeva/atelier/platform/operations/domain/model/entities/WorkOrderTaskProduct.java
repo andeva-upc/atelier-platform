@@ -1,11 +1,10 @@
-package com.andeva.atelier.platform.operations.domain.model.aggregates;
+package com.andeva.atelier.platform.operations.domain.model.entities;
 
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.ProductId;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.Quantity;
-import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.converters.QuantityAttributeConverter;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderTaskProductId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
-import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MoneyAttributeConverter;
 
 import lombok.Getter;
 
@@ -21,7 +20,7 @@ import java.util.UUID;
 
 public class WorkOrderTaskProduct {
 
-    private UUID id;
+    private WorkOrderTaskProductId id;
     private ProductId productId;
     private BranchId branchId;
     private Quantity quantity;
@@ -34,7 +33,7 @@ public class WorkOrderTaskProduct {
 
     public WorkOrderTaskProduct() {}
 
-    public WorkOrderTaskProduct(UUID id, ProductId productId, BranchId branchId, Quantity quantity, Money unitPrice, Money totalAmount, Instant createdAt, Instant updatedAt, Instant deletedAt, Long version) {
+    public WorkOrderTaskProduct(WorkOrderTaskProductId id, ProductId productId, BranchId branchId, Quantity quantity, Money unitPrice, Money totalAmount, Instant createdAt, Instant updatedAt, Instant deletedAt, Long version) {
         this.id = id;
         this.productId = productId;
         this.branchId = branchId;
@@ -52,15 +51,12 @@ public class WorkOrderTaskProduct {
      * @param productId the unique identifier of the product associated with the work order task
      * @param branchId the unique identifier of the branch where the product is located
      * @param quantity the quantity of the product being used in the work order task
-     * @param unitPrice the unit price of the product, which is used to calculate the total amount for the work order task product
      */
-    public WorkOrderTaskProduct(ProductId productId, BranchId branchId, Quantity quantity, Money unitPrice) {
-        this.id = UUID.randomUUID();
+    public WorkOrderTaskProduct(ProductId productId, BranchId branchId, Quantity quantity) {
+        this.id = new WorkOrderTaskProductId(UUID.randomUUID());
         this.productId = productId;
         this.branchId = branchId;
         this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.totalAmount = unitPrice.multiply(quantity.value());
     }
 
     /**
