@@ -3,6 +3,7 @@ package com.andeva.atelier.platform.iot.application.commandservices;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device;
 import com.andeva.atelier.platform.iot.domain.model.commands.CreateObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeleteObd2DeviceCommand;
+import com.andeva.atelier.platform.iot.domain.model.commands.UpdateObd2DeviceCommand;
 import com.andeva.atelier.platform.shared.application.result.Result;
 
 /**
@@ -23,4 +24,11 @@ public interface Obd2DeviceCommandService {
      * @return a Result containing Void on success, or a Obd2DeviceCommandFailure
      */
     Result<Void, Obd2DeviceCommandFailure> handle(DeleteObd2DeviceCommand command);
+
+    /**
+     * Handles the update of an existing OBD2 Device's details.
+     * @param command the command containing update details
+     * @return a Result containing the updated OBD2 Device, or a Obd2DeviceCommandFailure
+     */
+    Result<Obd2Device, Obd2DeviceCommandFailure> handle(UpdateObd2DeviceCommand command);
 }
