@@ -101,6 +101,21 @@ public class VouchersController {
         return toErrorResponse(result.failure().get());
     }
 
+    @org.springframework.web.bind.annotation.DeleteMapping("/{voucherId}/payments/{paymentId}")
+    @Operation(summary = "Remove a payment from a voucher", description = "Deletes a previously recorded payment and updates the voucher's balance and status")
+    public ResponseEntity<?> removePayment(@PathVariable UUID voucherId, @PathVariable UUID paymentId) {
+        var command = new com.andeva.atelier.platform.billing.domain.model.commands.RemovePaymentCommand(voucherId, paymentId);
+        
+        var result = commandService.handle(command);
+
+        if (result.isSuccess()) {
+            var voucherResource = VoucherResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
+            return ResponseEntity.ok(voucherResource);
+        }
+
+        return toErrorResponse(result.failure().get());
+    }
+
     private ResponseEntity<?> toErrorResponse(VoucherCommandFailure failure) {
         return switch (failure) {
             case QUOTE_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quote not found");
@@ -110,8 +125,9 @@ public class VouchersController {
             case FACTHUB_ISSUANCE_FAILED -> ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Failed to issue voucher via Facthub");
             case VOUCHER_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
             case VOUCHER_ALREADY_PAID -> ResponseEntity.status(HttpStatus.CONFLICT).body("Voucher is already paid in full");
-            case VOUCHER_CANCELED -> ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot add payment to a canceled voucher");
+            case VOUCHER_CANCELED -> ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot add or remove payment from a canceled voucher");
             case PAYMENT_EXCEEDS_TOTAL_DEBT -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment exceeds the total debt of the voucher");
+            case PAYMENT_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment not found in this voucher");
         };
     }
 }

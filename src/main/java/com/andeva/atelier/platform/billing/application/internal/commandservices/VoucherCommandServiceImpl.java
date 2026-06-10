@@ -134,4 +134,25 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
             return Result.failure(VoucherCommandFailure.INVALID_VOUCHER_DATA);
         }
     }
+
+    @Override
+    public Result<Voucher, VoucherCommandFailure> handle(com.andeva.atelier.platform.billing.domain.model.commands.RemovePaymentCommand command) {
+        var voucherOpt = voucherRepository.findById(command.voucherId());
+        
+        if (voucherOpt.isEmpty()) {
+            return Result.failure(VoucherCommandFailure.VOUCHER_NOT_FOUND);
+        }
+
+        var voucher = voucherOpt.get();
+
+        try {
+            voucher.removePayment(command.paymentId());
+            var savedVoucher = voucherRepository.save(voucher);
+            return Result.success(savedVoucher);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(VoucherCommandFailure.PAYMENT_NOT_FOUND);
+        } catch (IllegalStateException e) {
+            return Result.failure(VoucherCommandFailure.VOUCHER_CANCELED);
+        }
+    }
 }
