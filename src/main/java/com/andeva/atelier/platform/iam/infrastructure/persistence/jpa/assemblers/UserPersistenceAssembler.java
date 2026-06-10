@@ -3,8 +3,6 @@ package com.andeva.atelier.platform.iam.infrastructure.persistence.jpa.assembler
 import com.andeva.atelier.platform.iam.domain.model.aggregates.User;
 import com.andeva.atelier.platform.iam.infrastructure.persistence.jpa.entities.UserPersistenceEntity;
 
-import java.util.UUID;
-
 import com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress;
 import com.andeva.atelier.platform.iam.domain.model.valueobjects.GoogleId;
 import com.andeva.atelier.platform.iam.domain.model.valueobjects.Password;
