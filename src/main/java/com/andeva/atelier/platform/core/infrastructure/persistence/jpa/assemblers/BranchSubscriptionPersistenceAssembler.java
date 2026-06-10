@@ -1,12 +1,14 @@
 package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers;
 
-import com.andeva.atelier.platform.core.domain.model.entities.BranchSubscription;
+import com.andeva.atelier.platform.core.domain.model.aggregates.BranchSubscription;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchSubscriptionId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.BranchSubscriptionPersistenceEntity;
 
-public class BranchSubscriptionPersistenceAssembler {
+public final class BranchSubscriptionPersistenceAssembler {
+
+    private BranchSubscriptionPersistenceAssembler() {}
 
     public static BranchSubscriptionPersistenceEntity toEntity(BranchSubscription branchSubscription, BranchSubscriptionPersistenceEntity entity) {
         if (entity == null) {

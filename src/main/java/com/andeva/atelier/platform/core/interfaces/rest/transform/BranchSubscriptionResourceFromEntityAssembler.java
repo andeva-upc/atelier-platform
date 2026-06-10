@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.interfaces.rest.transform;
 
-import com.andeva.atelier.platform.core.domain.model.entities.BranchSubscription;
+import com.andeva.atelier.platform.core.domain.model.aggregates.BranchSubscription;
 import com.andeva.atelier.platform.core.interfaces.rest.resources.BranchSubscriptionResource;
 
 public class BranchSubscriptionResourceFromEntityAssembler {

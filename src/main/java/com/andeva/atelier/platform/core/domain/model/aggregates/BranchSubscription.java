@@ -1,12 +1,12 @@
-package com.andeva.atelier.platform.core.domain.model.entities;
+package com.andeva.atelier.platform.core.domain.model.aggregates;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BillingCycle;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BranchSubscriptionId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionStatus;
-import lombok.Getter;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 
+import lombok.Getter;
 import java.util.Date;
 
 @Getter
