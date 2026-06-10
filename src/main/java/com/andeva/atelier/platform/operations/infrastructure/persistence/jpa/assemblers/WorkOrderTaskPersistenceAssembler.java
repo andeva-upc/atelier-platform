@@ -1,18 +1,21 @@
 package com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.assemblers;
 
-import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrderTask;
+import com.andeva.atelier.platform.operations.domain.model.entities.WorkOrderTask;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderTaskId;
 import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.entities.WorkOrderTaskPersistenceEntity;
 
 import java.util.stream.Collectors;
 import java.util.Collections;
 
-public class WorkOrderTaskPersistenceAssembler {
+public final class WorkOrderTaskPersistenceAssembler {
+
+    public WorkOrderTaskPersistenceAssembler() {}
 
     public static WorkOrderTaskPersistenceEntity toPersistenceEntity(WorkOrderTask domainEntity) {
         if (domainEntity == null) return null;
         WorkOrderTaskPersistenceEntity persistenceEntity = new WorkOrderTaskPersistenceEntity();
         if (domainEntity.getVersion() != null) {
-            persistenceEntity.setId(domainEntity.getId());
+            persistenceEntity.setId(domainEntity.getId() != null ? domainEntity.getId().value() : null);
         }
         persistenceEntity.setServiceId(domainEntity.getServiceId());
         persistenceEntity.setBranchId(domainEntity.getBranchId());
@@ -37,7 +40,7 @@ public class WorkOrderTaskPersistenceAssembler {
     public static WorkOrderTask toDomainEntity(WorkOrderTaskPersistenceEntity persistenceEntity) {
         if (persistenceEntity == null) return null;
         return new WorkOrderTask(
-                persistenceEntity.getId(),
+                new WorkOrderTaskId(persistenceEntity.getId()),
                 persistenceEntity.getServiceId(),
                 persistenceEntity.getBranchId(),
                 persistenceEntity.getAssignedMechanicId(),

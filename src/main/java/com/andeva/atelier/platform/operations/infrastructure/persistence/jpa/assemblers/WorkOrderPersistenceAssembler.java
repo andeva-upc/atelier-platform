@@ -1,18 +1,21 @@
 package com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.assemblers;
 
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
 import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.entities.WorkOrderPersistenceEntity;
 
 import java.util.stream.Collectors;
 import java.util.Collections;
 
-public class WorkOrderPersistenceAssembler {
+public final class WorkOrderPersistenceAssembler {
+
+    public WorkOrderPersistenceAssembler() {}
 
     public static WorkOrderPersistenceEntity toPersistenceEntity(WorkOrder domainEntity) {
         if (domainEntity == null) return null;
         WorkOrderPersistenceEntity persistenceEntity = new WorkOrderPersistenceEntity();
         if (domainEntity.getVersion() != null) {
-            persistenceEntity.setId(domainEntity.getId());
+            persistenceEntity.setId(domainEntity.getId() != null ? domainEntity.getId().value() : null);
         }
         persistenceEntity.setAppointmentId(domainEntity.getAppointmentId());
         persistenceEntity.setBranchId(domainEntity.getBranchId());
@@ -38,7 +41,7 @@ public class WorkOrderPersistenceAssembler {
     public static WorkOrder toDomainEntity(WorkOrderPersistenceEntity persistenceEntity) {
         if (persistenceEntity == null) return null;
         WorkOrder workOrder = new WorkOrder(
-                persistenceEntity.getId(),
+                new WorkOrderId(persistenceEntity.getId()),
                 persistenceEntity.getAppointmentId(),
                 persistenceEntity.getBranchId(),
                 persistenceEntity.getVehicleId(),
