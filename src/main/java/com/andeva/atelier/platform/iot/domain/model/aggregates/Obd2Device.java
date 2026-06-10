@@ -24,7 +24,7 @@ public class Obd2Device extends AbstractDomainAggregateRoot<Obd2Device> {
     }
 
     public Obd2Device(BranchId branchId, String macAddress) {
-        this.id = Obd2DeviceId.random();
+        this.id = null;
         this.branchId = branchId;
         this.macAddress = macAddress;
         this.status = Obd2DeviceStatus.AVAILABLE;

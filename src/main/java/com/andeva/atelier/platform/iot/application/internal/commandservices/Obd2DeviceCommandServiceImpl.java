@@ -1,0 +1,36 @@
+package com.andeva.atelier.platform.iot.application.internal.commandservices;
+
+import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandFailure;
+import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandService;
+import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device;
+import com.andeva.atelier.platform.iot.domain.model.commands.CreateObd2DeviceCommand;
+import com.andeva.atelier.platform.iot.domain.repositories.Obd2DeviceRepository;
+import com.andeva.atelier.platform.shared.application.result.Result;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Service implementation for handling OBD2 Device command cases.
+ */
+@Service
+public class Obd2DeviceCommandServiceImpl implements Obd2DeviceCommandService {
+
+    private final Obd2DeviceRepository obd2DeviceRepository;
+
+    public Obd2DeviceCommandServiceImpl(Obd2DeviceRepository obd2DeviceRepository) {
+        this.obd2DeviceRepository = obd2DeviceRepository;
+    }
+
+    @Override
+    @Transactional
+    public Result<Obd2Device, Obd2DeviceCommandFailure> handle(CreateObd2DeviceCommand command) {
+        if (obd2DeviceRepository.existsByMacAddress(command.macAddress())) {
+            return Result.failure(new Obd2DeviceCommandFailure.Duplicate("iot.error.obd2Device.macAlreadyExists"));
+        }
+
+        var obd2Device = new Obd2Device(command.branchId(), command.macAddress());
+        var savedDevice = obd2DeviceRepository.save(obd2Device);
+
+        return Result.success(savedDevice);
+    }
+}
