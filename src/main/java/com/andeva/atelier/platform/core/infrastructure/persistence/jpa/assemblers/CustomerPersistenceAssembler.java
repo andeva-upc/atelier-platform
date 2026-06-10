@@ -16,6 +16,9 @@ public final class CustomerPersistenceAssembler {
         if (entity == null) {
             entity = new CustomerPersistenceEntity();
         }
+        if (customer.getVersion() != null) {
+            entity.setId(customer.getId() != null ? customer.getId().value() : null);
+        }
         entity.setId(customer.getId() != null ? customer.getId().value() : null);
         entity.setUserId(customer.getUserId() != null ? customer.getUserId().value() : null);
         entity.setCorporate(customer.isCorporate());
@@ -33,6 +36,10 @@ public final class CustomerPersistenceAssembler {
         }
         
         entity.setPhone(customer.getPhone() != null ? customer.getPhone().value() : null);
+        entity.setCreatedAt(customer.getCreatedAt());
+        entity.setUpdatedAt(customer.getUpdatedAt());
+        entity.setDeletedAt(customer.getDeletedAt());
+        entity.setVersion(customer.getVersion());
         return entity;
     }
 
@@ -54,7 +61,11 @@ public final class CustomerPersistenceAssembler {
                 personName,
                 entity.getBusinessName(),
                 document,
-                new Phone(entity.getPhone())
+                new Phone(entity.getPhone()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getVersion()
         );
     }
 }

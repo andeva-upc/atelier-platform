@@ -4,12 +4,14 @@ import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entitie
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -21,7 +23,12 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OwnerPersistenceEntity extends AuditableAbstractPersistenceEntity {
+public class OwnerPersistenceEntity extends AuditableAbstractPersistenceEntity implements Persistable<UUID> {
+
+    @Override
+    public boolean isNew() {
+        return getCreatedAt() == null;
+    }
 
     @Column(name = "user_id", nullable = false, unique = true)
     private UUID userId;
@@ -43,4 +50,7 @@ public class OwnerPersistenceEntity extends AuditableAbstractPersistenceEntity {
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @Version
+    private Long version;
 }

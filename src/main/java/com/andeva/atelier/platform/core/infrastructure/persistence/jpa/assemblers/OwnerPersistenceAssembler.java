@@ -16,6 +16,9 @@ public final class OwnerPersistenceAssembler {
         if (entity == null) {
             entity = new OwnerPersistenceEntity();
         }
+        if (owner.getVersion() != null) {
+            entity.setId(owner.getId() != null ? owner.getId().value() : null);
+        }
         entity.setId(owner.getId() != null ? owner.getId().value() : null);
         entity.setUserId(owner.getUserId() != null ? owner.getUserId().value() : null);
         
@@ -30,6 +33,10 @@ public final class OwnerPersistenceAssembler {
         }
         
         entity.setPhone(owner.getPhone() != null ? owner.getPhone().value() : null);
+        entity.setCreatedAt(owner.getCreatedAt());
+        entity.setUpdatedAt(owner.getUpdatedAt());
+        entity.setDeletedAt(owner.getDeletedAt());
+        entity.setVersion(owner.getVersion());
         return entity;
     }
 
@@ -42,7 +49,11 @@ public final class OwnerPersistenceAssembler {
                 new UserId(entity.getUserId()),
                 personName,
                 document,
-                new Phone(entity.getPhone())
+                new Phone(entity.getPhone()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getVersion()
         );
     }
 }

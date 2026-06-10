@@ -15,6 +15,9 @@ public final class BranchPersistenceAssembler {
         if (entity == null) {
             entity = new BranchPersistenceEntity();
         }
+        if (branch.getVersion() != null) {
+            entity.setId(branch.getId() != null ? branch.getId().value() : null);
+        }
         entity.setId(branch.getId() != null ? branch.getId().value() : null);
         entity.setWorkshopId(branch.getWorkshopId() != null ? branch.getWorkshopId().value() : null);
         entity.setCode(branch.getCode());
@@ -23,6 +26,12 @@ public final class BranchPersistenceAssembler {
             entity.setAddress(branch.getAddress().value());
         }
         entity.setPhone(branch.getPhone() != null ? branch.getPhone().value() : null);
+        entity.setCreatedAt(branch.getCreatedAt());
+        entity.setUpdatedAt(branch.getUpdatedAt());
+        entity.setDeletedAt(branch.getDeletedAt());
+        entity.setCreatedBy(branch.getCreatedBy());
+        entity.setUpdatedBy(branch.getUpdatedBy());
+        entity.setVersion(branch.getVersion());
         return entity;
     }
 
@@ -33,7 +42,13 @@ public final class BranchPersistenceAssembler {
                 entity.getCode(),
                 entity.getName(),
                 new Address(entity.getAddress()),
-                new Phone(entity.getPhone())
+                new Phone(entity.getPhone()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getCreatedBy(),
+                entity.getUpdatedBy(),
+                entity.getVersion()
         );
     }
 }
