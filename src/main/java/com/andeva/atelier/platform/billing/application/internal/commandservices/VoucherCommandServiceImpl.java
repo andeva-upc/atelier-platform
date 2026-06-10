@@ -18,6 +18,12 @@ import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementation of the VoucherCommandService interface.
+ * Orchestrates the business logic for creating and paying invoices/receipts.
+ * Integrates with the Operations bounded context to validate branch data, 
+ * and with the Facthub external service to emit documents to the tax authority.
+ */
 @Service
 public class VoucherCommandServiceImpl implements VoucherCommandService {
 
