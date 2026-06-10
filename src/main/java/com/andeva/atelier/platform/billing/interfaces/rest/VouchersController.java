@@ -43,10 +43,12 @@ public class VouchersController {
 
     private final VoucherCommandService commandService;
     private final VoucherQueryService queryService;
+    private final org.springframework.context.MessageSource messageSource;
 
-    public VouchersController(VoucherCommandService commandService, VoucherQueryService queryService) {
+    public VouchersController(VoucherCommandService commandService, VoucherQueryService queryService, org.springframework.context.MessageSource messageSource) {
         this.commandService = commandService;
         this.queryService = queryService;
+        this.messageSource = messageSource;
     }
 
     @PostMapping
@@ -148,16 +150,46 @@ public class VouchersController {
 
     private ResponseEntity<?> toErrorResponse(VoucherCommandFailure failure) {
         return switch (failure) {
-            case QUOTE_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quote not found");
-            case QUOTE_NOT_APPROVED -> ResponseEntity.status(HttpStatus.CONFLICT).body("Quote must be APPROVED to generate a voucher");
-            case INVALID_VOUCHER_DATA -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid voucher data");
-            case ISSUER_NOT_FOUND -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not determine issuer RUC");
-            case FACTHUB_ISSUANCE_FAILED -> ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Failed to issue voucher via Facthub");
-            case VOUCHER_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
-            case VOUCHER_ALREADY_PAID -> ResponseEntity.status(HttpStatus.CONFLICT).body("Voucher is already paid in full");
-            case VOUCHER_CANCELED -> ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot add or remove payment from a canceled voucher");
-            case PAYMENT_EXCEEDS_TOTAL_DEBT -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment exceeds the total debt of the voucher");
-            case PAYMENT_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment not found in this voucher");
+            case QUOTE_NOT_FOUND -> {
+                String message = messageSource.getMessage("billing.error.quote.notFound", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.notFound("voucher", message));
+            }
+            case QUOTE_NOT_APPROVED -> {
+                String message = messageSource.getMessage("billing.error.voucher.notApproved", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("voucher", message));
+            }
+            case INVALID_VOUCHER_DATA -> {
+                String message = messageSource.getMessage("billing.error.voucher.invalidData", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.validationError("voucher", message));
+            }
+            case ISSUER_NOT_FOUND -> {
+                String message = messageSource.getMessage("billing.error.voucher.issuerNotFound", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.unexpected("voucher", message));
+            }
+            case FACTHUB_ISSUANCE_FAILED -> {
+                String message = messageSource.getMessage("billing.error.voucher.facthubFailed", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.unexpected("voucher", message));
+            }
+            case VOUCHER_NOT_FOUND -> {
+                String message = messageSource.getMessage("billing.error.voucher.notFound", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.notFound("voucher", message));
+            }
+            case VOUCHER_ALREADY_PAID -> {
+                String message = messageSource.getMessage("billing.error.voucher.alreadyPaidInFull", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("voucher", message));
+            }
+            case VOUCHER_CANCELED -> {
+                String message = messageSource.getMessage("billing.error.voucher.cannotAddPaymentCanceled", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("voucher", message));
+            }
+            case PAYMENT_EXCEEDS_TOTAL_DEBT -> {
+                String message = messageSource.getMessage("billing.error.voucher.paymentExceedsDebt", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.validationError("voucher", message));
+            }
+            case PAYMENT_NOT_FOUND -> {
+                String message = messageSource.getMessage("billing.error.payment.notFound", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.notFound("voucher", message));
+            }
         };
     }
 }

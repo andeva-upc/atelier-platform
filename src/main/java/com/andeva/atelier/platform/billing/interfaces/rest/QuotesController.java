@@ -36,10 +36,12 @@ public class QuotesController {
 
     private final QuoteCommandService commandService;
     private final QuoteQueryService queryService;
+    private final org.springframework.context.MessageSource messageSource;
 
-    public QuotesController(QuoteCommandService commandService, QuoteQueryService queryService) {
+    public QuotesController(QuoteCommandService commandService, QuoteQueryService queryService, org.springframework.context.MessageSource messageSource) {
         this.commandService = commandService;
         this.queryService = queryService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -157,11 +159,26 @@ public class QuotesController {
 
     private ResponseEntity<?> toErrorResponse(QuoteCommandFailure failure) {
         return switch (failure) {
-            case WORK_ORDER_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Work order not found");
-            case INVALID_QUOTE_DATA -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid quote data");
-            case QUOTE_ALREADY_EXISTS_FOR_WORK_ORDER -> ResponseEntity.status(HttpStatus.CONFLICT).body("Quote already exists");
-            case QUOTE_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quote not found");
-            case INVALID_QUOTE_STATE -> ResponseEntity.status(HttpStatus.CONFLICT).body("Quote must be in DRAFT state to be updated");
+            case WORK_ORDER_NOT_FOUND -> {
+                String message = messageSource.getMessage("billing.error.quote.workOrderNotFound", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.notFound("quote", message));
+            }
+            case INVALID_QUOTE_DATA -> {
+                String message = messageSource.getMessage("billing.error.quote.invalidData", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.validationError("quote", message));
+            }
+            case QUOTE_ALREADY_EXISTS_FOR_WORK_ORDER -> {
+                String message = messageSource.getMessage("billing.error.quote.alreadyExistsForWorkOrder", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("quote", message));
+            }
+            case QUOTE_NOT_FOUND -> {
+                String message = messageSource.getMessage("billing.error.quote.notFound", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.notFound("quote", message));
+            }
+            case INVALID_QUOTE_STATE -> {
+                String message = messageSource.getMessage("billing.error.quote.invalidStateForUpdate", null, org.springframework.context.i18n.LocaleContextHolder.getLocale());
+                yield com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler.toErrorResponseFromApplicationError(com.andeva.atelier.platform.shared.application.result.ApplicationError.businessError("quote", message));
+            }
         };
     }
 }
