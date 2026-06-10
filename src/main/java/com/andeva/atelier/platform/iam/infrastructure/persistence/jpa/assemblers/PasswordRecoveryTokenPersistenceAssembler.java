@@ -3,7 +3,9 @@ package com.andeva.atelier.platform.iam.infrastructure.persistence.jpa.assembler
 import com.andeva.atelier.platform.iam.domain.model.entities.PasswordRecoveryToken;
 import com.andeva.atelier.platform.iam.infrastructure.persistence.jpa.entities.PasswordRecoveryTokenPersistenceEntity;
 
-public class PasswordRecoveryTokenPersistenceAssembler {
+public final class PasswordRecoveryTokenPersistenceAssembler {
+
+    private PasswordRecoveryTokenPersistenceAssembler() {}
 
     public static PasswordRecoveryTokenPersistenceEntity toEntity(PasswordRecoveryToken token, PasswordRecoveryTokenPersistenceEntity entity) {
         if (entity == null) {

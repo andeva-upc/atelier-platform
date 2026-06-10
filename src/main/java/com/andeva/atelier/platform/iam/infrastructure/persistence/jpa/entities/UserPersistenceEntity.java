@@ -11,9 +11,6 @@ import lombok.Setter;
 
 import java.time.Instant;
 
-/**
- * JPA persistence entity for IAM users.
- */
 @Entity
 @Table(name = "users")
 @Getter
