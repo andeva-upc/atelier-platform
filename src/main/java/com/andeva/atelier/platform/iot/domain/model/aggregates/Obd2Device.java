@@ -64,4 +64,15 @@ public class Obd2Device extends AbstractDomainAggregateRoot<Obd2Device> {
     public void markAsAvailable() {
         this.status = Obd2DeviceStatus.AVAILABLE;
     }
+
+    /**
+     * Updates the MAC address of the device.
+     * @param macAddress the new MAC address
+     */
+    public void updateMacAddress(String macAddress) {
+        if (macAddress == null || macAddress.isBlank()) {
+            throw new IllegalArgumentException("iot.error.obd2Device.macAddressEmpty");
+        }
+        this.macAddress = macAddress;
+    }
 }
