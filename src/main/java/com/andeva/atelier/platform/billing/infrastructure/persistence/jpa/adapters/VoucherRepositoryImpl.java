@@ -11,14 +11,17 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import org.springframework.context.ApplicationEventPublisher;
 
 @Component
 public class VoucherRepositoryImpl implements VoucherRepository {
 
     private final VoucherJpaRepository persistenceRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public VoucherRepositoryImpl(VoucherJpaRepository persistenceRepository) {
+    public VoucherRepositoryImpl(VoucherJpaRepository persistenceRepository, ApplicationEventPublisher eventPublisher) {
         this.persistenceRepository = persistenceRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -35,6 +38,11 @@ public class VoucherRepositoryImpl implements VoucherRepository {
         VoucherPersistenceAssembler.updateEntityFromAggregate(entity, voucher);
         
         var savedEntity = persistenceRepository.save(entity);
+        
+        // Publish any domain events registered in the aggregate
+        voucher.domainEvents().forEach(eventPublisher::publishEvent);
+        voucher.clearDomainEvents();
+        
         return VoucherPersistenceAssembler.toAggregate(savedEntity);
     }
 
