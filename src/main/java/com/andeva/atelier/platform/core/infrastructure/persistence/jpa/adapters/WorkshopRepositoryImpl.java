@@ -24,7 +24,7 @@ public class WorkshopRepositoryImpl implements WorkshopRepository {
 
     @Override
     public Workshop save(Workshop workshop) {
-        WorkshopPersistenceEntity entity = null;
+        WorkshopPersistenceEntity entity;
         if (workshop.getId() != null) {
             entity = workshopPersistenceRepository.findById(workshop.getId().value()).orElse(new WorkshopPersistenceEntity());
         } else {
