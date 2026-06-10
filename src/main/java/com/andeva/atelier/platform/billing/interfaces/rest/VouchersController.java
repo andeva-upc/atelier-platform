@@ -3,6 +3,10 @@ package com.andeva.atelier.platform.billing.interfaces.rest;
 import com.andeva.atelier.platform.billing.domain.model.valueobjects.VoucherCommandFailure;
 import com.andeva.atelier.platform.billing.application.commandservices.VoucherCommandService;
 import com.andeva.atelier.platform.billing.interfaces.rest.resources.GenerateVoucherResource;
+import com.andeva.atelier.platform.billing.interfaces.rest.resources.AddPaymentResource;
+import com.andeva.atelier.platform.billing.domain.model.commands.AddPaymentCommand;
+import com.andeva.atelier.platform.billing.domain.model.valueobjects.PaymentMethod;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.GenerateVoucherCommandFromResourceAssembler;
 import com.andeva.atelier.platform.billing.interfaces.rest.transform.VoucherResourceFromAggregateAssembler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -78,6 +82,25 @@ public class VouchersController {
         return ResponseEntity.ok(voucherResources);
     }
 
+    @PostMapping("/{voucherId}/payments")
+    @Operation(summary = "Add a payment to a voucher", description = "Records a partial or full payment for a given voucher")
+    public ResponseEntity<?> addPayment(@PathVariable UUID voucherId, @Valid @RequestBody AddPaymentResource resource) {
+        var command = new AddPaymentCommand(
+                voucherId,
+                new Money(resource.amount()),
+                PaymentMethod.valueOf(resource.method())
+        );
+
+        var result = commandService.handle(command);
+
+        if (result.isSuccess()) {
+            var voucherResource = VoucherResourceFromAggregateAssembler.toResourceFromAggregate(result.success().get());
+            return ResponseEntity.ok(voucherResource);
+        }
+
+        return toErrorResponse(result.failure().get());
+    }
+
     private ResponseEntity<?> toErrorResponse(VoucherCommandFailure failure) {
         return switch (failure) {
             case QUOTE_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quote not found");
@@ -85,6 +108,10 @@ public class VouchersController {
             case INVALID_VOUCHER_DATA -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid voucher data");
             case ISSUER_NOT_FOUND -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not determine issuer RUC");
             case FACTHUB_ISSUANCE_FAILED -> ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Failed to issue voucher via Facthub");
+            case VOUCHER_NOT_FOUND -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
+            case VOUCHER_ALREADY_PAID -> ResponseEntity.status(HttpStatus.CONFLICT).body("Voucher is already paid in full");
+            case VOUCHER_CANCELED -> ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot add payment to a canceled voucher");
+            case PAYMENT_EXCEEDS_TOTAL_DEBT -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment exceeds the total debt of the voucher");
         };
     }
 }

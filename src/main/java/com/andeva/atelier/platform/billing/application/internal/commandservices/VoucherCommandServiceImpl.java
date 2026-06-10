@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.billing.domain.model.valueobjects.VoucherComm
 import com.andeva.atelier.platform.billing.application.commandservices.VoucherCommandService;
 import com.andeva.atelier.platform.billing.application.outboundservices.FacthubGateway;
 import com.andeva.atelier.platform.billing.domain.model.aggregates.Voucher;
+import com.andeva.atelier.platform.billing.domain.model.commands.AddPaymentCommand;
 import com.andeva.atelier.platform.billing.domain.model.commands.GenerateVoucherCommand;
 import com.andeva.atelier.platform.billing.domain.model.valueobjects.QuoteStatus;
 import com.andeva.atelier.platform.billing.domain.repositories.QuoteRepository;
@@ -94,6 +95,41 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
 
             var savedVoucher = voucherRepository.save(voucher);
             return Result.success(savedVoucher);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(VoucherCommandFailure.INVALID_VOUCHER_DATA);
+        }
+    }
+
+    @Override
+    @Transactional
+    public Result<Voucher, VoucherCommandFailure> handle(AddPaymentCommand command) {
+        var voucherOpt = voucherRepository.findById(command.voucherId());
+        if (voucherOpt.isEmpty()) {
+            return Result.failure(VoucherCommandFailure.VOUCHER_NOT_FOUND);
+        }
+
+        var voucher = voucherOpt.get();
+        var quoteOpt = quoteRepository.findById(voucher.getQuoteId());
+        if (quoteOpt.isEmpty()) {
+            return Result.failure(VoucherCommandFailure.QUOTE_NOT_FOUND);
+        }
+        var branchId = quoteOpt.get().getBranchId().value();
+
+        try {
+            voucher.addPayment(command.amount(), command.method(), branchId);
+            var savedVoucher = voucherRepository.save(voucher);
+            return Result.success(savedVoucher);
+        } catch (IllegalStateException e) {
+            if (e.getMessage().contains("already paid")) {
+                return Result.failure(VoucherCommandFailure.VOUCHER_ALREADY_PAID);
+            }
+            if (e.getMessage().contains("canceled")) {
+                return Result.failure(VoucherCommandFailure.VOUCHER_CANCELED);
+            }
+            if (e.getMessage().contains("exceeds")) {
+                return Result.failure(VoucherCommandFailure.PAYMENT_EXCEEDS_TOTAL_DEBT);
+            }
+            return Result.failure(VoucherCommandFailure.INVALID_VOUCHER_DATA);
         } catch (IllegalArgumentException e) {
             return Result.failure(VoucherCommandFailure.INVALID_VOUCHER_DATA);
         }
