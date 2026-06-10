@@ -64,8 +64,7 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
         if (workshopOpt.isEmpty()) {
             return Result.failure(VoucherCommandFailure.ISSUER_NOT_FOUND);
         }
-        
-        String issuerRuc = String.valueOf(workshopOpt.get().getTaxId());
+        String issuerRuc = workshopOpt.get().getTaxId().value();
 
         // 3. Issue Voucher via Facthub
         var externalInvoiceIdOpt = facthubGateway.issueVoucher(
@@ -180,8 +179,7 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
         if (workshopOpt.isEmpty()) {
             return Result.failure(VoucherCommandFailure.ISSUER_NOT_FOUND);
         }
-        
-        String issuerRuc = workshopOpt.get().getTaxId();
+        String issuerRuc = workshopOpt.get().getTaxId().value();
 
         // 3. Issue Voucher via Facthub
         var externalInvoiceIdOpt = facthubGateway.issueVoucher(
