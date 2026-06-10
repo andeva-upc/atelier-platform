@@ -22,7 +22,7 @@ public class OwnerRepositoryImpl implements OwnerRepository {
 
     @Override
     public Owner save(Owner owner) {
-        OwnerPersistenceEntity entity = null;
+        OwnerPersistenceEntity entity;
         if (owner.getId() != null) {
             entity = ownerPersistenceRepository.findById(owner.getId().value()).orElse(new OwnerPersistenceEntity());
         } else {

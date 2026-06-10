@@ -25,7 +25,7 @@ public class BranchSubscriptionRepositoryImpl implements BranchSubscriptionRepos
 
     @Override
     public BranchSubscription save(BranchSubscription branchSubscription) {
-        BranchSubscriptionPersistenceEntity entity = null;
+        BranchSubscriptionPersistenceEntity entity;
         if (branchSubscription.getId() != null) {
             entity = branchSubscriptionPersistenceRepository.findById(branchSubscription.getId().value()).orElse(new BranchSubscriptionPersistenceEntity());
         } else {

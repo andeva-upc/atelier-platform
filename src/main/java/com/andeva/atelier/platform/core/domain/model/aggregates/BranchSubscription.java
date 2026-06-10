@@ -21,8 +21,7 @@ public class BranchSubscription {
     private Date endDate;
     private Date canceledAt;
 
-    public BranchSubscription() {
-    }
+    public BranchSubscription() {}
 
     public BranchSubscription(BranchId branchId, SubscriptionPlanId planId, BillingCycle billingCycle, Date startDate, Date endDate) {
         if (billingCycle == null) throw new IllegalArgumentException("core.error.billingCycle.required");

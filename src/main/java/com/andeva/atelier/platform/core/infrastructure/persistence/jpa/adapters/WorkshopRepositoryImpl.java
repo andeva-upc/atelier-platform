@@ -7,48 +7,48 @@ import com.andeva.atelier.platform.core.domain.repositories.WorkshopRepository;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.WorkshopPersistenceAssembler;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.WorkshopPersistenceEntity;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.WorkshopPersistenceRepository;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class WorkshopRepositoryImpl implements WorkshopRepository {
 
-    private final WorkshopPersistenceRepository jpaRepository;
+    private final WorkshopPersistenceRepository workshopPersistenceRepository;
 
-    public WorkshopRepositoryImpl(WorkshopPersistenceRepository jpaRepository) {
-        this.jpaRepository = jpaRepository;
+    public WorkshopRepositoryImpl(WorkshopPersistenceRepository workshopPersistenceRepository) {
+        this.workshopPersistenceRepository = workshopPersistenceRepository;
     }
 
     @Override
     public Workshop save(Workshop workshop) {
         WorkshopPersistenceEntity entity = null;
         if (workshop.getId() != null) {
-            entity = jpaRepository.findById(workshop.getId().value()).orElse(new WorkshopPersistenceEntity());
+            entity = workshopPersistenceRepository.findById(workshop.getId().value()).orElse(new WorkshopPersistenceEntity());
         } else {
             entity = new WorkshopPersistenceEntity();
         }
         WorkshopPersistenceAssembler.toEntity(workshop, entity);
-        WorkshopPersistenceEntity savedEntity = jpaRepository.save(entity);
+        WorkshopPersistenceEntity savedEntity = workshopPersistenceRepository.save(entity);
         return WorkshopPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Workshop> findById(WorkshopId id) {
-        return jpaRepository.findById(id.value()).map(WorkshopPersistenceAssembler::toDomain);
+        return workshopPersistenceRepository.findById(id.value()).map(WorkshopPersistenceAssembler::toDomain);
     }
 
     @Override
     public List<Workshop> findAllByOwnerId(OwnerId ownerId) {
-        return jpaRepository.findAllByOwnerId(ownerId.value()).stream()
+        return workshopPersistenceRepository.findAllByOwnerId(ownerId.value()).stream()
                 .map(WorkshopPersistenceAssembler::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public boolean existsById(WorkshopId id) {
-        return jpaRepository.existsById(id.value());
+        return workshopPersistenceRepository.existsById(id.value());
     }
 }

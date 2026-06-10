@@ -22,7 +22,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public Employee save(Employee employee) {
-        EmployeePersistenceEntity entity = null;
+        EmployeePersistenceEntity entity;
         if (employee.getId() != null) {
             entity = employeePersistenceRepository.findById(employee.getId().value()).orElse(new EmployeePersistenceEntity());
         } else {

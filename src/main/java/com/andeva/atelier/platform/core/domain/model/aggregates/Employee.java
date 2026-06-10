@@ -24,6 +24,7 @@ public class Employee extends AbstractDomainAggregateRoot<Employee> {
     public Employee(EmployeeId id, UserId userId, PersonName name, Document document, Phone phone) {
         this.id = id;
         this.userId = userId;
+        this.name = name;
         this.document = document;
         this.phone = phone;
     }

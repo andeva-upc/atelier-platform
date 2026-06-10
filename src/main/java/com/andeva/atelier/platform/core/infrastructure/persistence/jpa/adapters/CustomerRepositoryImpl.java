@@ -22,7 +22,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     @Override
     public Customer save(Customer customer) {
-        CustomerPersistenceEntity entity = null;
+        CustomerPersistenceEntity entity;
         if (customer.getId() != null) {
             entity = customerPersistenceRepository.findById(customer.getId().value()).orElse(new CustomerPersistenceEntity());
         } else {
