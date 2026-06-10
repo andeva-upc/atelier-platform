@@ -7,6 +7,7 @@ import com.andeva.atelier.platform.billing.domain.model.commands.CreateQuoteComm
 import com.andeva.atelier.platform.billing.domain.repositories.QuoteRepository;
 import com.andeva.atelier.platform.operations.application.queryservices.WorkOrderQueryService;
 import com.andeva.atelier.platform.operations.domain.model.queries.GetWorkOrderByIdQuery;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class QuoteCommandServiceImpl implements QuoteCommandService {
 
     @Override
     public Result<Quote, QuoteCommandFailure> handle(CreateQuoteCommand command) {
-        var query = new GetWorkOrderByIdQuery(command.workOrderId());
+        var query = new GetWorkOrderByIdQuery(new WorkOrderId(command.workOrderId()));
         var workOrderOpt = workOrderQueryService.handle(query);
 
         if (workOrderOpt.isEmpty()) {
