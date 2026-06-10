@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * Implementation of the QuoteRepository domain interface using Spring Data JPA.
  * Responsible for translating between Domain Aggregates and JPA Persistence Entities.
  */
-@Component
+@Service
 public class QuoteRepositoryImpl implements QuoteRepository {
 
     private final QuotePersistenceRepository persistenceRepository;

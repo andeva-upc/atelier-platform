@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
+/**
+ * DTO representing the payload required to create a new Quote via the REST API.
+ */
 public record CreateQuoteResource(
         @NotNull(message = "Work Order ID is required") UUID workOrderId,
         @NotNull(message = "Branch ID is required") UUID branchId,
