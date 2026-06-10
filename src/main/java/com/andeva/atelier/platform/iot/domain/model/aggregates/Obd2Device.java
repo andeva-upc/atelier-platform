@@ -49,7 +49,7 @@ public class Obd2Device extends AbstractDomainAggregateRoot<Obd2Device> {
      * Marks the device as linked to a vehicle.
      */
     public void markAsLinked() {
-        if (this.status == Obd2DeviceStatus.LINKED) {
+        if (Obd2DeviceStatus.LINKED.equals(this.status)) {
             throw new IllegalStateException("iot.error.obd2Device.alreadyLinked");
         }
         this.status = Obd2DeviceStatus.LINKED;

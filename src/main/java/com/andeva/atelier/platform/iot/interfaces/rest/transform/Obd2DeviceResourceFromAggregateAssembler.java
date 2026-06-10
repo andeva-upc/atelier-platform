@@ -12,7 +12,7 @@ public class Obd2DeviceResourceFromAggregateAssembler {
                 aggregate.getId() != null ? aggregate.getId().value() : null,
                 aggregate.getBranchId() != null ? aggregate.getBranchId().value() : null,
                 aggregate.getMacAddress(),
-                aggregate.getStatus() != null ? aggregate.getStatus().name() : null
+                aggregate.getStatus() != null ? aggregate.getStatus().value() : null
         );
     }
 }

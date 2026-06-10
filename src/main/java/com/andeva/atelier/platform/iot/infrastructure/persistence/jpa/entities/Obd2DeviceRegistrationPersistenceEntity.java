@@ -1,7 +1,6 @@
 package com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.entities;
 
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
-import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2RegistrationStatus;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import jakarta.persistence.*;
@@ -48,9 +47,8 @@ public class Obd2DeviceRegistrationPersistenceEntity implements Persistable<UUID
     @AttributeOverride(name = "value", column = @Column(name = "vehicle_id", nullable = false))
     private VehicleId vehicleId;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Obd2RegistrationStatus status;
+    private String status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
