@@ -37,4 +37,10 @@ public interface Obd2DeviceRepository {
      * @return true if a device exists, false otherwise
      */
     boolean existsByMacAddress(String macAddress);
+
+    /**
+     * Deletes (unregisters) a device from the repository by its ID.
+     * @param id the unique identifier of the device
+     */
+    void delete(Obd2DeviceId id);
 }

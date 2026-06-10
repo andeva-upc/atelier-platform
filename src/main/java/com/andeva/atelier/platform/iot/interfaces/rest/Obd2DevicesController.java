@@ -1,6 +1,10 @@
 package com.andeva.atelier.platform.iot.interfaces.rest;
 
+import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandFailure;
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandService;
+import com.andeva.atelier.platform.iot.domain.model.commands.CreateObd2DeviceCommand;
+import com.andeva.atelier.platform.iot.domain.model.commands.DeleteObd2DeviceCommand;
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.CreateObd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.CreateObd2DeviceCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromObd2DeviceCommandResultAssembler;
@@ -8,11 +12,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
+import java.util.UUID;
 
 /**
  * REST controller for managing OBD2 Devices registration.
@@ -41,5 +47,42 @@ public class Obd2DevicesController {
         var command = CreateObd2DeviceCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = commandService.handle(command);
         return ResponseEntityFromObd2DeviceCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+    }
+
+    /**
+     * Deletes (unregisters) an OBD2 device.
+     * @param id the unique identifier of the OBD2 device
+     * @return 204 No Content on success, or a ProblemDetail on failure
+     */
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an OBD2 device", description = "Performs a soft delete of an OBD2 device by its unique ID")
+    public ResponseEntity<?> deleteObd2Device(@PathVariable UUID id) {
+        var command = new DeleteObd2DeviceCommand(new Obd2DeviceId(id));
+        var result = commandService.handle(command);
+
+        return result.fold(
+                _void -> ResponseEntity.noContent().build(),
+                failure -> {
+                    HttpStatus status = switch (failure) {
+                        case Obd2DeviceCommandFailure.NotFound(String _) -> HttpStatus.NOT_FOUND;
+                        case Obd2DeviceCommandFailure.InvalidState(String _) -> HttpStatus.BAD_REQUEST;
+                        case Obd2DeviceCommandFailure.Duplicate(String _) -> HttpStatus.CONFLICT;
+                    };
+                    String messageKey = switch (failure) {
+                        case Obd2DeviceCommandFailure.NotFound(String message) -> message;
+                        case Obd2DeviceCommandFailure.InvalidState(String message) -> message;
+                        case Obd2DeviceCommandFailure.Duplicate(String message) -> message;
+                    };
+                    String localizedMessage;
+                    try {
+                        localizedMessage = messageSource.getMessage(messageKey, null, Locale.getDefault());
+                    } catch (Exception e) {
+                        localizedMessage = messageKey;
+                    }
+                    return ResponseEntity.status(status).body(
+                            ProblemDetail.forStatusAndDetail(status, localizedMessage)
+                    );
+                }
+        );
     }
 }

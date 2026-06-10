@@ -55,4 +55,9 @@ public class Obd2DeviceRepositoryImpl implements Obd2DeviceRepository {
     public boolean existsByMacAddress(String macAddress) {
         return persistenceRepository.existsByMacAddress(macAddress);
     }
+
+    @Override
+    public void delete(Obd2DeviceId id) {
+        persistenceRepository.deleteById(id.value());
+    }
 }

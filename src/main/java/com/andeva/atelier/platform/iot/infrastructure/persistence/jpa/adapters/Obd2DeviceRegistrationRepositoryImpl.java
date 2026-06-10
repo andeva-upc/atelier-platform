@@ -49,13 +49,13 @@ public class Obd2DeviceRegistrationRepositoryImpl implements Obd2DeviceRegistrat
 
     @Override
     public Optional<Obd2DeviceRegistration> findActiveByObd2DeviceId(Obd2DeviceId obd2DeviceId) {
-        return persistenceRepository.findByObd2DeviceIdAndStatus(obd2DeviceId, Obd2RegistrationStatus.ACTIVE)
+        return persistenceRepository.findByObd2DeviceIdAndStatus(obd2DeviceId, Obd2RegistrationStatus.ACTIVE.value())
                 .map(Obd2DeviceRegistrationPersistenceAssembler::toDomainEntity);
     }
 
     @Override
     public Optional<Obd2DeviceRegistration> findActiveByVehicleId(VehicleId vehicleId) {
-        return persistenceRepository.findByVehicleIdAndStatus(vehicleId, Obd2RegistrationStatus.ACTIVE)
+        return persistenceRepository.findByVehicleIdAndStatus(vehicleId, Obd2RegistrationStatus.ACTIVE.value())
                 .map(Obd2DeviceRegistrationPersistenceAssembler::toDomainEntity);
     }
 }

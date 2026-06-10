@@ -4,6 +4,8 @@ import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCom
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandService;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device;
 import com.andeva.atelier.platform.iot.domain.model.commands.CreateObd2DeviceCommand;
+import com.andeva.atelier.platform.iot.domain.model.commands.DeleteObd2DeviceCommand;
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceStatus;
 import com.andeva.atelier.platform.iot.domain.repositories.Obd2DeviceRepository;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
@@ -32,5 +34,22 @@ public class Obd2DeviceCommandServiceImpl implements Obd2DeviceCommandService {
         var savedDevice = obd2DeviceRepository.save(obd2Device);
 
         return Result.success(savedDevice);
+    }
+
+    @Override
+    @Transactional
+    public Result<Void, Obd2DeviceCommandFailure> handle(DeleteObd2DeviceCommand command) {
+        var obd2DeviceOpt = obd2DeviceRepository.findById(command.obd2DeviceId());
+        if (obd2DeviceOpt.isEmpty()) {
+            return Result.failure(new Obd2DeviceCommandFailure.NotFound("iot.error.obd2Device.notFound"));
+        }
+
+        var obd2Device = obd2DeviceOpt.get();
+        if (Obd2DeviceStatus.LINKED.equals(obd2Device.getStatus())) {
+            return Result.failure(new Obd2DeviceCommandFailure.InvalidState("iot.error.obd2Device.cannotDeleteLinkedDevice"));
+        }
+
+        obd2DeviceRepository.delete(command.obd2DeviceId());
+        return Result.success(null);
     }
 }

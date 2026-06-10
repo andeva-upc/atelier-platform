@@ -2,6 +2,7 @@ package com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.assembler
 
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2DeviceRegistration;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceRegistrationId;
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2RegistrationStatus;
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.entities.Obd2DeviceRegistrationPersistenceEntity;
 
 public class Obd2DeviceRegistrationPersistenceAssembler {
@@ -15,7 +16,7 @@ public class Obd2DeviceRegistrationPersistenceAssembler {
         entity.setObd2DeviceId(domain.getObd2DeviceId());
         entity.setBranchId(domain.getBranchId());
         entity.setVehicleId(domain.getVehicleId());
-        entity.setStatus(domain.getStatus());
+        entity.setStatus(domain.getStatus() != null ? domain.getStatus().value() : null);
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setDeletedAt(domain.getDeletedAt());
         return entity;
@@ -30,7 +31,7 @@ public class Obd2DeviceRegistrationPersistenceAssembler {
                 entity.getObd2DeviceId(),
                 entity.getBranchId(),
                 entity.getVehicleId(),
-                entity.getStatus(),
+                entity.getStatus() != null ? new Obd2RegistrationStatus(entity.getStatus()) : null,
                 entity.getCreatedAt(),
                 entity.getDeletedAt()
         );

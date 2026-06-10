@@ -1,6 +1,5 @@
 package com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.entities;
 
-import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceStatus;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
 import jakarta.persistence.*;
@@ -43,9 +42,8 @@ public class Obd2DevicePersistenceEntity extends AuditableAbstractPersistenceEnt
     @Column(name = "last_ping")
     private Instant lastPing;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Obd2DeviceStatus status;
+    private String status;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
