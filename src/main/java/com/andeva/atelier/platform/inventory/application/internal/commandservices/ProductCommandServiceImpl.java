@@ -19,7 +19,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
     @Override
     public Optional<Product> handle(CreateProductCommand command) {
-        Product product = new Product(UUID.randomUUID(), command.branchId(), command.category(), command.name(), command.sku());
+        Product product = new Product(UUID.randomUUID(), command.branchId(), command.category(), command.name(), command.sku(), command.salePrice(), command.description(), command.minimumStock().value());
         productRepository.save(product);
         return Optional.of(product);
     }
@@ -46,7 +46,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         if (product.isEmpty()) {
             return Optional.empty();
         }
-        product.get().updateDetails(command.name(), command.category(), command.sku());
+        product.get().updateDetails(command.name(), command.category(), command.sku(), command.salePrice(), command.description(), command.minimumStock().value());
         productRepository.save(product.get());
         return product;
     }

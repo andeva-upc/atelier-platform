@@ -45,7 +45,7 @@ public class ProductsController {
     public ResponseEntity<ProductResource> createProduct(@RequestBody CreateProductResource resource) {
         CreateProductCommand command = new CreateProductCommand(
                 new BranchId(java.util.UUID.fromString(resource.branchId())),
-                ProductCategory.valueOf(resource.category()),
+                new ProductCategory(resource.category()),
                 new ProductName(resource.name()),
                 new Sku(resource.sku()),
                 resource.description(),
@@ -108,8 +108,11 @@ public class ProductsController {
         var command = new com.andeva.atelier.platform.inventory.domain.model.commands.UpdateProductCommand(
                 productId,
                 new com.andeva.atelier.platform.inventory.domain.model.valueobjects.ProductName(resource.name()),
-                com.andeva.atelier.platform.inventory.domain.model.valueobjects.ProductCategory.valueOf(resource.category().toUpperCase()),
-                new com.andeva.atelier.platform.inventory.domain.model.valueobjects.Sku(resource.sku())
+                new com.andeva.atelier.platform.inventory.domain.model.valueobjects.ProductCategory(resource.category().toUpperCase()),
+                new com.andeva.atelier.platform.inventory.domain.model.valueobjects.Sku(resource.sku()),
+                resource.description(),
+                new Money(java.math.BigDecimal.valueOf(resource.salePrice())),
+                new InventoryQuantity(resource.minimumStock())
         );
         
         var updatedProduct = productCommandService.handle(command);
