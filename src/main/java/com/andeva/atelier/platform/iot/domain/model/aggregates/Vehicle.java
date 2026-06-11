@@ -28,7 +28,7 @@ public class Vehicle extends AbstractDomainAggregateRoot<Vehicle> {
     }
 
     public Vehicle(String plateNumber, String brand, String model, Integer year, String vin) {
-        this.id = new VehicleId(UUID.randomUUID());
+        this.id = null;
         this.plateNumber = plateNumber;
         this.brand = brand;
         this.model = model;
