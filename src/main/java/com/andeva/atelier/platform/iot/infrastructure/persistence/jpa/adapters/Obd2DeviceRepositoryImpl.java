@@ -9,6 +9,8 @@ import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.repositori
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -73,5 +75,12 @@ public class Obd2DeviceRepositoryImpl implements Obd2DeviceRepository {
     @Override
     public void delete(Obd2DeviceId id) {
         persistenceRepository.deleteById(id.value());
+    }
+
+    @Override
+    public List<Obd2Device> findAllByBranchId(BranchId branchId) {
+        return persistenceRepository.findAllByBranchId(branchId.value()).stream()
+                .map(Obd2DevicePersistenceAssembler::toDomainEntity)
+                .toList();
     }
 }
