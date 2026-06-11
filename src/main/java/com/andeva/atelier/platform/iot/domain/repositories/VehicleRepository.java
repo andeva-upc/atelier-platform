@@ -2,6 +2,7 @@ package com.andeva.atelier.platform.iot.domain.repositories;
 
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,13 @@ import java.util.Optional;
  * Domain repository interface/port for managing Vehicle operations inside the iot context.
  */
 public interface VehicleRepository {
+
+    /**
+     * Finds a vehicle by its unique identifier.
+     * @param id the unique identifier of the vehicle
+     * @return an Optional containing the Vehicle aggregate if found
+     */
+    Optional<Vehicle> findById(VehicleId id);
 
     /**
      * Finds all vehicles in a specific branch that are available for linking (unlinked).

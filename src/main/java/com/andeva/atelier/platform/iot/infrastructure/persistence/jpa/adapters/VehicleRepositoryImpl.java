@@ -6,6 +6,7 @@ import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.assemblers
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.entities.VehiclePersistenceEntity;
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.repositories.VehiclePersistenceRepository;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,6 +22,12 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     public VehicleRepositoryImpl(VehiclePersistenceRepository persistenceRepository) {
         this.persistenceRepository = persistenceRepository;
+    }
+
+    @Override
+    public Optional<Vehicle> findById(VehicleId id) {
+        return persistenceRepository.findById(id.value())
+                .map(VehiclePersistenceAssembler::toDomainEntity);
     }
 
     @Override
