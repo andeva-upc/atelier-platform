@@ -1,16 +1,20 @@
 package com.andeva.atelier.platform.iot.interfaces.rest;
 
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceRegistrationCommandService;
+import com.andeva.atelier.platform.iot.application.queryservices.DtcAlertQueryService;
 import com.andeva.atelier.platform.iot.application.queryservices.Obd2DeviceRegistrationQueryService;
 import com.andeva.atelier.platform.iot.application.queryservices.TelemetryQueryService;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeactivateObd2DeviceRegistrationCommand;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetDtcAlertsByRegistrationIdQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceRegistrationsByBranchIdAndStatusQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetTelemetrySnapshotsByRegistrationIdQuery;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceRegistrationId;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2RegistrationStatus;
+import com.andeva.atelier.platform.iot.interfaces.rest.resources.DtcAlertResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.LinkObd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.Obd2DeviceRegistrationResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.TelemetrySnapshotResource;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.DtcAlertResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.LinkObd2DeviceCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.Obd2DeviceRegistrationResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromObd2DeviceRegistrationCommandResultAssembler;
@@ -39,17 +43,20 @@ public class Obd2DeviceRegistrationsController {
     private final Obd2DeviceRegistrationCommandService commandService;
     private final Obd2DeviceRegistrationQueryService queryService;
     private final TelemetryQueryService telemetryQueryService;
+    private final DtcAlertQueryService dtcAlertQueryService;
     private final MessageSource messageSource;
 
     public Obd2DeviceRegistrationsController(
             Obd2DeviceRegistrationCommandService commandService,
             Obd2DeviceRegistrationQueryService queryService,
             TelemetryQueryService telemetryQueryService,
+            DtcAlertQueryService dtcAlertQueryService,
             MessageSource messageSource
     ) {
         this.commandService = commandService;
         this.queryService = queryService;
         this.telemetryQueryService = telemetryQueryService;
+        this.dtcAlertQueryService = dtcAlertQueryService;
         this.messageSource = messageSource;
     }
 
@@ -114,6 +121,22 @@ public class Obd2DeviceRegistrationsController {
         var list = telemetryQueryService.handle(query);
         var resources = list.stream()
                 .map(TelemetrySnapshotResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+        return ResponseEntity.ok(resources);
+    }
+
+    /**
+     * Retrieves DTC alerts for a specific OBD2 device registration.
+     * @param id the registration identifier
+     * @return a ResponseEntity containing the list of DTC alert resources
+     */
+    @GetMapping("/{id}/dtc-alerts")
+    @Operation(summary = "Get DTC alerts for registration", description = "Retrieves all DTC alerts captured under a specific OBD2-vehicle registration")
+    public ResponseEntity<List<DtcAlertResource>> getDtcAlertsForRegistration(@PathVariable UUID id) {
+        var query = new GetDtcAlertsByRegistrationIdQuery(new Obd2DeviceRegistrationId(id));
+        var list = dtcAlertQueryService.handle(query);
+        var resources = list.stream()
+                .map(DtcAlertResourceFromAggregateAssembler::toResourceFromAggregate)
                 .toList();
         return ResponseEntity.ok(resources);
     }
