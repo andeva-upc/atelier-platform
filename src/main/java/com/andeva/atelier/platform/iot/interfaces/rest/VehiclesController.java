@@ -2,14 +2,18 @@ package com.andeva.atelier.platform.iot.interfaces.rest;
 
 import com.andeva.atelier.platform.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
 import com.andeva.atelier.platform.iot.application.commandservices.VehicleCommandService;
+import com.andeva.atelier.platform.iot.application.queryservices.DtcAlertQueryService;
 import com.andeva.atelier.platform.iot.application.queryservices.TelemetryQueryService;
 import com.andeva.atelier.platform.iot.application.queryservices.VehicleQueryService;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehiclesAvailableForLinkingQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleDtcAlertHistoryQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleTelemetrySnapshotHistoryQuery;
+import com.andeva.atelier.platform.iot.interfaces.rest.resources.DtcAlertResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.RegisterVehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.TelemetrySnapshotResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.UpdateVehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.VehicleResource;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.DtcAlertResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.RegisterVehicleCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromVehicleCommandResultAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.TelemetrySnapshotResourceFromAggregateAssembler;
@@ -40,15 +44,18 @@ public class VehiclesController {
     private final VehicleQueryService vehicleQueryService;
     private final VehicleCommandService vehicleCommandService;
     private final TelemetryQueryService telemetryQueryService;
+    private final DtcAlertQueryService dtcAlertQueryService;
     private final MessageSource messageSource;
 
     public VehiclesController(VehicleQueryService vehicleQueryService,
                               VehicleCommandService vehicleCommandService,
                               TelemetryQueryService telemetryQueryService,
+                              DtcAlertQueryService dtcAlertQueryService,
                               MessageSource messageSource) {
         this.vehicleQueryService = vehicleQueryService;
         this.vehicleCommandService = vehicleCommandService;
         this.telemetryQueryService = telemetryQueryService;
+        this.dtcAlertQueryService = dtcAlertQueryService;
         this.messageSource = messageSource;
     }
 
@@ -130,6 +137,22 @@ public class VehiclesController {
         var list = telemetryQueryService.handle(query);
         var resources = list.stream()
                 .map(TelemetrySnapshotResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+        return ResponseEntity.ok(resources);
+    }
+
+    /**
+     * Retrieves historical DTC alerts for a vehicle starting from the start of its active driver registration.
+     * @param vehicleId the vehicle identifier
+     * @return the list of DTC alerts
+     */
+    @GetMapping("/{vehicleId}/dtc-alerts")
+    @Operation(summary = "Get historical DTC alerts for vehicle", description = "Retrieves all DTC/motor alerts captured for the vehicle since its active registration start date")
+    public ResponseEntity<List<DtcAlertResource>> getVehicleDtcAlerts(@PathVariable UUID vehicleId) {
+        var query = new GetVehicleDtcAlertHistoryQuery(new VehicleId(vehicleId));
+        var list = dtcAlertQueryService.handle(query);
+        var resources = list.stream()
+                .map(DtcAlertResourceFromAggregateAssembler::toResourceFromAggregate)
                 .toList();
         return ResponseEntity.ok(resources);
     }

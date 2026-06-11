@@ -2,6 +2,7 @@ package com.andeva.atelier.platform.iot.application.queryservices;
 
 import com.andeva.atelier.platform.iot.domain.model.aggregates.DtcAlert;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetDtcAlertsByRegistrationIdQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleDtcAlertHistoryQuery;
 
 import java.util.List;
 
@@ -16,4 +17,11 @@ public interface DtcAlertQueryService {
      * @return the list of DTC alerts ordered by creation date descending
      */
     List<DtcAlert> handle(GetDtcAlertsByRegistrationIdQuery query);
+
+    /**
+     * Handles retrieving the historical DTC alerts for a vehicle starting from its active driver registration start date.
+     * @param query the query containing the vehicle identifier
+     * @return the list of DTC alerts ordered by creation date descending
+     */
+    List<DtcAlert> handle(GetVehicleDtcAlertHistoryQuery query);
 }
