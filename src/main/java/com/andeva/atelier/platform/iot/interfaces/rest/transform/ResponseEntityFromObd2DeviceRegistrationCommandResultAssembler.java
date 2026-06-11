@@ -18,19 +18,21 @@ public final class ResponseEntityFromObd2DeviceRegistrationCommandResultAssemble
     private ResponseEntityFromObd2DeviceRegistrationCommandResultAssembler() {}
 
     /**
-     * Transforms the Result of an OBD2 Device Registration command execution into a ResponseEntity.
+     * Transforms the Result of an OBD2 Device Registration command execution into a ResponseEntity with a custom success status.
      * @param result The Result of the command execution
+     * @param successStatus The HttpStatus to return on success
      * @param messageSource The MessageSource used to retrieve localized error messages
      * @return A ResponseEntity containing either the Obd2DeviceRegistrationResource (on success) or a ProblemDetail with localized error message (on failure)
      */
     public static ResponseEntity<?> toResponseEntityFromResult(
             Result<Obd2DeviceRegistration, Obd2DeviceRegistrationCommandFailure> result,
+            HttpStatus successStatus,
             MessageSource messageSource) {
 
         return result.fold(
                 registration -> new ResponseEntity<>(
                         Obd2DeviceRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration),
-                        HttpStatus.CREATED
+                        successStatus
                 ),
                 failure -> {
                     HttpStatus status = statusFromFailure(failure);
@@ -40,6 +42,18 @@ public final class ResponseEntityFromObd2DeviceRegistrationCommandResultAssemble
                     );
                 }
         );
+    }
+
+    /**
+     * Transforms the Result of an OBD2 Device Registration command execution into a ResponseEntity.
+     * @param result The Result of the command execution
+     * @param messageSource The MessageSource used to retrieve localized error messages
+     * @return A ResponseEntity containing either the Obd2DeviceRegistrationResource (on success) or a ProblemDetail with localized error message (on failure)
+     */
+    public static ResponseEntity<?> toResponseEntityFromResult(
+            Result<Obd2DeviceRegistration, Obd2DeviceRegistrationCommandFailure> result,
+            MessageSource messageSource) {
+        return toResponseEntityFromResult(result, HttpStatus.CREATED, messageSource);
     }
 
     private static HttpStatus statusFromFailure(Obd2DeviceRegistrationCommandFailure failure) {
