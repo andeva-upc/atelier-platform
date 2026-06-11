@@ -10,13 +10,15 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import java.util.stream.Collectors;
 
 public class ProductEntityAssembler {
-    public static ProductJpaEntity toEntity(Product product) {
+    public static ProductJpaEntity toEntity(Product product, ProductJpaEntity entity) {
         if (product == null) return null;
-        ProductJpaEntity entity = new ProductJpaEntity();
+        if (entity == null) entity = new ProductJpaEntity();
         
         if (product.getVersion() != null) {
             entity.setId(product.getId());
             entity.setVersion(product.getVersion());
+        } else {
+            entity.setId(product.getId());
         }
         
         entity.setBranchId(product.getBranchId());
@@ -28,21 +30,29 @@ public class ProductEntityAssembler {
         entity.setCurrentStock(product.getCurrentStock().value());
         entity.setMinimumStock(product.getMinimumStock());
 
-        var batchEntities = product.getBatches().stream().map(b -> {
-            ProductBatchJpaEntity be = new ProductBatchJpaEntity();
-            if (b.getVersion() != null) {
-                be.setId(b.getBatchId());
-                be.setVersion(b.getVersion());
+        if (entity.getBatches() == null) {
+            entity.setBatches(new java.util.ArrayList<>());
+        }
+        
+        var productBatchIds = product.getBatches().stream().map(ProductBatch::getBatchId).collect(Collectors.toSet());
+        entity.getBatches().removeIf(b -> !productBatchIds.contains(b.getId()));
+        
+        for (ProductBatch b : product.getBatches()) {
+            var batchEntity = entity.getBatches().stream().filter(be -> be.getId() != null && be.getId().equals(b.getBatchId())).findFirst().orElse(null);
+            if (batchEntity == null) {
+                batchEntity = new ProductBatchJpaEntity();
+                batchEntity.setProduct(entity);
+                entity.getBatches().add(batchEntity);
             }
-            be.setBranchId(product.getBranchId());
-            be.setInitialQuantity(b.getInitialQuantity().value()); 
-            be.setAvailableQuantity(b.getAvailableQuantity().value());
-            be.setAcquisitionCost(b.getAcquisitionCost());
-            be.setProduct(entity);
-            return be;
-        }).collect(Collectors.toList());
+            if (b.getVersion() != null) {
+                batchEntity.setVersion(b.getVersion());
+            }
+            batchEntity.setBranchId(product.getBranchId());
+            batchEntity.setInitialQuantity(b.getInitialQuantity().value()); 
+            batchEntity.setAvailableQuantity(b.getAvailableQuantity().value());
+            batchEntity.setAcquisitionCost(b.getAcquisitionCost());
+        }
 
-        entity.setBatches(batchEntities);
         return entity;
     }
 
