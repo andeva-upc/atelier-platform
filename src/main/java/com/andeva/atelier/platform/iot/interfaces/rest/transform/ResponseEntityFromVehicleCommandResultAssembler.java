@@ -96,6 +96,28 @@ public final class ResponseEntityFromVehicleCommandResultAssembler {
         return toResponseEntityFromVehicleResult(result, HttpStatus.OK, messageSource);
     }
 
+    /**
+     * Transforms the Result of a Vehicle command deletion (Void) execution into a ResponseEntity.
+     * @param result The Result of the command execution
+     * @param messageSource The MessageSource used to retrieve localized error messages
+     * @return A ResponseEntity with 204 No Content (on success) or a ProblemDetail (on failure)
+     */
+    public static ResponseEntity<?> toResponseEntityFromVoidResult(
+            Result<Void, VehicleCommandFailure> result,
+            MessageSource messageSource) {
+
+        return result.fold(
+                _void -> ResponseEntity.noContent().build(),
+                failure -> {
+                    HttpStatus status = statusFromFailure(failure);
+                    String localizedMessage = messageFromFailure(failure, messageSource);
+                    return ResponseEntity.status(status).body(
+                            ProblemDetail.forStatusAndDetail(status, localizedMessage)
+                    );
+                }
+        );
+    }
+
     private static HttpStatus statusFromFailure(VehicleCommandFailure failure) {
         return switch (failure) {
             case VehicleCommandFailure.Duplicate(String _) -> HttpStatus.CONFLICT;
