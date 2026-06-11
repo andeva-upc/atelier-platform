@@ -10,7 +10,9 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * JPA adapter implementing the VehicleRegistrationRepository port.
@@ -46,5 +48,12 @@ public class VehicleRegistrationRepositoryImpl implements VehicleRegistrationRep
     public Optional<VehicleRegistration> findActiveByVehicleId(VehicleId vehicleId) {
         return persistenceRepository.findByVehicleIdAndStatus(vehicleId, VehicleRegistrationStatus.ACTIVE.value())
                 .map(VehicleRegistrationPersistenceAssembler::toDomainEntity);
+    }
+
+    @Override
+    public List<VehicleRegistration> findAllActiveByUserId(UUID userId) {
+        return persistenceRepository.findAllByUserIdAndStatus(userId, VehicleRegistrationStatus.ACTIVE.value()).stream()
+                .map(VehicleRegistrationPersistenceAssembler::toDomainEntity)
+                .toList();
     }
 }
