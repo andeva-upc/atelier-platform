@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCom
 import com.andeva.atelier.platform.iot.application.queryservices.Obd2DeviceQueryService;
 import com.andeva.atelier.platform.iot.domain.model.commands.CreateObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeleteObd2DeviceCommand;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetAvailableObd2DevicesQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceByIdQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DevicesByBranchIdQuery;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
@@ -140,6 +141,22 @@ public class Obd2DevicesController {
     @Operation(summary = "Get all OBD2 devices by branch", description = "Retrieves all registered OBD2 devices under a specific branch")
     public ResponseEntity<List<Obd2DeviceResource>> getObd2DevicesByBranchId(@RequestParam UUID branchId) {
         var query = new GetObd2DevicesByBranchIdQuery(new BranchId(branchId));
+        var list = queryService.handle(query);
+        var resources = list.stream()
+                .map(Obd2DeviceResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+        return ResponseEntity.ok(resources);
+    }
+
+    /**
+     * Retrieves all available (unlinked) OBD2 devices registered in a specific branch.
+     * @param branchId the branch identifier to filter devices
+     * @return a ResponseEntity containing the list of available device resources
+     */
+    @GetMapping("/available")
+    @Operation(summary = "Get available OBD2 devices by branch", description = "Retrieves all available (unlinked) OBD2 devices registered under a specific branch")
+    public ResponseEntity<List<Obd2DeviceResource>> getAvailableObd2Devices(@RequestParam UUID branchId) {
+        var query = new GetAvailableObd2DevicesQuery(new BranchId(branchId));
         var list = queryService.handle(query);
         var resources = list.stream()
                 .map(Obd2DeviceResourceFromAggregateAssembler::toResourceFromAggregate)
