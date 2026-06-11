@@ -5,9 +5,11 @@ import com.andeva.atelier.platform.iot.application.commandservices.VehicleComman
 import com.andeva.atelier.platform.iot.application.queryservices.VehicleQueryService;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehiclesAvailableForLinkingQuery;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.RegisterVehicleResource;
+import com.andeva.atelier.platform.iot.interfaces.rest.resources.UpdateVehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.VehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.RegisterVehicleCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromVehicleCommandResultAssembler;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.UpdateVehicleCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.VehicleResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,6 +74,23 @@ public class VehiclesController {
         UUID userId = userDetails.getId();
 
         var command = RegisterVehicleCommandFromResourceAssembler.toCommandFromResource(userId, resource);
+        var result = vehicleCommandService.handle(command);
+
+        return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+    }
+
+    /**
+     * Updates client vehicle details.
+     * @param id the unique identifier of the vehicle
+     * @param resource the vehicle update request details DTO
+     * @return a ResponseEntity containing the updated VehicleResource
+     */
+    @PutMapping("/{id}")
+    @Operation(summary = "Update client vehicle", description = "Updates client vehicle details by its unique identifier")
+    public ResponseEntity<?> updateVehicle(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateVehicleResource resource) {
+        var command = UpdateVehicleCommandFromResourceAssembler.toCommandFromResource(id, resource);
         var result = vehicleCommandService.handle(command);
 
         return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
