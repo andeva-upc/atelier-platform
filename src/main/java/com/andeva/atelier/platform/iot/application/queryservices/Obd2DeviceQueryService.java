@@ -2,7 +2,9 @@ package com.andeva.atelier.platform.iot.application.queryservices;
 
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceByIdQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DevicesByBranchIdQuery;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,4 +18,11 @@ public interface Obd2DeviceQueryService {
      * @return an Optional containing the device if found, or empty
      */
     Optional<Obd2Device> handle(GetObd2DeviceByIdQuery query);
+
+    /**
+     * Handles retrieving all OBD2 devices registered in a specific branch.
+     * @param query the query containing the branch ID
+     * @return the list of registered OBD2 devices
+     */
+    List<Obd2Device> handle(GetObd2DevicesByBranchIdQuery query);
 }
