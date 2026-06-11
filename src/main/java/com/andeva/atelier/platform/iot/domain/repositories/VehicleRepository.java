@@ -46,4 +46,10 @@ public interface VehicleRepository {
      * @return an Optional containing the Vehicle aggregate if found
      */
     Optional<Vehicle> findByPlateNumber(String plateNumber);
+
+    /**
+     * Deletes (soft deletes) a vehicle from the repository.
+     * @param id the unique identifier of the vehicle
+     */
+    void delete(VehicleId id);
 }
