@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2DeviceRegistr
 import com.andeva.atelier.platform.iot.domain.model.aggregates.TelemetrySnapshot;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetLatestTelemetrySnapshotQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetTelemetrySnapshotHistoryQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetTelemetrySnapshotsByRegistrationIdQuery;
 import com.andeva.atelier.platform.iot.domain.repositories.Obd2DeviceRegistrationRepository;
 import com.andeva.atelier.platform.iot.domain.repositories.TelemetrySnapshotRepository;
 import org.springframework.stereotype.Service;
@@ -46,5 +47,11 @@ public class TelemetryQueryServiceImpl implements TelemetryQueryService {
                 .findActiveByObd2DeviceId(query.obd2DeviceId())
                 .map(registration -> telemetrySnapshotRepository.findAllByRegistrationId(registration.getId()))
                 .orElse(Collections.emptyList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TelemetrySnapshot> handle(GetTelemetrySnapshotsByRegistrationIdQuery query) {
+        return telemetrySnapshotRepository.findAllByRegistrationId(query.obd2DeviceRegistrationId());
     }
 }
