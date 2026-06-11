@@ -3,6 +3,7 @@ package com.andeva.atelier.platform.iot.domain.repositories;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.DtcAlert;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceRegistrationId;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -16,4 +17,15 @@ public interface DtcAlertRepository {
      * @return the list of DTC alerts ordered by creation date descending
      */
     List<DtcAlert> findAllByRegistrationId(Obd2DeviceRegistrationId registrationId);
+
+    /**
+     * Finds all DTC alerts for a specific OBD2 device registration starting from a specific timestamp.
+     * @param registrationId the registration ID
+     * @param startTimestamp the start timestamp
+     * @return the list of DTC alerts ordered by creation date descending
+     */
+    List<DtcAlert> findAllByRegistrationIdAndCreatedAtGreaterThanEqual(
+            Obd2DeviceRegistrationId registrationId,
+            Instant startTimestamp
+    );
 }

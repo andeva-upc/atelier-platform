@@ -7,6 +7,7 @@ import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.assemblers
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.repositories.DtcAlertPersistenceRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -24,6 +25,16 @@ public class DtcAlertRepositoryImpl implements DtcAlertRepository {
     @Override
     public List<DtcAlert> findAllByRegistrationId(Obd2DeviceRegistrationId registrationId) {
         return persistenceRepository.findAllByRegistrationId(registrationId.value()).stream()
+                .map(DtcAlertPersistenceAssembler::toDomainEntity)
+                .toList();
+    }
+
+    @Override
+    public List<DtcAlert> findAllByRegistrationIdAndCreatedAtGreaterThanEqual(
+            Obd2DeviceRegistrationId registrationId,
+            Instant startTimestamp
+    ) {
+        return persistenceRepository.findAllByRegistrationIdAndCreatedAtGreaterThanEqual(registrationId.value(), startTimestamp).stream()
                 .map(DtcAlertPersistenceAssembler::toDomainEntity)
                 .toList();
     }
