@@ -1,6 +1,7 @@
 package com.andeva.atelier.platform.iot.interfaces.rest.transform;
 
 import com.andeva.atelier.platform.iot.application.commandservices.VehicleCommandFailure;
+import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.VehicleRegistration;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.context.MessageSource;
@@ -54,6 +55,45 @@ public final class ResponseEntityFromVehicleCommandResultAssembler {
             Result<VehicleRegistration, VehicleCommandFailure> result,
             MessageSource messageSource) {
         return toResponseEntityFromResult(result, HttpStatus.CREATED, messageSource);
+    }
+
+    /**
+     * Transforms the Result of a Vehicle update command execution into a ResponseEntity with a custom success status.
+     * @param result The Result of the command execution
+     * @param successStatus The HttpStatus to return on success
+     * @param messageSource The MessageSource used to retrieve localized error messages
+     * @return A ResponseEntity containing either the VehicleResource (on success) or a ProblemDetail with localized error message (on failure)
+     */
+    public static ResponseEntity<?> toResponseEntityFromResult(
+            Result<Vehicle, VehicleCommandFailure> result,
+            HttpStatus successStatus,
+            MessageSource messageSource) {
+
+        return result.fold(
+                vehicle -> new ResponseEntity<>(
+                        VehicleResourceFromAggregateAssembler.toResourceFromAggregate(vehicle),
+                        successStatus
+                ),
+                failure -> {
+                    HttpStatus status = statusFromFailure(failure);
+                    String localizedMessage = messageFromFailure(failure, messageSource);
+                    return ResponseEntity.status(status).body(
+                            ProblemDetail.forStatusAndDetail(status, localizedMessage)
+                    );
+                }
+        );
+    }
+
+    /**
+     * Transforms the Result of a Vehicle update command execution into a ResponseEntity.
+     * @param result The Result of the command execution
+     * @param messageSource The MessageSource used to retrieve localized error messages
+     * @return A ResponseEntity containing either the VehicleResource (on success) or a ProblemDetail with localized error message (on failure)
+     */
+    public static ResponseEntity<?> toResponseEntityFromResult(
+            Result<Vehicle, VehicleCommandFailure> result,
+            MessageSource messageSource) {
+        return toResponseEntityFromResult(result, HttpStatus.OK, messageSource);
     }
 
     private static HttpStatus statusFromFailure(VehicleCommandFailure failure) {
