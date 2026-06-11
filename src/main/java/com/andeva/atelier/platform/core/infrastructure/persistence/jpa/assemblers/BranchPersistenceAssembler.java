@@ -18,7 +18,6 @@ public final class BranchPersistenceAssembler {
         if (branch.getVersion() != null) {
             entity.setId(branch.getId() != null ? branch.getId().value() : null);
         }
-        entity.setId(branch.getId() != null ? branch.getId().value() : null);
         entity.setWorkshopId(branch.getWorkshopId() != null ? branch.getWorkshopId().value() : null);
         entity.setCode(branch.getCode());
         entity.setName(branch.getName());

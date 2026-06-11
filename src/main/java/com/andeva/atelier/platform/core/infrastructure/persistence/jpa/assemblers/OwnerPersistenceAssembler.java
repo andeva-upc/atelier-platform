@@ -19,7 +19,6 @@ public final class OwnerPersistenceAssembler {
         if (owner.getVersion() != null) {
             entity.setId(owner.getId() != null ? owner.getId().value() : null);
         }
-        entity.setId(owner.getId() != null ? owner.getId().value() : null);
         entity.setUserId(owner.getUserId() != null ? owner.getUserId().value() : null);
         
         if (owner.getName() != null) {

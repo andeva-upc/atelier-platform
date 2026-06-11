@@ -17,7 +17,6 @@ public final class WorkshopPersistenceAssembler {
         if (workshop.getVersion() != null) {
             entity.setId(workshop.getId() != null ? workshop.getId().value() : null);
         }
-        entity.setId(workshop.getId() != null ? workshop.getId().value() : null);
         entity.setOwnerId(workshop.getOwnerId() != null ? workshop.getOwnerId().value() : null);
         entity.setBusinessName(workshop.getBusinessName());
         entity.setBrandName(workshop.getBrandName());

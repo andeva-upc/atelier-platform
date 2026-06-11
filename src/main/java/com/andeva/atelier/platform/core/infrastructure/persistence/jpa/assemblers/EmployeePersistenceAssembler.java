@@ -19,7 +19,6 @@ public final class EmployeePersistenceAssembler {
         if (employee.getVersion() != null) {
             entity.setId(employee.getId() != null ? employee.getId().value() : null);
         }
-        entity.setId(employee.getId() != null ? employee.getId().value() : null);
         entity.setUserId(employee.getUserId() != null ? employee.getUserId().value() : null);
         
         if (employee.getName() != null) {

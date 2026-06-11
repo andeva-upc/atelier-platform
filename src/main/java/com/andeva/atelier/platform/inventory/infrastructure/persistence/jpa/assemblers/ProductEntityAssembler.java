@@ -5,7 +5,6 @@ import com.andeva.atelier.platform.inventory.domain.model.entities.ProductBatch;
 import com.andeva.atelier.platform.inventory.domain.model.valueobjects.*;
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductBatchJpaEntity;
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductJpaEntity;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 
 import java.util.stream.Collectors;
 
