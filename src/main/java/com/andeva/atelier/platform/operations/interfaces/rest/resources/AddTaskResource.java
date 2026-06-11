@@ -2,7 +2,6 @@ package com.andeva.atelier.platform.operations.interfaces.rest.resources;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -10,7 +9,6 @@ import java.util.UUID;
  * @param serviceId
  * @param assignedMechanicId
  * @param description
- * @param laborPrice
  * @author Joel Huamani Estefanero
  */
 public record AddTaskResource(
