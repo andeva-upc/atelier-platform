@@ -3,6 +3,7 @@ package com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.adapters;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.iot.domain.repositories.VehicleRepository;
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.assemblers.VehiclePersistenceAssembler;
+import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.entities.VehiclePersistenceEntity;
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.repositories.VehiclePersistenceRepository;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import org.springframework.stereotype.Repository;
