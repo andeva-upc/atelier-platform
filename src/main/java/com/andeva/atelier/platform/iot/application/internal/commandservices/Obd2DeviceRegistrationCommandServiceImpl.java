@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceReg
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceRegistrationCommandService;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2DeviceRegistration;
+import com.andeva.atelier.platform.iot.domain.model.commands.DeactivateObd2DeviceRegistrationCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.LinkObd2DeviceToVehicleCommand;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceStatus;
@@ -70,6 +71,42 @@ public class Obd2DeviceRegistrationCommandServiceImpl implements Obd2DeviceRegis
         );
 
         // 7. Guardar en base de datos
+        var savedRegistration = obd2DeviceRegistrationRepository.save(registration);
+
+        return Result.success(savedRegistration);
+    }
+
+    @Override
+    @Transactional
+    public Result<Obd2DeviceRegistration, Obd2DeviceRegistrationCommandFailure> handle(DeactivateObd2DeviceRegistrationCommand command) {
+        // 1. Validar existencia de la vinculación
+        var registrationOpt = obd2DeviceRegistrationRepository.findById(command.registrationId());
+        if (registrationOpt.isEmpty()) {
+            return Result.failure(new Obd2DeviceRegistrationCommandFailure.NotFound("iot.error.obd2DeviceRegistration.notFound"));
+        }
+
+        var registration = registrationOpt.get();
+
+        // 2. Validar existencia del OBD2 asociado
+        var obd2DeviceOpt = obd2DeviceRepository.findById(registration.getObd2DeviceId());
+        if (obd2DeviceOpt.isEmpty()) {
+            return Result.failure(new Obd2DeviceRegistrationCommandFailure.NotFound("iot.error.obd2Device.notFound"));
+        }
+
+        var obd2Device = obd2DeviceOpt.get();
+
+        // 3. Desactivar vinculación
+        try {
+            registration.deactivate();
+        } catch (IllegalStateException e) {
+            return Result.failure(new Obd2DeviceRegistrationCommandFailure.InvalidState(e.getMessage()));
+        }
+
+        // 4. Actualizar el estado del OBD2 a AVAILABLE
+        obd2Device.markAsAvailable();
+
+        // 5. Guardar cambios en base de datos
+        obd2DeviceRepository.save(obd2Device);
         var savedRegistration = obd2DeviceRegistrationRepository.save(registration);
 
         return Result.success(savedRegistration);
