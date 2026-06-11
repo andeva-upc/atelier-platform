@@ -8,10 +8,12 @@ import com.andeva.atelier.platform.iot.domain.repositories.Obd2DeviceRegistratio
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.assemblers.Obd2DeviceRegistrationPersistenceAssembler;
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.entities.Obd2DeviceRegistrationPersistenceEntity;
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.repositories.Obd2DeviceRegistrationPersistenceRepository;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -57,5 +59,13 @@ public class Obd2DeviceRegistrationRepositoryImpl implements Obd2DeviceRegistrat
     public Optional<Obd2DeviceRegistration> findActiveByVehicleId(VehicleId vehicleId) {
         return persistenceRepository.findByVehicleIdAndStatus(vehicleId, Obd2RegistrationStatus.ACTIVE.value())
                 .map(Obd2DeviceRegistrationPersistenceAssembler::toDomainEntity);
+    }
+
+    @Override
+    public List<Obd2DeviceRegistration> findAllByBranchIdAndStatus(BranchId branchId, Obd2RegistrationStatus status) {
+        return persistenceRepository.findAllByBranchIdAndStatus(branchId, status.value())
+                .stream()
+                .map(Obd2DeviceRegistrationPersistenceAssembler::toDomainEntity)
+                .toList();
     }
 }

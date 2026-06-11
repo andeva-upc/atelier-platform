@@ -1,11 +1,17 @@
 package com.andeva.atelier.platform.iot.interfaces.rest;
 
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceRegistrationCommandService;
+import com.andeva.atelier.platform.iot.application.queryservices.Obd2DeviceRegistrationQueryService;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeactivateObd2DeviceRegistrationCommand;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceRegistrationsByBranchIdAndStatusQuery;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceRegistrationId;
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2RegistrationStatus;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.LinkObd2DeviceResource;
+import com.andeva.atelier.platform.iot.interfaces.rest.resources.Obd2DeviceRegistrationResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.LinkObd2DeviceCommandFromResourceAssembler;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.Obd2DeviceRegistrationResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromObd2DeviceRegistrationCommandResultAssembler;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -15,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -26,13 +33,16 @@ import java.util.UUID;
 public class Obd2DeviceRegistrationsController {
 
     private final Obd2DeviceRegistrationCommandService commandService;
+    private final Obd2DeviceRegistrationQueryService queryService;
     private final MessageSource messageSource;
 
     public Obd2DeviceRegistrationsController(
             Obd2DeviceRegistrationCommandService commandService,
+            Obd2DeviceRegistrationQueryService queryService,
             MessageSource messageSource
     ) {
         this.commandService = commandService;
+        this.queryService = queryService;
         this.messageSource = messageSource;
     }
 
@@ -60,5 +70,28 @@ public class Obd2DeviceRegistrationsController {
         var command = new DeactivateObd2DeviceRegistrationCommand(new Obd2DeviceRegistrationId(id));
         var result = commandService.handle(command);
         return ResponseEntityFromObd2DeviceRegistrationCommandResultAssembler.toResponseEntityFromResult(result, HttpStatus.OK, messageSource);
+    }
+
+    /**
+     * Retrieves OBD2 device registrations by branch and status.
+     * @param branchId the branch identifier
+     * @param status the registration status string
+     * @return a ResponseEntity containing the list of matching registration resources
+     */
+    @GetMapping
+    @Operation(summary = "Get OBD2 device registrations by branch and status", description = "Retrieves all registered OBD2-vehicle couplings under a specific branch, filtered by status")
+    public ResponseEntity<List<Obd2DeviceRegistrationResource>> getObd2DeviceRegistrations(
+            @RequestParam UUID branchId,
+            @RequestParam String status
+    ) {
+        var query = new GetObd2DeviceRegistrationsByBranchIdAndStatusQuery(
+                new BranchId(branchId),
+                new Obd2RegistrationStatus(status)
+        );
+        var list = queryService.handle(query);
+        var resources = list.stream()
+                .map(Obd2DeviceRegistrationResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+        return ResponseEntity.ok(resources);
     }
 }
