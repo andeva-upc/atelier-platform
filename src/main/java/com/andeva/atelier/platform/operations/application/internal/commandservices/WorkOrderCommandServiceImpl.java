@@ -6,6 +6,9 @@ import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
 import com.andeva.atelier.platform.operations.domain.model.commands.*;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
 import com.andeva.atelier.platform.operations.domain.repositories.WorkOrderRepository;
+import com.andeva.atelier.platform.operations.domain.repositories.ServiceRepository;
+import com.andeva.atelier.platform.inventory.application.queryservices.ProductQueryService;
+import com.andeva.atelier.platform.inventory.domain.model.queries.GetProductByIdQuery;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +22,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
 
     private final WorkOrderRepository workOrderRepository;
+    private final ServiceRepository serviceRepository;
+    private final ProductQueryService productQueryService;
 
     /**
-     * Constructor injection of the WorkOrderRepository
-     * @param workOrderRepository The repository used to load and save WorkOrder aggregates
+     * Constructor injection of the dependencies
      */
-    public WorkOrderCommandServiceImpl(WorkOrderRepository workOrderRepository) {
+    public WorkOrderCommandServiceImpl(WorkOrderRepository workOrderRepository, ServiceRepository serviceRepository, ProductQueryService productQueryService) {
         this.workOrderRepository = workOrderRepository;
+        this.serviceRepository = serviceRepository;
+        this.productQueryService = productQueryService;
     }
 
     /**
@@ -96,7 +102,9 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
     public Result<WorkOrder, WorkOrderCommandFailure> handle(AddTaskToWorkOrderCommand command) {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
-            workOrder.addTask(command.serviceId(), command.mechanicId(), command.description());
+            var service = serviceRepository.findById(command.serviceId())
+                    .orElseThrow(() -> new IllegalArgumentException("operations.error.service.notFound"));
+            workOrder.addTask(command.serviceId(), command.mechanicId(), command.description(), service.getPrice());
             WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
             return Result.success(savedWorkOrder);
 
@@ -117,7 +125,9 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
     public Result<WorkOrder, WorkOrderCommandFailure> handle(AddProductToTaskCommand command) {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
-            workOrder.addProductToTask(command.taskId(), command.productId(), command.quantity());
+            var product = productQueryService.handle(new GetProductByIdQuery(command.productId().value()))
+                    .orElseThrow(() -> new IllegalArgumentException("operations.error.product.notFound"));
+            workOrder.addProductToTask(command.taskId(), command.productId(), command.quantity(), product.getCurrentSellingPrice());
             WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
             return Result.success(savedWorkOrder);
 
@@ -266,11 +276,14 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
     public Result<WorkOrder, WorkOrderCommandFailure> handle(UpdateWorkOrderTaskDetailsCommand command) {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
+            var service = serviceRepository.findById(command.serviceId())
+                    .orElseThrow(() -> new IllegalArgumentException("operations.error.service.notFound"));
             workOrder.updateTaskDetails(
                     command.taskId(),
                     command.serviceId(),
                     command.mechanicId(),
-                    command.description()
+                    command.description(),
+                    service.getPrice()
             );
             WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
             return Result.success(savedWorkOrder);

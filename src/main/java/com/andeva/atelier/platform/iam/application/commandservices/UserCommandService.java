@@ -14,6 +14,6 @@ public interface UserCommandService {
     Optional<User> handle(SignUpCommand command);
     Optional<AuthenticatedUser> handle(SignInCommand command);
     Optional<AuthenticatedUser> handle(GoogleSignInCommand command);
-    Optional<User> handle(UpdateUserEmailCommand command);
+    Optional<AuthenticatedUser> handle(UpdateUserEmailCommand command);
     Optional<User> handle(UpdateUserPasswordCommand command);
 }

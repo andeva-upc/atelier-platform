@@ -19,7 +19,6 @@ public final class CustomerPersistenceAssembler {
         if (customer.getVersion() != null) {
             entity.setId(customer.getId() != null ? customer.getId().value() : null);
         }
-        entity.setId(customer.getId() != null ? customer.getId().value() : null);
         entity.setUserId(customer.getUserId() != null ? customer.getUserId().value() : null);
         entity.setCorporate(customer.isCorporate());
         

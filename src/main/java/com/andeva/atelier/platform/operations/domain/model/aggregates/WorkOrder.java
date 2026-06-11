@@ -95,11 +95,11 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @param description a textual description of the task, providing details about what needs to be done and any specific instructions or notes for the mechanic
      * @throws IllegalStateException if the work order is in a state that does not allow modifications (COMPLETED or PAID), which prevents adding tasks to a closed order
      */
-    public void addTask(ServiceId serviceId, MechanicId mechanicId, TaskDescription description) {
+    public void addTask(ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money laborPrice) {
         if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
         }
-        WorkOrderTask task = new WorkOrderTask(serviceId, this.branchId, mechanicId, description);
+        WorkOrderTask task = new WorkOrderTask(serviceId, this.branchId, mechanicId, description, laborPrice);
         this.tasks.add(task);
         recalculateTotalAmount();
     }
@@ -112,12 +112,12 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @param quantity  the quantity of the product being added, which indicates how many units of the product are needed for the task and can affect inventory levels and the total amount of the work order
      * @throws IllegalStateException if the work order is in a state that does not allow modifications (COMPLETED or PAID), which prevents adding products to tasks of a closed order
      */
-    public void addProductToTask(WorkOrderTaskId taskId, ProductId productId, Quantity quantity) {
+    public void addProductToTask(WorkOrderTaskId taskId, ProductId productId, Quantity quantity, Money unitPrice) {
         if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
         }
         WorkOrderTask task = findTaskOrThrow(taskId);
-        task.addProduct(productId, quantity);
+        task.addProduct(productId, quantity, unitPrice);
         recalculateTotalAmount();
         this.registerEvent(new ProductReservedEvent(this, this.branchId, productId, quantity));
     }
@@ -327,12 +327,12 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @param description the new description to be set for the task, providing updated details about what needs to be done and any specific instructions or notes for the mechanic
      * @throws IllegalStateException if the work order is in a state that does not allow
      */
-    public void updateTaskDetails(WorkOrderTaskId taskId, ServiceId serviceId, MechanicId mechanicId, TaskDescription description) {
+    public void updateTaskDetails(WorkOrderTaskId taskId, ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money newLaborPrice) {
         if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
         }
         WorkOrderTask task = findTaskOrThrow(taskId);
-        task.updateDetails(serviceId, mechanicId, description);
+        task.updateDetails(serviceId, mechanicId, description, newLaborPrice);
         recalculateTotalAmount();
     }
 

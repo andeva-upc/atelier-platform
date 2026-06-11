@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Adiel Sanchez
  */
 public interface ProductRepository {
-    void save(Product product);
+    Product save(Product product);
     Optional<Product> findById(UUID id);
 
     /**

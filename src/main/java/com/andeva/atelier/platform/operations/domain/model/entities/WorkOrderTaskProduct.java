@@ -51,12 +51,15 @@ public class WorkOrderTaskProduct {
      * @param productId the unique identifier of the product associated with the work order task
      * @param branchId the unique identifier of the branch where the product is located
      * @param quantity the quantity of the product being used in the work order task
+     * @param unitPrice the unit price of the product
      */
-    public WorkOrderTaskProduct(ProductId productId, BranchId branchId, Quantity quantity) {
+    public WorkOrderTaskProduct(ProductId productId, BranchId branchId, Quantity quantity, Money unitPrice) {
         this.id = new WorkOrderTaskProductId(UUID.randomUUID());
         this.productId = productId;
         this.branchId = branchId;
         this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.totalAmount = unitPrice.multiply(quantity.value());
     }
 
     /**

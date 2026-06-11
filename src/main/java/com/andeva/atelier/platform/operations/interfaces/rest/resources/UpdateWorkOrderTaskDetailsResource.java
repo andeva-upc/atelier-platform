@@ -2,7 +2,6 @@ package com.andeva.atelier.platform.operations.interfaces.rest.resources;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -10,7 +9,6 @@ import java.util.UUID;
  * @param serviceId
  * @param assignedMechanicId
  * @param description
- * @param laborPrice
  * @author Joel Huamani Estefanero
  */
 public record UpdateWorkOrderTaskDetailsResource(
@@ -22,8 +20,5 @@ public record UpdateWorkOrderTaskDetailsResource(
 
         @NotNull(message = "operations.error.resource.description.required")
         @Size(min = 5, max = 1000, message = "operations.error.resource.description.size")
-        String description,
-
-        @NotNull(message = "operations.error.resource.laborPrice.required")
-        BigDecimal laborPrice
+        String description
 ) {}

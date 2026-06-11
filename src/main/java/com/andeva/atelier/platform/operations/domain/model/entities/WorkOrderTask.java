@@ -63,8 +63,9 @@ public class WorkOrderTask {
      * @param branchId the identifier of the branch where the task will be performed
      * @param mechanicId the identifier of the mechanic assigned to this task
      * @param description a description of the task to be performed
+     * @param laborPrice the price of the service associated with this task
      */
-    public WorkOrderTask(ServiceId serviceId, BranchId branchId, MechanicId mechanicId, TaskDescription description) {
+    public WorkOrderTask(ServiceId serviceId, BranchId branchId, MechanicId mechanicId, TaskDescription description, Money laborPrice) {
         this.id = new WorkOrderTaskId(UUID.randomUUID());
         this.serviceId = serviceId;
         this.branchId = branchId;
@@ -72,14 +73,16 @@ public class WorkOrderTask {
         this.description = description;
         this.status = WorkOrderTaskStatus.PENDING;
         this.products = new ArrayList<>();
+        this.price = laborPrice;
     }
 
     /**
      * Adds a product to the task or updates the quantity if the product already exists. If the task is completed, it throws an IllegalStateException to prevent modifications. If the product already exists in the task, it updates the quantity and recalculates the total price accordingly. If the product does not exist, it creates a new WorkOrderTaskProduct, adds it to the list of products, and updates the total price of the task by adding the total amount of the new product.
      * @param productId the identifier of the product to be added or updated in the task
      * @param quantity the quantity of the product to be added or updated. If the product already exists, this quantity will be added to the existing quantity.
+     * @param unitPrice the unit price of the product
      */
-    public void addProduct(ProductId productId, Quantity quantity) {
+    public void addProduct(ProductId productId, Quantity quantity, Money unitPrice) {
         if (this.status == WorkOrderTaskStatus.COMPLETED) {
             throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
         }
@@ -93,7 +96,7 @@ public class WorkOrderTask {
             product.updateQuantity(new Quantity(product.getQuantity().value() + quantity.value()));
             this.price = this.price.minus(oldTotalAmount).plus(product.getTotalAmount());
         } else {
-          WorkOrderTaskProduct product = new WorkOrderTaskProduct(productId, this.branchId, quantity);
+          WorkOrderTaskProduct product = new WorkOrderTaskProduct(productId, this.branchId, quantity, unitPrice);
           this.products.add(product);
           this.price = this.price.plus(product.getTotalAmount());
         }
@@ -150,8 +153,9 @@ public class WorkOrderTask {
      * @param serviceId the new service identifier to be associated with the task. This allows for changing the service that the task is related to, which may affect the type of work being performed and potentially the price.
      * @param mechanicId the new mechanic identifier to be assigned to the task. This allows for changing the mechanic responsible for performing the task, which may be necessary if there are scheduling changes or if the original mechanic is unavailable.
      * @param description the new description of the task, providing updated details about the work to be performed. This allows for clarifying or modifying the instructions for the task as needed.
+     * @param newLaborPrice the new labor price associated with the potentially updated service.
      */
-    public void updateDetails(ServiceId serviceId, MechanicId mechanicId, TaskDescription description) {
+    public void updateDetails(ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money newLaborPrice) {
         if (this.status == WorkOrderTaskStatus.COMPLETED) {
             throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
         }
@@ -162,7 +166,7 @@ public class WorkOrderTask {
         this.price = this.products.stream()
                 .filter(p -> !p.isDeleted())
                 .map(WorkOrderTaskProduct::getTotalAmount)
-                .reduce(Money.ZERO, Money::plus);
+                .reduce(newLaborPrice, Money::plus);
     }
 
     /**
