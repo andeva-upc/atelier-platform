@@ -79,7 +79,7 @@ public class Obd2DeviceRepositoryImpl implements Obd2DeviceRepository {
 
     @Override
     public List<Obd2Device> findAllByBranchId(BranchId branchId) {
-        return persistenceRepository.findAllByBranchId(branchId.value()).stream()
+        return persistenceRepository.findAllByBranchId(branchId).stream()
                 .map(Obd2DevicePersistenceAssembler::toDomainEntity)
                 .toList();
     }
