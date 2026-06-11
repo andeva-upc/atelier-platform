@@ -1,17 +1,22 @@
 package com.andeva.atelier.platform.iot.interfaces.rest;
 
+import com.andeva.atelier.platform.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
+import com.andeva.atelier.platform.iot.application.commandservices.VehicleCommandService;
 import com.andeva.atelier.platform.iot.application.queryservices.VehicleQueryService;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehiclesAvailableForLinkingQuery;
+import com.andeva.atelier.platform.iot.interfaces.rest.resources.RegisterVehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.VehicleResource;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.RegisterVehicleCommandFromResourceAssembler;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromVehicleCommandResultAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.VehicleResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,9 +30,15 @@ import java.util.UUID;
 public class VehiclesController {
 
     private final VehicleQueryService vehicleQueryService;
+    private final VehicleCommandService vehicleCommandService;
+    private final MessageSource messageSource;
 
-    public VehiclesController(VehicleQueryService vehicleQueryService) {
+    public VehiclesController(VehicleQueryService vehicleQueryService,
+                              VehicleCommandService vehicleCommandService,
+                              MessageSource messageSource) {
         this.vehicleQueryService = vehicleQueryService;
+        this.vehicleCommandService = vehicleCommandService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -44,5 +55,25 @@ public class VehiclesController {
                 .map(VehicleResourceFromAggregateAssembler::toResourceFromAggregate)
                 .toList();
         return ResponseEntity.ok(resources);
+    }
+
+    /**
+     * Registers a new vehicle and associates its registration with the authenticated user.
+     * @param resource the vehicle registration request details DTO
+     * @param authentication the authenticated user token context
+     * @return a ResponseEntity containing the created VehicleRegistrationResource
+     */
+    @PostMapping
+    @Operation(summary = "Register a client vehicle", description = "Registers a client vehicle and links it to the authenticated user")
+    public ResponseEntity<?> registerVehicle(
+            @Valid @RequestBody RegisterVehicleResource resource,
+            Authentication authentication) {
+        var userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UUID userId = userDetails.getId();
+
+        var command = RegisterVehicleCommandFromResourceAssembler.toCommandFromResource(userId, resource);
+        var result = vehicleCommandService.handle(command);
+
+        return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
     }
 }
