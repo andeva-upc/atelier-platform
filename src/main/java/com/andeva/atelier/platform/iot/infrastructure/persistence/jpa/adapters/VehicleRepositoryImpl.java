@@ -71,4 +71,9 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return persistenceRepository.findByPlateNumber(plateNumber)
                 .map(VehiclePersistenceAssembler::toDomainEntity);
     }
+
+    @Override
+    public void delete(VehicleId id) {
+        persistenceRepository.deleteById(id.value());
+    }
 }

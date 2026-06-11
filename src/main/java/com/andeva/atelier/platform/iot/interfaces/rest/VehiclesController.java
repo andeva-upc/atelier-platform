@@ -10,8 +10,10 @@ import com.andeva.atelier.platform.iot.interfaces.rest.resources.VehicleResource
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.RegisterVehicleCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromVehicleCommandResultAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.UpdateVehicleCommandFromResourceAssembler;
+import com.andeva.atelier.platform.iot.domain.model.commands.DeleteVehicleCommand;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.VehicleResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -94,5 +96,18 @@ public class VehiclesController {
         var result = vehicleCommandService.handle(command);
 
         return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromVehicleResult(result, messageSource);
+    }
+
+    /**
+     * Deletes (soft deletes) a vehicle by its unique identifier.
+     * @param id the unique identifier of the vehicle
+     * @return 204 No Content on success, or a ProblemDetail on failure
+     */
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete client vehicle", description = "Performs a soft delete of a vehicle and deactivates active driver/OBD2 links")
+    public ResponseEntity<?> deleteVehicle(@PathVariable UUID id) {
+        var command = new DeleteVehicleCommand(new VehicleId(id));
+        var result = vehicleCommandService.handle(command);
+        return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromVoidResult(result, messageSource);
     }
 }
