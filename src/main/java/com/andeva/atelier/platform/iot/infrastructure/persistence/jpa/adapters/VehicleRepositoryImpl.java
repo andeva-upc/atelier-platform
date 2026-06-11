@@ -39,7 +39,23 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
     @Override
     public Vehicle save(Vehicle vehicle) {
-        VehiclePersistenceEntity entity = VehiclePersistenceAssembler.toPersistenceEntity(vehicle);
+        VehiclePersistenceEntity entity;
+        if (vehicle.getId() != null) {
+            entity = persistenceRepository.findById(vehicle.getId().value())
+                    .orElseGet(VehiclePersistenceEntity::new);
+        } else {
+            entity = new VehiclePersistenceEntity();
+        }
+
+        entity.setId(vehicle.getId() != null ? vehicle.getId().value() : null);
+        entity.setPlateNumber(vehicle.getPlateNumber());
+        entity.setBrand(vehicle.getBrand());
+        entity.setModel(vehicle.getModel());
+        entity.setYear(vehicle.getYear());
+        entity.setVin(vehicle.getVin());
+        entity.setDeletedAt(vehicle.getDeletedAt());
+        entity.setVersion(vehicle.getVersion());
+
         VehiclePersistenceEntity savedEntity = persistenceRepository.save(entity);
         return VehiclePersistenceAssembler.toDomainEntity(savedEntity);
     }
