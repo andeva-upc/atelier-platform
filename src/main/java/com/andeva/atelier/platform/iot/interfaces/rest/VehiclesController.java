@@ -76,7 +76,7 @@ public class VehiclesController {
         var command = RegisterVehicleCommandFromResourceAssembler.toCommandFromResource(userId, resource);
         var result = vehicleCommandService.handle(command);
 
-        return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromRegistrationResult(result, messageSource);
     }
 
     /**
@@ -93,6 +93,6 @@ public class VehiclesController {
         var command = UpdateVehicleCommandFromResourceAssembler.toCommandFromResource(id, resource);
         var result = vehicleCommandService.handle(command);
 
-        return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+        return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromVehicleResult(result, messageSource);
     }
 }

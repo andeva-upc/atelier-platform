@@ -25,7 +25,7 @@ public final class ResponseEntityFromVehicleCommandResultAssembler {
      * @param messageSource The MessageSource used to retrieve localized error messages
      * @return A ResponseEntity containing either the VehicleRegistrationResource (on success) or a ProblemDetail with localized error message (on failure)
      */
-    public static ResponseEntity<?> toResponseEntityFromResult(
+    public static ResponseEntity<?> toResponseEntityFromRegistrationResult(
             Result<VehicleRegistration, VehicleCommandFailure> result,
             HttpStatus successStatus,
             MessageSource messageSource) {
@@ -51,10 +51,10 @@ public final class ResponseEntityFromVehicleCommandResultAssembler {
      * @param messageSource The MessageSource used to retrieve localized error messages
      * @return A ResponseEntity containing either the VehicleRegistrationResource (on success) or a ProblemDetail with localized error message (on failure)
      */
-    public static ResponseEntity<?> toResponseEntityFromResult(
+    public static ResponseEntity<?> toResponseEntityFromRegistrationResult(
             Result<VehicleRegistration, VehicleCommandFailure> result,
             MessageSource messageSource) {
-        return toResponseEntityFromResult(result, HttpStatus.CREATED, messageSource);
+        return toResponseEntityFromRegistrationResult(result, HttpStatus.CREATED, messageSource);
     }
 
     /**
@@ -64,7 +64,7 @@ public final class ResponseEntityFromVehicleCommandResultAssembler {
      * @param messageSource The MessageSource used to retrieve localized error messages
      * @return A ResponseEntity containing either the VehicleResource (on success) or a ProblemDetail with localized error message (on failure)
      */
-    public static ResponseEntity<?> toResponseEntityFromResult(
+    public static ResponseEntity<?> toResponseEntityFromVehicleResult(
             Result<Vehicle, VehicleCommandFailure> result,
             HttpStatus successStatus,
             MessageSource messageSource) {
@@ -90,10 +90,10 @@ public final class ResponseEntityFromVehicleCommandResultAssembler {
      * @param messageSource The MessageSource used to retrieve localized error messages
      * @return A ResponseEntity containing either the VehicleResource (on success) or a ProblemDetail with localized error message (on failure)
      */
-    public static ResponseEntity<?> toResponseEntityFromResult(
+    public static ResponseEntity<?> toResponseEntityFromVehicleResult(
             Result<Vehicle, VehicleCommandFailure> result,
             MessageSource messageSource) {
-        return toResponseEntityFromResult(result, HttpStatus.OK, messageSource);
+        return toResponseEntityFromVehicleResult(result, HttpStatus.OK, messageSource);
     }
 
     private static HttpStatus statusFromFailure(VehicleCommandFailure failure) {
