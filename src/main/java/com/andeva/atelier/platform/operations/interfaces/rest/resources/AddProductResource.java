@@ -16,8 +16,5 @@ public record AddProductResource(
         UUID productId,
 
         @NotNull(message = "operations.error.resource.quantity.required")
-        Integer quantity,
-
-        @NotNull(message = "operations.error.resource.unitPrice.required")
-        BigDecimal unitPrice
+        Integer quantity
 ) {}

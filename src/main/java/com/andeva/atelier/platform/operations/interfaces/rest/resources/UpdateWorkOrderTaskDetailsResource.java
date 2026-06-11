@@ -22,8 +22,5 @@ public record UpdateWorkOrderTaskDetailsResource(
 
         @NotNull(message = "operations.error.resource.description.required")
         @Size(min = 5, max = 1000, message = "operations.error.resource.description.size")
-        String description,
-
-        @NotNull(message = "operations.error.resource.laborPrice.required")
-        BigDecimal laborPrice
+        String description
 ) {}

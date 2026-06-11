@@ -1,7 +1,6 @@
 package com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.repositories;
 
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.AppointmentId;
-import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
 import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.entities.WorkOrderPersistenceEntity;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
