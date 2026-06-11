@@ -2,10 +2,15 @@ package com.andeva.atelier.platform.iot.application.internal.commandservices;
 
 import com.andeva.atelier.platform.iot.application.commandservices.VehicleCommandFailure;
 import com.andeva.atelier.platform.iot.application.commandservices.VehicleCommandService;
+import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device;
+import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2DeviceRegistration;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.VehicleRegistration;
+import com.andeva.atelier.platform.iot.domain.model.commands.DeleteVehicleCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.RegisterVehicleCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.UpdateVehicleCommand;
+import com.andeva.atelier.platform.iot.domain.repositories.Obd2DeviceRegistrationRepository;
+import com.andeva.atelier.platform.iot.domain.repositories.Obd2DeviceRepository;
 import com.andeva.atelier.platform.iot.domain.repositories.VehicleRegistrationRepository;
 import com.andeva.atelier.platform.iot.domain.repositories.VehicleRepository;
 import com.andeva.atelier.platform.shared.application.result.Result;
@@ -23,13 +28,19 @@ public class VehicleCommandServiceImpl implements VehicleCommandService {
 
     private final VehicleRepository vehicleRepository;
     private final VehicleRegistrationRepository vehicleRegistrationRepository;
+    private final Obd2DeviceRegistrationRepository obd2DeviceRegistrationRepository;
+    private final Obd2DeviceRepository obd2DeviceRepository;
 
     public VehicleCommandServiceImpl(
             VehicleRepository vehicleRepository,
-            VehicleRegistrationRepository vehicleRegistrationRepository
+            VehicleRegistrationRepository vehicleRegistrationRepository,
+            Obd2DeviceRegistrationRepository obd2DeviceRegistrationRepository,
+            Obd2DeviceRepository obd2DeviceRepository
     ) {
         this.vehicleRepository = vehicleRepository;
         this.vehicleRegistrationRepository = vehicleRegistrationRepository;
+        this.obd2DeviceRegistrationRepository = obd2DeviceRegistrationRepository;
+        this.obd2DeviceRepository = obd2DeviceRepository;
     }
 
     @Override
@@ -112,5 +123,43 @@ public class VehicleCommandServiceImpl implements VehicleCommandService {
         Vehicle updatedVehicle = vehicleRepository.save(vehicle);
 
         return Result.success(updatedVehicle);
+    }
+
+    @Override
+    @Transactional
+    public Result<Void, VehicleCommandFailure> handle(DeleteVehicleCommand command) {
+        Optional<Vehicle> vehicleOpt = vehicleRepository.findById(command.vehicleId());
+        if (vehicleOpt.isEmpty()) {
+            return Result.failure(new VehicleCommandFailure.NotFound("iot.error.vehicle.notFound"));
+        }
+
+        // Deactivate active driver registration if present
+        Optional<VehicleRegistration> activeRegOpt = vehicleRegistrationRepository.findActiveByVehicleId(command.vehicleId());
+        if (activeRegOpt.isPresent()) {
+            VehicleRegistration activeReg = activeRegOpt.get();
+            activeReg.deactivateRegistration();
+            vehicleRegistrationRepository.save(activeReg);
+        }
+
+        // Deactivate active OBD2 registration if present
+        Optional<Obd2DeviceRegistration> activeObd2RegOpt = obd2DeviceRegistrationRepository.findActiveByVehicleId(command.vehicleId());
+        if (activeObd2RegOpt.isPresent()) {
+            Obd2DeviceRegistration activeObd2Reg = activeObd2RegOpt.get();
+            
+            Optional<Obd2Device> obd2DeviceOpt = obd2DeviceRepository.findById(activeObd2Reg.getObd2DeviceId());
+            if (obd2DeviceOpt.isPresent()) {
+                Obd2Device obd2Device = obd2DeviceOpt.get();
+                obd2Device.markAsAvailable();
+                obd2DeviceRepository.save(obd2Device);
+            }
+            
+            activeObd2Reg.deactivate();
+            obd2DeviceRegistrationRepository.save(activeObd2Reg);
+        }
+
+        // Soft delete the vehicle
+        vehicleRepository.delete(command.vehicleId());
+
+        return Result.success(null);
     }
 }
