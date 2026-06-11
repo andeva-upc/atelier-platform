@@ -1,0 +1,18 @@
+package com.andeva.atelier.platform.iot.application.commandservices;
+
+import com.andeva.atelier.platform.iot.domain.model.aggregates.VehicleRegistration;
+import com.andeva.atelier.platform.iot.domain.model.commands.RegisterVehicleCommand;
+import com.andeva.atelier.platform.shared.application.result.Result;
+
+/**
+ * Service interface for handling Vehicle command operations.
+ */
+public interface VehicleCommandService {
+
+    /**
+     * Handles the registration of a new vehicle or transferring an existing one.
+     * @param command the command containing registration/transfer details
+     * @return a Result containing the active VehicleRegistration, or a VehicleCommandFailure
+     */
+    Result<VehicleRegistration, VehicleCommandFailure> handle(RegisterVehicleCommand command);
+}

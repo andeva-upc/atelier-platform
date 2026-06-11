@@ -9,6 +9,22 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
  */
 public class VehiclePersistenceAssembler {
 
+    public static VehiclePersistenceEntity toPersistenceEntity(Vehicle domain) {
+        if (domain == null) {
+            return null;
+        }
+        VehiclePersistenceEntity entity = new VehiclePersistenceEntity();
+        entity.setId(domain.getId() != null ? domain.getId().value() : null);
+        entity.setPlateNumber(domain.getPlateNumber());
+        entity.setBrand(domain.getBrand());
+        entity.setModel(domain.getModel());
+        entity.setYear(domain.getYear());
+        entity.setVin(domain.getVin());
+        entity.setDeletedAt(domain.getDeletedAt());
+        entity.setVersion(domain.getVersion());
+        return entity;
+    }
+
     public static Vehicle toDomainEntity(VehiclePersistenceEntity entity) {
         if (entity == null) {
             return null;

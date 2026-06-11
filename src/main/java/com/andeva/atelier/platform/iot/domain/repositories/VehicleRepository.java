@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Domain repository interface/port for managing Vehicle operations inside the iot context.
@@ -16,4 +17,25 @@ public interface VehicleRepository {
      * @return the list of available vehicles
      */
     List<Vehicle> findAvailableForLinkingByBranchId(BranchId branchId);
+
+    /**
+     * Saves a Vehicle aggregate.
+     * @param vehicle the aggregate to save
+     * @return the saved aggregate
+     */
+    Vehicle save(Vehicle vehicle);
+
+    /**
+     * Finds a vehicle by its Vehicle Identification Number (VIN).
+     * @param vin the VIN string
+     * @return an Optional containing the Vehicle aggregate if found
+     */
+    Optional<Vehicle> findByVin(String vin);
+
+    /**
+     * Finds a vehicle by its plate number.
+     * @param plateNumber the plate number string
+     * @return an Optional containing the Vehicle aggregate if found
+     */
+    Optional<Vehicle> findByPlateNumber(String plateNumber);
 }

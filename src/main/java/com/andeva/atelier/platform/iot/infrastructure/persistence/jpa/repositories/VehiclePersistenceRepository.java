@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -27,4 +28,8 @@ public interface VehiclePersistenceRepository extends JpaRepository<VehiclePersi
                    "      WHERE odr.status = 'ACTIVE' AND odr.deleted_at IS NULL" +
                    "  )", nativeQuery = true)
     List<VehiclePersistenceEntity> findAvailableForLinkingByBranchId(@Param("branchId") UUID branchId);
+
+    Optional<VehiclePersistenceEntity> findByVin(String vin);
+
+    Optional<VehiclePersistenceEntity> findByPlateNumber(String plateNumber);
 }
