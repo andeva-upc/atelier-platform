@@ -20,4 +20,6 @@ public interface Obd2DevicePersistenceRepository extends JpaRepository<Obd2Devic
     boolean existsByMacAddress(String macAddress);
 
     List<Obd2DevicePersistenceEntity> findAllByBranchId(BranchId branchId);
+
+    List<Obd2DevicePersistenceEntity> findAllByBranchIdAndStatus(BranchId branchId, String status);
 }
