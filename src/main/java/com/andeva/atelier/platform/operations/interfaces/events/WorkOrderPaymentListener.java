@@ -2,6 +2,7 @@ package com.andeva.atelier.platform.operations.interfaces.events;
 
 import com.andeva.atelier.platform.operations.application.commandservices.WorkOrderCommandService;
 import com.andeva.atelier.platform.operations.domain.model.commands.MarkWorkOrderAsPaidCommand;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
 import com.andeva.atelier.platform.shared.domain.model.events.PaymentProcessedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,6 @@ public class WorkOrderPaymentListener {
      */
     @EventListener
     public void onPaymentProcessed(PaymentProcessedEvent event) {
-        commandService.handle(new MarkWorkOrderAsPaidCommand(event.workOrderId()));
+        commandService.handle(new MarkWorkOrderAsPaidCommand(new WorkOrderId(event.workOrderId())));
     }
 }

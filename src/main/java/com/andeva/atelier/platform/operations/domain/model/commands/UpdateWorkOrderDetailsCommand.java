@@ -1,9 +1,8 @@
 package com.andeva.atelier.platform.operations.domain.model.commands;
 
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.DiagnosticSummary;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Mileage;
-
-import java.util.UUID;
 
 /**
  * Command representing the intent to update the details of a Work Order, specifically the diagnostic summary and mileage.
@@ -14,7 +13,7 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 public record UpdateWorkOrderDetailsCommand(
-        UUID workOrderId,
+        WorkOrderId workOrderId,
         DiagnosticSummary diagnosticSummary,
         Mileage mileageIn
 ) {}

@@ -39,7 +39,7 @@ public final class WorkOrderCommandFromResourceAssembler {
      */
     public static UpdateWorkOrderDetailsCommand toCommandFromResource(UUID workOrderId, UpdateWorkOrderDetailsResource resource) {
         return new UpdateWorkOrderDetailsCommand(
-                workOrderId,
+                new WorkOrderId(workOrderId),
                 new DiagnosticSummary(resource.diagnosticSummary()),
                 new Mileage(resource.mileageIn())
         );
@@ -53,11 +53,10 @@ public final class WorkOrderCommandFromResourceAssembler {
      */
     public static AddTaskToWorkOrderCommand toCommandFromResource(UUID workOrderId, AddTaskResource resource) {
         return new AddTaskToWorkOrderCommand(
-                workOrderId,
+                new WorkOrderId(workOrderId),
                 new ServiceId(resource.serviceId()),
                 new MechanicId(resource.assignedMechanicId()),
-                new TaskDescription(resource.description()),
-                new Money(resource.laborPrice())
+                new TaskDescription(resource.description())
         );
     }
 
@@ -70,11 +69,10 @@ public final class WorkOrderCommandFromResourceAssembler {
      */
     public static AddProductToTaskCommand toCommandFromResource(UUID workOrderId, UUID taskId, AddProductResource resource) {
         return new AddProductToTaskCommand(
-                workOrderId,
-                taskId,
+                new WorkOrderId(workOrderId),
+                new WorkOrderTaskId(taskId),
                 new ProductId(resource.productId()),
-                new Quantity(resource.quantity()),
-                new Money(resource.unitPrice())
+                new Quantity(resource.quantity())
         );
     }
 
@@ -87,12 +85,11 @@ public final class WorkOrderCommandFromResourceAssembler {
      */
     public static UpdateWorkOrderTaskDetailsCommand toCommandFromResource(UUID workOrderId, UUID taskId, UpdateWorkOrderTaskDetailsResource resource) {
         return new UpdateWorkOrderTaskDetailsCommand(
-                workOrderId,
-                taskId,
+                new WorkOrderId(workOrderId),
+                new WorkOrderTaskId(taskId),
                 new ServiceId(resource.serviceId()),
                 new MechanicId(resource.assignedMechanicId()),
-                new TaskDescription(resource.description()),
-                new Money(resource.laborPrice())
+                new TaskDescription(resource.description())
         );
     }
 
@@ -106,8 +103,8 @@ public final class WorkOrderCommandFromResourceAssembler {
      */
     public static UpdateProductQuantityInTaskCommand toCommandFromResource(UUID workOrderId, UUID taskId, UUID productId, UpdateProductQuantityInTaskResource resource) {
         return new UpdateProductQuantityInTaskCommand(
-                workOrderId,
-                taskId,
+                new WorkOrderId(workOrderId),
+                new WorkOrderTaskId(taskId),
                 new ProductId(productId),
                 new Quantity(resource.quantity())
         );

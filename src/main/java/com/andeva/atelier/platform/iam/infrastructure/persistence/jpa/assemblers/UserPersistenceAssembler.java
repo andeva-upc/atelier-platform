@@ -3,14 +3,14 @@ package com.andeva.atelier.platform.iam.infrastructure.persistence.jpa.assembler
 import com.andeva.atelier.platform.iam.domain.model.aggregates.User;
 import com.andeva.atelier.platform.iam.infrastructure.persistence.jpa.entities.UserPersistenceEntity;
 
-import java.util.UUID;
-
 import com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress;
 import com.andeva.atelier.platform.iam.domain.model.valueobjects.GoogleId;
 import com.andeva.atelier.platform.iam.domain.model.valueobjects.Password;
 import com.andeva.atelier.platform.iam.domain.model.valueobjects.UserId;
 
-public class UserPersistenceAssembler {
+public final class UserPersistenceAssembler {
+
+    private UserPersistenceAssembler() {}
 
     public static UserPersistenceEntity toEntity(User user, UserPersistenceEntity entity) {
         if (entity == null) {
@@ -32,7 +32,11 @@ public class UserPersistenceAssembler {
                 new EmailAddress(entity.getEmail()),
                 new Password(entity.getPasswordHash()),
                 entity.getGoogleId() != null ? new GoogleId(entity.getGoogleId()) : null,
-                entity.getStatus()
+                entity.getStatus(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getVersion()
         );
     }
 }
