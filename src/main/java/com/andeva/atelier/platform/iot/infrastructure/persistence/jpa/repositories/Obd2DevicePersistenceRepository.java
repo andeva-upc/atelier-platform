@@ -1,9 +1,11 @@
 package com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.repositories;
 
 import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.entities.Obd2DevicePersistenceEntity;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,4 +18,6 @@ public interface Obd2DevicePersistenceRepository extends JpaRepository<Obd2Devic
     Optional<Obd2DevicePersistenceEntity> findByMacAddress(String macAddress);
 
     boolean existsByMacAddress(String macAddress);
+
+    List<Obd2DevicePersistenceEntity> findAllByBranchId(BranchId branchId);
 }

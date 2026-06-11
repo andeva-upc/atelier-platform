@@ -3,10 +3,12 @@ package com.andeva.atelier.platform.iot.application.internal.queryservices;
 import com.andeva.atelier.platform.iot.application.queryservices.Obd2DeviceQueryService;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceByIdQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DevicesByBranchIdQuery;
 import com.andeva.atelier.platform.iot.domain.repositories.Obd2DeviceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,5 +27,11 @@ public class Obd2DeviceQueryServiceImpl implements Obd2DeviceQueryService {
     @Transactional(readOnly = true)
     public Optional<Obd2Device> handle(GetObd2DeviceByIdQuery query) {
         return obd2DeviceRepository.findById(query.obd2DeviceId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Obd2Device> handle(GetObd2DevicesByBranchIdQuery query) {
+        return obd2DeviceRepository.findAllByBranchId(query.branchId());
     }
 }

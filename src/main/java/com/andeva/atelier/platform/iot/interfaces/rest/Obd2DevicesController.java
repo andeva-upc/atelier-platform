@@ -6,7 +6,11 @@ import com.andeva.atelier.platform.iot.application.queryservices.Obd2DeviceQuery
 import com.andeva.atelier.platform.iot.domain.model.commands.CreateObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeleteObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceByIdQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DevicesByBranchIdQuery;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+
+import java.util.List;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.CreateObd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.Obd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.UpdateObd2DeviceResource;
@@ -125,5 +129,21 @@ public class Obd2DevicesController {
         var command = UpdateObd2DeviceCommandFromResourceAssembler.toCommandFromResource(id, resource);
         var result = commandService.handle(command);
         return ResponseEntityFromObd2DeviceCommandResultAssembler.toResponseEntityFromResult(result, HttpStatus.OK, messageSource);
+    }
+
+    /**
+     * Retrieves all registered OBD2 devices, optionally filtered by branch ID.
+     * @param branchId the branch identifier to filter devices
+     * @return a ResponseEntity containing the list of device resources
+     */
+    @GetMapping
+    @Operation(summary = "Get all OBD2 devices by branch", description = "Retrieves all registered OBD2 devices under a specific branch")
+    public ResponseEntity<List<Obd2DeviceResource>> getObd2DevicesByBranchId(@RequestParam UUID branchId) {
+        var query = new GetObd2DevicesByBranchIdQuery(new BranchId(branchId));
+        var list = queryService.handle(query);
+        var resources = list.stream()
+                .map(Obd2DeviceResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+        return ResponseEntity.ok(resources);
     }
 }
