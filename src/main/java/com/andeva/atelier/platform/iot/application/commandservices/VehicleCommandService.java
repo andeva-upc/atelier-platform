@@ -1,7 +1,9 @@
 package com.andeva.atelier.platform.iot.application.commandservices;
 
+import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.VehicleRegistration;
 import com.andeva.atelier.platform.iot.domain.model.commands.RegisterVehicleCommand;
+import com.andeva.atelier.platform.iot.domain.model.commands.UpdateVehicleCommand;
 import com.andeva.atelier.platform.shared.application.result.Result;
 
 /**
@@ -15,4 +17,11 @@ public interface VehicleCommandService {
      * @return a Result containing the active VehicleRegistration, or a VehicleCommandFailure
      */
     Result<VehicleRegistration, VehicleCommandFailure> handle(RegisterVehicleCommand command);
+
+    /**
+     * Handles updating an existing vehicle's details.
+     * @param command the command containing update details
+     * @return a Result containing the updated Vehicle aggregate, or a VehicleCommandFailure
+     */
+    Result<Vehicle, VehicleCommandFailure> handle(UpdateVehicleCommand command);
 }

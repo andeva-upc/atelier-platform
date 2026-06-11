@@ -5,9 +5,11 @@ import com.andeva.atelier.platform.iot.application.commandservices.VehicleComman
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.VehicleRegistration;
 import com.andeva.atelier.platform.iot.domain.model.commands.RegisterVehicleCommand;
+import com.andeva.atelier.platform.iot.domain.model.commands.UpdateVehicleCommand;
 import com.andeva.atelier.platform.iot.domain.repositories.VehicleRegistrationRepository;
 import com.andeva.atelier.platform.iot.domain.repositories.VehicleRepository;
 import com.andeva.atelier.platform.shared.application.result.Result;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,5 +81,36 @@ public class VehicleCommandServiceImpl implements VehicleCommandService {
         VehicleRegistration savedRegistration = vehicleRegistrationRepository.save(newRegistration);
 
         return Result.success(savedRegistration);
+    }
+
+    @Override
+    @Transactional
+    public Result<Vehicle, VehicleCommandFailure> handle(UpdateVehicleCommand command) {
+        Optional<Vehicle> vehicleOpt = vehicleRepository.findById(new VehicleId(command.id()));
+        if (vehicleOpt.isEmpty()) {
+            return Result.failure(new VehicleCommandFailure.NotFound("iot.error.vehicle.notFound"));
+        }
+        Vehicle vehicle = vehicleOpt.get();
+
+        Optional<Vehicle> vehicleByPlate = vehicleRepository.findByPlateNumber(command.plateNumber());
+        if (vehicleByPlate.isPresent() && !vehicleByPlate.get().getId().equals(vehicle.getId())) {
+            return Result.failure(new VehicleCommandFailure.Duplicate("iot.error.vehicle.conflict"));
+        }
+
+        Optional<Vehicle> vehicleByVin = vehicleRepository.findByVin(command.vin());
+        if (vehicleByVin.isPresent() && !vehicleByVin.get().getId().equals(vehicle.getId())) {
+            return Result.failure(new VehicleCommandFailure.Duplicate("iot.error.vehicle.conflict"));
+        }
+
+        vehicle.updateDetails(
+                command.plateNumber(),
+                command.brand(),
+                command.model(),
+                command.year(),
+                command.vin()
+        );
+        Vehicle updatedVehicle = vehicleRepository.save(vehicle);
+
+        return Result.success(updatedVehicle);
     }
 }
