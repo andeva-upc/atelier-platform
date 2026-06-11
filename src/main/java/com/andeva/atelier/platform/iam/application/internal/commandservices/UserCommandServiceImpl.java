@@ -99,7 +99,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
-    public Optional<User> handle(UpdateUserEmailCommand command) {
+    public Optional<AuthenticatedUser> handle(UpdateUserEmailCommand command) {
         var user = userRepository.findById(command.userId().value())
                 .orElseThrow(() -> new IllegalArgumentException("iam.error.user.notFound"));
 
@@ -109,7 +109,9 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         user.changeEmail(command.newEmail());
         userRepository.save(user);
-        return Optional.of(user);
+        
+        var token = tokenService.generateToken(user.getEmail().value());
+        return Optional.of(new AuthenticatedUser(user, token));
     }
 
     @Override

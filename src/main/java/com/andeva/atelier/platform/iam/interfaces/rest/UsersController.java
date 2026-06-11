@@ -9,6 +9,8 @@ import com.andeva.atelier.platform.iam.interfaces.rest.resources.UserResource;
 import com.andeva.atelier.platform.iam.interfaces.rest.transform.UpdateUserEmailCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iam.interfaces.rest.transform.UpdateUserPasswordCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
+import com.andeva.atelier.platform.iam.interfaces.rest.resources.AuthenticatedUserResource;
+import com.andeva.atelier.platform.iam.interfaces.rest.transform.AuthenticatedUserResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -43,18 +45,18 @@ public class UsersController {
         return ResponseEntity.ok(userResource);
     }
 
-    @Operation(summary = "Update user email", description = "Updates the email address of a specific user")
+    @Operation(summary = "Update user email", description = "Updates the email address of a specific user and returns a new authentication token")
     @PutMapping("/{userId}/email")
-    public ResponseEntity<UserResource> updateUserEmail(@PathVariable UUID userId, @RequestBody UpdateUserEmailResource resource) {
+    public ResponseEntity<AuthenticatedUserResource> updateUserEmail(@PathVariable UUID userId, @RequestBody UpdateUserEmailResource resource) {
         var command = UpdateUserEmailCommandFromResourceAssembler.toCommandFromResource(userId, resource);
-        var user = userCommandService.handle(command);
+        var authenticatedUser = userCommandService.handle(command);
 
-        if (user.isEmpty()) {
+        if (authenticatedUser.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
-        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
-        return ResponseEntity.ok(userResource);
+        var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.toResourceFromEntity(authenticatedUser.get());
+        return ResponseEntity.ok(authenticatedUserResource);
     }
 
     @Operation(summary = "Update user password", description = "Updates the password of a specific user")
