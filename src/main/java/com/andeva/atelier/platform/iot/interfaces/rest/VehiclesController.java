@@ -2,13 +2,17 @@ package com.andeva.atelier.platform.iot.interfaces.rest;
 
 import com.andeva.atelier.platform.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
 import com.andeva.atelier.platform.iot.application.commandservices.VehicleCommandService;
+import com.andeva.atelier.platform.iot.application.queryservices.TelemetryQueryService;
 import com.andeva.atelier.platform.iot.application.queryservices.VehicleQueryService;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehiclesAvailableForLinkingQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleTelemetrySnapshotHistoryQuery;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.RegisterVehicleResource;
+import com.andeva.atelier.platform.iot.interfaces.rest.resources.TelemetrySnapshotResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.UpdateVehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.VehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.RegisterVehicleCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromVehicleCommandResultAssembler;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.TelemetrySnapshotResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.UpdateVehicleCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeleteVehicleCommand;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.VehicleResourceFromAggregateAssembler;
@@ -35,13 +39,16 @@ public class VehiclesController {
 
     private final VehicleQueryService vehicleQueryService;
     private final VehicleCommandService vehicleCommandService;
+    private final TelemetryQueryService telemetryQueryService;
     private final MessageSource messageSource;
 
     public VehiclesController(VehicleQueryService vehicleQueryService,
                               VehicleCommandService vehicleCommandService,
+                              TelemetryQueryService telemetryQueryService,
                               MessageSource messageSource) {
         this.vehicleQueryService = vehicleQueryService;
         this.vehicleCommandService = vehicleCommandService;
+        this.telemetryQueryService = telemetryQueryService;
         this.messageSource = messageSource;
     }
 
@@ -109,5 +116,21 @@ public class VehiclesController {
         var command = new DeleteVehicleCommand(new VehicleId(id));
         var result = vehicleCommandService.handle(command);
         return ResponseEntityFromVehicleCommandResultAssembler.toResponseEntityFromVoidResult(result, messageSource);
+    }
+
+    /**
+     * Retrieves telemetry snapshots for a vehicle starting from the start of its active driver registration.
+     * @param vehicleId the vehicle identifier
+     * @return the list of telemetry snapshots
+     */
+    @GetMapping("/{vehicleId}/telemetry-snapshots")
+    @Operation(summary = "Get historical telemetry snapshots for vehicle", description = "Retrieves all telemetry snapshots captured for the vehicle since its active registration start date")
+    public ResponseEntity<List<TelemetrySnapshotResource>> getVehicleTelemetrySnapshots(@PathVariable UUID vehicleId) {
+        var query = new GetVehicleTelemetrySnapshotHistoryQuery(new VehicleId(vehicleId));
+        var list = telemetryQueryService.handle(query);
+        var resources = list.stream()
+                .map(TelemetrySnapshotResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+        return ResponseEntity.ok(resources);
     }
 }

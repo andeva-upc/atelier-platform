@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.iot.domain.model.aggregates.TelemetrySnapshot
 import com.andeva.atelier.platform.iot.domain.model.queries.GetLatestTelemetrySnapshotQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetTelemetrySnapshotHistoryQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetTelemetrySnapshotsByRegistrationIdQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleTelemetrySnapshotHistoryQuery;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,4 +34,11 @@ public interface TelemetryQueryService {
      * @return the list of snapshots ordered by creation date descending
      */
     List<TelemetrySnapshot> handle(GetTelemetrySnapshotsByRegistrationIdQuery query);
+
+    /**
+     * Handles retrieving the historical telemetry snapshots for a vehicle starting from its active driver registration start date.
+     * @param query the query containing the vehicle identifier
+     * @return the list of snapshots ordered by creation date descending
+     */
+    List<TelemetrySnapshot> handle(GetVehicleTelemetrySnapshotHistoryQuery query);
 }
