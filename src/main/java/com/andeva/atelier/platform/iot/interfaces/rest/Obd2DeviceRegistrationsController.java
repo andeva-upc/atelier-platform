@@ -1,6 +1,8 @@
 package com.andeva.atelier.platform.iot.interfaces.rest;
 
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceRegistrationCommandService;
+import com.andeva.atelier.platform.iot.domain.model.commands.DeactivateObd2DeviceRegistrationCommand;
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceRegistrationId;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.LinkObd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.LinkObd2DeviceCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromObd2DeviceRegistrationCommandResultAssembler;
@@ -8,12 +10,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 /**
  * REST controller for managing OBD2 Device Registrations (linking devices to vehicles).
@@ -45,5 +47,18 @@ public class Obd2DeviceRegistrationsController {
         var command = LinkObd2DeviceCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = commandService.handle(command);
         return ResponseEntityFromObd2DeviceRegistrationCommandResultAssembler.toResponseEntityFromResult(result, messageSource);
+    }
+
+    /**
+     * Deactivates/unlinks an OBD2 device registration.
+     * @param id the registration UUID
+     * @return a ResponseEntity containing the deactivated registration resource or localized error details
+     */
+    @PostMapping("/{id}/deactivate")
+    @Operation(summary = "Deactivate OBD2 device registration", description = "Deactivates/unlinks an active OBD2-vehicle coupling")
+    public ResponseEntity<?> deactivateObd2DeviceRegistration(@PathVariable UUID id) {
+        var command = new DeactivateObd2DeviceRegistrationCommand(new Obd2DeviceRegistrationId(id));
+        var result = commandService.handle(command);
+        return ResponseEntityFromObd2DeviceRegistrationCommandResultAssembler.toResponseEntityFromResult(result, HttpStatus.OK, messageSource);
     }
 }
