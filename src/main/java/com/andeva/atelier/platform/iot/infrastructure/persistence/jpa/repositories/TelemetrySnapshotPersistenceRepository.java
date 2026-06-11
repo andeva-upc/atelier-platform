@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.entities.T
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,5 +22,10 @@ public interface TelemetrySnapshotPersistenceRepository extends JpaRepository<Te
 
     Optional<TelemetrySnapshotPersistenceEntity> findFirstByObd2DeviceRegistrationIdOrderByCreatedAtDesc(
             Obd2DeviceRegistrationId obd2DeviceRegistrationId
+    );
+
+    List<TelemetrySnapshotPersistenceEntity> findAllByObd2DeviceRegistrationIdAndCreatedAtGreaterThanEqualOrderByCreatedAtDesc(
+            Obd2DeviceRegistrationId obd2DeviceRegistrationId,
+            Instant createdAt
     );
 }
