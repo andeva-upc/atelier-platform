@@ -6,13 +6,13 @@ import com.andeva.atelier.platform.operations.application.queryservices.WorkOrde
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
 import com.andeva.atelier.platform.operations.domain.model.commands.*;
 import com.andeva.atelier.platform.operations.domain.model.queries.*;
-import com.andeva.atelier.platform.operations.domain.model.valueobjects.DiagnosticSummary;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.ProductId;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderTaskId;
 import com.andeva.atelier.platform.operations.interfaces.rest.resources.*;
 import com.andeva.atelier.platform.operations.interfaces.rest.transform.*;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.Mileage;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -104,7 +104,7 @@ public class WorkOrdersController {
     @Operation(summary = "Remove a product/part from a task", description = "Removes a product from a task, releasing its stock reservation")
     public ResponseEntity<?> removeProductFromTask(@PathVariable UUID id, @PathVariable UUID taskId,
                                                    @PathVariable UUID productId) {
-        var command = new RemoveProductFromTaskCommand(id, taskId, new ProductId(productId));
+        var command = new RemoveProductFromTaskCommand(new WorkOrderId(id), new WorkOrderTaskId(taskId), new ProductId(productId));
         var result = commandService.handle(command);
         return toResponse(result);
     }
@@ -112,7 +112,7 @@ public class WorkOrdersController {
     @DeleteMapping("/{id}/tasks/{taskId}")
     @Operation(summary = "Remove a task from the Work Order", description = "Removes a task from the Work Order, releasing all its stock reservations")
     public ResponseEntity<?> removeTaskFromWorkOrder(@PathVariable UUID id, @PathVariable UUID taskId) {
-        var command = new RemoveTaskFromWorkOrderCommand(id, taskId);
+        var command = new RemoveTaskFromWorkOrderCommand(new WorkOrderId(id), new WorkOrderTaskId(taskId));
         var result = commandService.handle(command);
         return toResponse(result);
     }
@@ -120,7 +120,7 @@ public class WorkOrdersController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Soft delete a Work Order", description = "Soft deletes a Work Order, releasing all active stock reservations")
     public ResponseEntity<?> deleteWorkOrder(@PathVariable UUID id) {
-        var command = new DeleteWorkOrderCommand(id);
+        var command = new DeleteWorkOrderCommand(new WorkOrderId(id));
         var result = commandService.handle(command);
         return toResponse(result);
     }
@@ -128,7 +128,7 @@ public class WorkOrdersController {
     @PostMapping("/{id}/tasks/{taskId}/start")
     @Operation(summary = "Start executing a task", description = "Sets the task status to DOING and captures the startedAt timestamp")
     public ResponseEntity<?> startTask(@PathVariable UUID id, @PathVariable UUID taskId) {
-        var command = new StartTaskCommand(id, taskId);
+        var command = new StartTaskCommand(new WorkOrderId(id), new WorkOrderTaskId(taskId));
         var result = commandService.handle(command);
         return toResponse(result);
     }
@@ -136,7 +136,7 @@ public class WorkOrdersController {
     @PostMapping("/{id}/tasks/{taskId}/complete")
     @Operation(summary = "Complete a task", description = "Sets the task status to COMPLETED and captures the completedAt timestamp")
     public ResponseEntity<?> completeTask(@PathVariable UUID id, @PathVariable UUID taskId) {
-        var command = new CompleteTaskCommand(id, taskId);
+        var command = new CompleteTaskCommand(new WorkOrderId(id), new WorkOrderTaskId(taskId));
         var result = commandService.handle(command);
         return toResponse(result);
     }
@@ -144,7 +144,7 @@ public class WorkOrdersController {
     @PostMapping("/{id}/tasks/{taskId}/reopen")
     @Operation(summary = "Reopen a completed task", description = "Returns the task to DOING, clears completedAt, and keeps stock reserved")
     public ResponseEntity<?> reopenTask(@PathVariable UUID id, @PathVariable UUID taskId) {
-        var command = new ReopenTaskCommand(id, taskId);
+        var command = new ReopenTaskCommand(new WorkOrderId(id), new WorkOrderTaskId(taskId));
         var result = commandService.handle(command);
         return toResponse(result);
     }
@@ -152,7 +152,7 @@ public class WorkOrdersController {
     @GetMapping("/{id}")
     @Operation(summary = "Get a Work Order by ID", description = "Retrieves the details of a specific Work Order")
     public ResponseEntity<?> getWorkOrderById(@PathVariable UUID id) {
-        var query = new GetWorkOrderByIdQuery(id);
+        var query = new GetWorkOrderByIdQuery(new WorkOrderId(id));
         var workOrder = queryService.handle(query);
 
         return workOrder.map(value -> {

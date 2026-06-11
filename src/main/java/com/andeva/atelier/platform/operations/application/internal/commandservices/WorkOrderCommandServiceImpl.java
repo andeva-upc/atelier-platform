@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.operations.application.commandservices.WorkOr
 import com.andeva.atelier.platform.operations.application.commandservices.WorkOrderCommandService;
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
 import com.andeva.atelier.platform.operations.domain.model.commands.*;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
 import com.andeva.atelier.platform.operations.domain.repositories.WorkOrderRepository;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
@@ -95,7 +96,7 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
     public Result<WorkOrder, WorkOrderCommandFailure> handle(AddTaskToWorkOrderCommand command) {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
-            workOrder.addTask(command.serviceId(), command.mechanicId(), command.description(), command.laborPrice());
+            workOrder.addTask(command.serviceId(), command.mechanicId(), command.description());
             WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
             return Result.success(savedWorkOrder);
 
@@ -116,7 +117,7 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
     public Result<WorkOrder, WorkOrderCommandFailure> handle(AddProductToTaskCommand command) {
         try {
             WorkOrder workOrder = findWorkOrderOrThrow(command.workOrderId());
-            workOrder.addProductToTask(command.taskId(), command.productId(), command.quantity(), command.unitPrice());
+            workOrder.addProductToTask(command.taskId(), command.productId(), command.quantity());
             WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
             return Result.success(savedWorkOrder);
 
@@ -269,8 +270,7 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
                     command.taskId(),
                     command.serviceId(),
                     command.mechanicId(),
-                    command.description(),
-                    command.laborPrice()
+                    command.description()
             );
             WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
             return Result.success(savedWorkOrder);
@@ -327,11 +327,11 @@ public class WorkOrderCommandServiceImpl implements WorkOrderCommandService {
 
     /**
      * Utility method to find a Work Order by its ID or throw an IllegalArgumentException if not found. This method is used across multiple command handlers to ensure consistent error handling when a Work Order cannot be found in the repository.
-     * @param workOrderId The UUID of the Work Order to be retrieved.
+     * @param workOrderId The WorkOrderId of the Work Order to be retrieved.
      * @return The Work Order aggregate if found.
      * @throws IllegalArgumentException if the Work Order with the specified ID is not found in the repository, with a message indicating that the work order was not found.
      */
-    private WorkOrder findWorkOrderOrThrow(java.util.UUID workOrderId) {
+    private WorkOrder findWorkOrderOrThrow(WorkOrderId workOrderId) {
         return workOrderRepository.findById(workOrderId)
                 .orElseThrow(() -> new IllegalArgumentException("operations.error.workOrder.notFound"));
     }

@@ -1,6 +1,7 @@
 package com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.repositories;
 
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.AppointmentId;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
 import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.entities.WorkOrderPersistenceEntity;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
@@ -12,10 +13,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface WorkOrderPersistenceRepository extends JpaRepository<WorkOrderPersistenceEntity, UUID> {
+public interface WorkOrderPersistenceRepository extends JpaRepository<WorkOrderPersistenceEntity, WorkOrderId> {
 
     List<WorkOrderPersistenceEntity> findAllByBranchId(BranchId branchId);
 

@@ -1,4 +1,4 @@
-package com.andeva.atelier.platform.operations.domain.model.aggregates;
+package com.andeva.atelier.platform.operations.domain.model.entities;
 
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.*;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class WorkOrderTask {
 
-    private UUID id;
+    private WorkOrderTaskId id;
     private ServiceId serviceId;
     private BranchId branchId;
     private MechanicId assignedMechanicId;
@@ -38,7 +38,7 @@ public class WorkOrderTask {
 
     public WorkOrderTask() {}
 
-    public WorkOrderTask(UUID id, ServiceId serviceId, BranchId branchId, MechanicId assignedMechanicId, WorkOrderTaskStatus status, TaskDescription description, Money price, Instant startedAt, Instant completedAt, List<WorkOrderTaskProduct> products, Instant createdAt, Instant updatedAt, Instant deletedAt, UUID createdBy, UUID updatedBy, Long version) {
+    public WorkOrderTask(WorkOrderTaskId id, ServiceId serviceId, BranchId branchId, MechanicId assignedMechanicId, WorkOrderTaskStatus status, TaskDescription description, Money price, Instant startedAt, Instant completedAt, List<WorkOrderTaskProduct> products, Instant createdAt, Instant updatedAt, Instant deletedAt, UUID createdBy, UUID updatedBy, Long version) {
         this.id = id;
         this.serviceId = serviceId;
         this.branchId = branchId;
@@ -58,20 +58,18 @@ public class WorkOrderTask {
     }
 
     /**
-     * Constructor to create a new WorkOrderTask with the specified service, branch, assigned mechanic, description, and labor price. It initializes the task with a unique identifier, sets the initial status to PENDING, and calculates the total price based on the labor price and any associated products. This constructor is used when creating a new task for a work order.
+     * Constructor to create a new WorkOrderTask with the specified service, branch, assigned mechanic, description, and price. It initializes the task with a unique identifier, sets the initial status to PENDING, and calculates the total price based on the price and any associated products. This constructor is used when creating a new task for a work order.
      * @param serviceId the identifier of the service associated with this task
      * @param branchId the identifier of the branch where the task will be performed
      * @param mechanicId the identifier of the mechanic assigned to this task
      * @param description a description of the task to be performed
-     * @param laborPrice the price of the labor for this task, which will be included in the total price calculation along with any associated products
      */
-    public WorkOrderTask(ServiceId serviceId, BranchId branchId, MechanicId mechanicId, TaskDescription description, Money laborPrice) {
-        this.id = UUID.randomUUID();
+    public WorkOrderTask(ServiceId serviceId, BranchId branchId, MechanicId mechanicId, TaskDescription description) {
+        this.id = new WorkOrderTaskId(UUID.randomUUID());
         this.serviceId = serviceId;
         this.branchId = branchId;
         this.assignedMechanicId = mechanicId;
         this.description = description;
-        this.price = laborPrice;
         this.status = WorkOrderTaskStatus.PENDING;
         this.products = new ArrayList<>();
     }
@@ -80,9 +78,8 @@ public class WorkOrderTask {
      * Adds a product to the task or updates the quantity if the product already exists. If the task is completed, it throws an IllegalStateException to prevent modifications. If the product already exists in the task, it updates the quantity and recalculates the total price accordingly. If the product does not exist, it creates a new WorkOrderTaskProduct, adds it to the list of products, and updates the total price of the task by adding the total amount of the new product.
      * @param productId the identifier of the product to be added or updated in the task
      * @param quantity the quantity of the product to be added or updated. If the product already exists, this quantity will be added to the existing quantity.
-     * @param unitPrice the unit price of the product, which will be used to calculate the total amount for the product based on the quantity. This total amount will then be added to the task's total price if it's a new product, or used to adjust the total price if it's an existing product being updated.
      */
-    public void addProduct(ProductId productId, Quantity quantity, Money unitPrice) {
+    public void addProduct(ProductId productId, Quantity quantity) {
         if (this.status == WorkOrderTaskStatus.COMPLETED) {
             throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
         }
@@ -96,7 +93,7 @@ public class WorkOrderTask {
             product.updateQuantity(new Quantity(product.getQuantity().value() + quantity.value()));
             this.price = this.price.minus(oldTotalAmount).plus(product.getTotalAmount());
         } else {
-          WorkOrderTaskProduct product = new WorkOrderTaskProduct(productId, this.branchId, quantity, unitPrice);
+          WorkOrderTaskProduct product = new WorkOrderTaskProduct(productId, this.branchId, quantity);
           this.products.add(product);
           this.price = this.price.plus(product.getTotalAmount());
         }
@@ -149,13 +146,12 @@ public class WorkOrderTask {
     }
 
     /**
-     * Updates the details of the task, including the service, assigned mechanic, description, and labor price. If the task is completed, it throws an IllegalStateException to prevent modifications. It updates the serviceId, assignedMechanicId, and description with the new values provided. It then recalculates the total price of the task by summing the new labor price with the total amounts of all active (non-deleted) products associated with the task. This ensures that any changes to the labor price are reflected in the overall cost of the task while maintaining the integrity of the product costs.
-     * @param serviceId the new service identifier to be associated with the task. This allows for changing the service that the task is related to, which may affect the type of work being performed and potentially the labor price.
+     * Updates the details of the task, including the service, assigned mechanic, description, and price. If the task is completed, it throws an IllegalStateException to prevent modifications. It updates the serviceId, assignedMechanicId, and description with the new values provided. It then recalculates the total price of the task by summing the new price with the total amounts of all active (non-deleted) products associated with the task. This ensures that any changes to the price are reflected in the overall cost of the task while maintaining the integrity of the product costs.
+     * @param serviceId the new service identifier to be associated with the task. This allows for changing the service that the task is related to, which may affect the type of work being performed and potentially the price.
      * @param mechanicId the new mechanic identifier to be assigned to the task. This allows for changing the mechanic responsible for performing the task, which may be necessary if there are scheduling changes or if the original mechanic is unavailable.
      * @param description the new description of the task, providing updated details about the work to be performed. This allows for clarifying or modifying the instructions for the task as needed.
-     * @param newLaborPrice the new labor price for the task, which will be used to recalculate the total price of the task. This allows for adjusting the cost of labor based on changes to the service or other factors, and ensures that the total price reflects the current labor cost along with any associated product costs.
      */
-    public void updateDetails(ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money newLaborPrice) {
+    public void updateDetails(ServiceId serviceId, MechanicId mechanicId, TaskDescription description) {
         if (this.status == WorkOrderTaskStatus.COMPLETED) {
             throw new IllegalStateException("operations.error.task.cannotModifyCompletedTask");
         }
@@ -163,11 +159,10 @@ public class WorkOrderTask {
         this.assignedMechanicId = mechanicId;
         this.description = description;
 
-        Money productsTotal = this.products.stream()
+        this.price = this.products.stream()
                 .filter(p -> !p.isDeleted())
                 .map(WorkOrderTaskProduct::getTotalAmount)
                 .reduce(Money.ZERO, Money::plus);
-        this.price = newLaborPrice.plus(productsTotal);
     }
 
     /**

@@ -16,6 +16,9 @@ public final class EmployeePersistenceAssembler {
         if (entity == null) {
             entity = new EmployeePersistenceEntity();
         }
+        if (employee.getVersion() != null) {
+            entity.setId(employee.getId() != null ? employee.getId().value() : null);
+        }
         entity.setId(employee.getId() != null ? employee.getId().value() : null);
         entity.setUserId(employee.getUserId() != null ? employee.getUserId().value() : null);
         
@@ -30,6 +33,10 @@ public final class EmployeePersistenceAssembler {
         }
         
         entity.setPhone(employee.getPhone() != null ? employee.getPhone().value() : null);
+        entity.setCreatedAt(employee.getCreatedAt());
+        entity.setUpdatedAt(employee.getUpdatedAt());
+        entity.setDeletedAt(employee.getDeletedAt());
+        entity.setVersion(employee.getVersion());
         return entity;
     }
 
@@ -42,7 +49,11 @@ public final class EmployeePersistenceAssembler {
                 new UserId(entity.getUserId()),
                 personName,
                 document,
-                new Phone(entity.getPhone())
+                new Phone(entity.getPhone()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getVersion()
         );
     }
 }

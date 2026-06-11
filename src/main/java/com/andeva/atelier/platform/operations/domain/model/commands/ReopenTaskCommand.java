@@ -1,6 +1,7 @@
 package com.andeva.atelier.platform.operations.domain.model.commands;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderTaskId;
 
 /**
  * Command to reopen a task within a work order. This command is used when a task that was previously closed needs to be reopened for further work or corrections.
@@ -9,4 +10,4 @@ import java.util.UUID;
  * @param taskId
  * @author Joel Huamani Estefanero
  */
-public record ReopenTaskCommand(UUID workOrderId, UUID taskId) {}
+public record ReopenTaskCommand(WorkOrderId workOrderId, WorkOrderTaskId taskId) {}
