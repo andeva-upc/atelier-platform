@@ -20,6 +20,8 @@ public class VehiclePersistenceAssembler {
         entity.setModel(domain.getModel());
         entity.setYear(domain.getYear());
         entity.setVin(domain.getVin());
+        entity.setCreatedAt(domain.getCreatedAt());
+        entity.setUpdatedAt(domain.getUpdatedAt());
         entity.setDeletedAt(domain.getDeletedAt());
         entity.setVersion(domain.getVersion());
         return entity;

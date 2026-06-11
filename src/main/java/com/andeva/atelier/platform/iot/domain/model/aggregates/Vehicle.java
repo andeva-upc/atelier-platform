@@ -59,4 +59,20 @@ public class Vehicle extends AbstractDomainAggregateRoot<Vehicle> {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
+
+    /**
+     * Updates the vehicle details.
+     * @param plateNumber the new plate number
+     * @param brand the new brand
+     * @param model the new model
+     * @param year the new manufacturing year
+     * @param vin the new Vehicle Identification Number (VIN)
+     */
+    public void updateDetails(String plateNumber, String brand, String model, Integer year, String vin) {
+        this.plateNumber = plateNumber;
+        this.brand = brand;
+        this.model = model;
+        this.year = year;
+        this.vin = vin;
+    }
 }
