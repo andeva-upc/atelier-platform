@@ -22,10 +22,13 @@ import java.util.UUID;
 @Service
 public class FacthubGatewayImpl implements FacthubGateway {
 
-    private static final String FACTHUB_API_URL = "https://facthub-service.onrender.com/api/invoices/issue";
+    private final String facthubApiUrl;
     private final RestTemplate restTemplate;
 
-    public FacthubGatewayImpl(RestTemplate restTemplate) {
+    public FacthubGatewayImpl(
+            @org.springframework.beans.factory.annotation.Value("${facthub.api.url}") String facthubApiUrl,
+            RestTemplate restTemplate) {
+        this.facthubApiUrl = facthubApiUrl;
         this.restTemplate = restTemplate;
     }
 
@@ -63,7 +66,7 @@ public class FacthubGatewayImpl implements FacthubGateway {
             HttpEntity<FacthubIssueInvoiceRequest> requestEntity = new HttpEntity<>(requestDto, headers);
 
             var response = restTemplate.postForObject(
-                    FACTHUB_API_URL, 
+                    facthubApiUrl, 
                     requestEntity, 
                     FacthubIssueInvoiceResponse.class
             );
