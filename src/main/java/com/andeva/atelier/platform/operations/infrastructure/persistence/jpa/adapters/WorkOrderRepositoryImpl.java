@@ -41,7 +41,7 @@ public class WorkOrderRepositoryImpl implements WorkOrderRepository {
 
     @Override
     public Optional<WorkOrder> findById(WorkOrderId id) {
-        return workOrderPersistenceRepository.findById(id)
+        return workOrderPersistenceRepository.findById(id.value())
                 .map(WorkOrderPersistenceAssembler::toDomainEntity);
     }
 
