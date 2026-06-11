@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.UUID;
 
 /**
  * Domain Aggregate Root representing a Vehicle within the iot bounded context.
@@ -24,6 +25,15 @@ public class Vehicle extends AbstractDomainAggregateRoot<Vehicle> {
     private Instant deletedAt;
 
     public Vehicle() {
+    }
+
+    public Vehicle(String plateNumber, String brand, String model, Integer year, String vin) {
+        this.id = new VehicleId(UUID.randomUUID());
+        this.plateNumber = plateNumber;
+        this.brand = brand;
+        this.model = model;
+        this.year = year;
+        this.vin = vin;
     }
 
     public Vehicle(
