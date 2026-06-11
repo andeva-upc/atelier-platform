@@ -9,6 +9,7 @@ import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.repositori
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceStatus;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import java.util.List;
 import java.util.Optional;
@@ -80,6 +81,13 @@ public class Obd2DeviceRepositoryImpl implements Obd2DeviceRepository {
     @Override
     public List<Obd2Device> findAllByBranchId(BranchId branchId) {
         return persistenceRepository.findAllByBranchId(branchId).stream()
+                .map(Obd2DevicePersistenceAssembler::toDomainEntity)
+                .toList();
+    }
+
+    @Override
+    public List<Obd2Device> findAllByBranchIdAndStatus(BranchId branchId, Obd2DeviceStatus status) {
+        return persistenceRepository.findAllByBranchIdAndStatus(branchId, status.value()).stream()
                 .map(Obd2DevicePersistenceAssembler::toDomainEntity)
                 .toList();
     }
