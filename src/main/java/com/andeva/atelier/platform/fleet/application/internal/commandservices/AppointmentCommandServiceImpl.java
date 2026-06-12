@@ -5,7 +5,7 @@ import com.andeva.atelier.platform.fleet.application.commandservices.Appointment
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.Appointment;
 import com.andeva.atelier.platform.fleet.domain.model.commands.CreateAppointmentCommand;
 import com.andeva.atelier.platform.fleet.domain.model.commands.DeleteAppointmentCommand;
-import com.andeva.atelier.platform.fleet.domain.model.commands.UpdateFleetCommand;
+import com.andeva.atelier.platform.fleet.domain.model.commands.UpdateAppointmentCommand;
 import com.andeva.atelier.platform.fleet.domain.repositories.AppointmentRepository;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-public class FleetCommandServiceImpl implements AppointmentCommandService {
+public class AppointmentCommandServiceImpl implements AppointmentCommandService {
 
     private final AppointmentRepository appointmentRepository;
 
-    public FleetCommandServiceImpl(AppointmentRepository appointmentRepository) {
+    public AppointmentCommandServiceImpl(AppointmentRepository appointmentRepository) {
         this.appointmentRepository = appointmentRepository;
     }
 
@@ -57,7 +57,7 @@ public class FleetCommandServiceImpl implements AppointmentCommandService {
 
     @Override
     @Transactional
-    public Result<Appointment, AppointmentCommandFailure> handle(UpdateFleetCommand command) {
+    public Result<Appointment, AppointmentCommandFailure> handle(UpdateAppointmentCommand command) {
         try {
             var appointmentOptional = appointmentRepository.findById(command.appointmentId());
 

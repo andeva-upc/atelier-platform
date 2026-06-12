@@ -8,7 +8,7 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record UpdateFleetCommand(
+public record UpdateAppointmentCommand(
         UUID appointmentId,
         BranchId branchId,
         CustomerId customerId,
@@ -16,7 +16,7 @@ public record UpdateFleetCommand(
         LocalDateTime scheduledStart,
         AppointmentSummary notes
 ) {
-    public UpdateFleetCommand {
+    public UpdateAppointmentCommand {
         if (appointmentId == null) {
             throw new IllegalArgumentException("Appointment ID is required");
         }
