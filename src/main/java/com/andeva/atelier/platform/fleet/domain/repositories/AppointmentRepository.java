@@ -20,6 +20,5 @@ public interface AppointmentRepository {
     boolean existsByIdNotAndScheduledStartLessThanAndScheduledEndGreaterThan(
             UUID appointmentId, LocalDateTime scheduledEnd, LocalDateTime scheduledStart);
 
-    // 👇 nuevo
     List<Appointment> findByBranchId(BranchId branchId);
 }

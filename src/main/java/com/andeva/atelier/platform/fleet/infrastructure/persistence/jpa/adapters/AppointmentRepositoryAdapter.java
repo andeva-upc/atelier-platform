@@ -61,7 +61,6 @@ public class AppointmentRepositoryAdapter implements AppointmentRepository {
                         appointmentId, scheduledEnd, scheduledStart);
     }
 
-    // 👇 nuevo
     @Override
     public List<Appointment> findByBranchId(BranchId branchId) {
         return appointmentJpaRepository.findByBranchId(branchId)

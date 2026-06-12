@@ -79,7 +79,6 @@ public class AppointmentsController {
         );
     }
 
-    // 👇 nuevo
     @GetMapping("/branch/{branchId}")
     @Operation(
             summary = "Get appointments by branch",
