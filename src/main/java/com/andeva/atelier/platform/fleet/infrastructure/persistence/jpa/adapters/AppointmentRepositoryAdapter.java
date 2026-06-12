@@ -1,12 +1,15 @@
 package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.adapters;
 
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.Appointment;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentStatus;
 import com.andeva.atelier.platform.fleet.domain.repositories.AppointmentRepository;
 import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.assemblers.AppointmentPersistenceAssembler;
 import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.repositories.AppointmentJpaRepository;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,15 +30,11 @@ public class AppointmentRepositoryAdapter implements AppointmentRepository {
     }
 
     @Override
-    public boolean existsByScheduledStartLessThanAndScheduledEndGreaterThan(
-            LocalDateTime scheduledEnd,
-            LocalDateTime scheduledStart
-    ) {
-        return appointmentJpaRepository.existsByScheduledStartLessThanAndScheduledEndGreaterThan(
-                scheduledEnd,
-                scheduledStart
-        );
+    public Optional<Appointment> findById(UUID appointmentId) {
+        return appointmentJpaRepository.findById(appointmentId)
+                .map(AppointmentPersistenceAssembler::toAggregateFromEntity);
     }
+
     @Override
     public boolean existsById(UUID appointmentId) {
         return appointmentJpaRepository.existsById(appointmentId);
@@ -46,22 +45,28 @@ public class AppointmentRepositoryAdapter implements AppointmentRepository {
         appointmentJpaRepository.findById(appointmentId)
                 .ifPresent(appointmentJpaRepository::delete);
     }
+
     @Override
-    public Optional<Appointment> findById(UUID appointmentId) {
-        return appointmentJpaRepository.findById(appointmentId)
-                .map(AppointmentPersistenceAssembler::toAggregateFromEntity);
+    public boolean existsByScheduledStartLessThanAndScheduledEndGreaterThan(
+            LocalDateTime scheduledEnd, LocalDateTime scheduledStart) {
+        return appointmentJpaRepository
+                .existsByScheduledStartLessThanAndScheduledEndGreaterThan(scheduledEnd, scheduledStart);
     }
 
     @Override
     public boolean existsByIdNotAndScheduledStartLessThanAndScheduledEndGreaterThan(
-            UUID appointmentId,
-            LocalDateTime scheduledEnd,
-            LocalDateTime scheduledStart
-    ) {
-        return appointmentJpaRepository.existsByIdNotAndScheduledStartLessThanAndScheduledEndGreaterThan(
-                appointmentId,
-                scheduledEnd,
-                scheduledStart
-        );
+            UUID appointmentId, LocalDateTime scheduledEnd, LocalDateTime scheduledStart) {
+        return appointmentJpaRepository
+                .existsByIdNotAndScheduledStartLessThanAndScheduledEndGreaterThan(
+                        appointmentId, scheduledEnd, scheduledStart);
+    }
+
+    // 👇 nuevo
+    @Override
+    public List<Appointment> findByBranchId(BranchId branchId) {
+        return appointmentJpaRepository.findByBranchId(branchId)
+                .stream()
+                .map(AppointmentPersistenceAssembler::toAggregateFromEntity)
+                .toList();
     }
 }
