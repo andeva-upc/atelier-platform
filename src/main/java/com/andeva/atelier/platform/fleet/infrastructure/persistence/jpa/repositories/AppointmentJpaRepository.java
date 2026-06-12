@@ -1,5 +1,6 @@
 package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.repositories;
 
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentStatus;
 import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.entities.AppointmentPersistenceEntity;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,7 @@ public interface AppointmentJpaRepository extends JpaRepository<AppointmentPersi
                         UUID appointmentId, LocalDateTime scheduledEnd, LocalDateTime scheduledStart);
 
         List<AppointmentPersistenceEntity> findByBranchId(BranchId branchId);
+
+        List<AppointmentPersistenceEntity> findByBranchIdAndStatus(
+                        BranchId branchId, AppointmentStatus status);
 }

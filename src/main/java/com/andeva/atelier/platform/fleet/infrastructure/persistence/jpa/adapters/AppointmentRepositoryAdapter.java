@@ -68,4 +68,12 @@ public class AppointmentRepositoryAdapter implements AppointmentRepository {
                 .map(AppointmentPersistenceAssembler::toAggregateFromEntity)
                 .toList();
     }
+
+    @Override
+    public List<Appointment> findByBranchIdAndStatus(BranchId branchId, AppointmentStatus status) {
+        return appointmentJpaRepository.findByBranchIdAndStatus(branchId, status)
+                .stream()
+                .map(AppointmentPersistenceAssembler::toAggregateFromEntity)
+                .toList();
+    }
 }
