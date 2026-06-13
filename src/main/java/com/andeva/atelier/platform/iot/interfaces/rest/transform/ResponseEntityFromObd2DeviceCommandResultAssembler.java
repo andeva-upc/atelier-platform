@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Locale;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
  * Assembler class responsible for transforming the Result of an OBD2 Device command execution into an appropriate ResponseEntity for REST API responses.
@@ -71,7 +71,7 @@ public final class ResponseEntityFromObd2DeviceCommandResultAssembler {
             case Obd2DeviceCommandFailure.InvalidState(String message) -> message;
         };
         try {
-            return messageSource.getMessage(messageKey, null, Locale.getDefault());
+            return messageSource.getMessage(messageKey, null, LocaleContextHolder.getLocale());
         } catch (Exception e) {
             return messageKey;
         }

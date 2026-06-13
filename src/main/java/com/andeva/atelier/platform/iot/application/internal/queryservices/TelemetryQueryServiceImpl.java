@@ -1,7 +1,6 @@
 package com.andeva.atelier.platform.iot.application.internal.queryservices;
 
 import com.andeva.atelier.platform.iot.application.queryservices.TelemetryQueryService;
-import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2DeviceRegistration;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.TelemetrySnapshot;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetLatestTelemetrySnapshotQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetTelemetrySnapshotHistoryQuery;

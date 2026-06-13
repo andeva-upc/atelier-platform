@@ -3,7 +3,6 @@ package com.andeva.atelier.platform.iot.interfaces.rest;
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandFailure;
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandService;
 import com.andeva.atelier.platform.iot.application.queryservices.Obd2DeviceQueryService;
-import com.andeva.atelier.platform.iot.domain.model.commands.CreateObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeleteObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetAvailableObd2DevicesQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceByIdQuery;
@@ -28,7 +27,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Locale;
+import org.springframework.context.i18n.LocaleContextHolder;
 import java.util.UUID;
 
 /**
@@ -107,7 +106,7 @@ public class Obd2DevicesController {
                     };
                     String localizedMessage;
                     try {
-                        localizedMessage = messageSource.getMessage(messageKey, null, Locale.getDefault());
+                        localizedMessage = messageSource.getMessage(messageKey, null, LocaleContextHolder.getLocale());
                     } catch (Exception e) {
                         localizedMessage = messageKey;
                     }

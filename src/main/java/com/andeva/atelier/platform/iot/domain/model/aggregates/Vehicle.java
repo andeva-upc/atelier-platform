@@ -5,7 +5,6 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 import lombok.Getter;
 
 import java.time.Instant;
-import java.util.UUID;
 
 /**
  * Domain Aggregate Root representing a Vehicle within the iot bounded context.

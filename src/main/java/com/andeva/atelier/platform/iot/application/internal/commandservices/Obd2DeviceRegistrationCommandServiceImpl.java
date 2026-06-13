@@ -2,11 +2,9 @@ package com.andeva.atelier.platform.iot.application.internal.commandservices;
 
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceRegistrationCommandFailure;
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceRegistrationCommandService;
-import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2DeviceRegistration;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeactivateObd2DeviceRegistrationCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.LinkObd2DeviceToVehicleCommand;
-import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceStatus;
 import com.andeva.atelier.platform.iot.domain.repositories.Obd2DeviceRegistrationRepository;
 import com.andeva.atelier.platform.iot.domain.repositories.Obd2DeviceRepository;
