@@ -9,7 +9,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Locale;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
  * Assembler class responsible for transforming the Result of a Telemetry command execution
@@ -59,7 +59,7 @@ public final class ResponseEntityFromTelemetryCommandResultAssembler {
             case TelemetryCommandFailure.InvalidState(String message) -> message;
         };
         try {
-            return messageSource.getMessage(messageKey, null, Locale.getDefault());
+            return messageSource.getMessage(messageKey, null, LocaleContextHolder.getLocale());
         } catch (Exception e) {
             return messageKey;
         }

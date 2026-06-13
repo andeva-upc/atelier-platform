@@ -5,11 +5,10 @@ import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.VehicleRegistration;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Locale;
 
 /**
  * Assembler class responsible for transforming the Result of a Vehicle command execution into an appropriate ResponseEntity for REST API responses.
@@ -133,7 +132,7 @@ public final class ResponseEntityFromVehicleCommandResultAssembler {
             case VehicleCommandFailure.InvalidState(String message) -> message;
         };
         try {
-            return messageSource.getMessage(messageKey, null, Locale.getDefault());
+            return messageSource.getMessage(messageKey, null, LocaleContextHolder.getLocale());
         } catch (Exception e) {
             return messageKey;
         }

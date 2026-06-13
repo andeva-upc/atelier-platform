@@ -28,7 +28,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Locale;
+import org.springframework.context.i18n.LocaleContextHolder;
 import java.util.UUID;
 
 /**
@@ -107,7 +107,7 @@ public class Obd2DevicesController {
                     };
                     String localizedMessage;
                     try {
-                        localizedMessage = messageSource.getMessage(messageKey, null, Locale.getDefault());
+                        localizedMessage = messageSource.getMessage(messageKey, null, LocaleContextHolder.getLocale());
                     } catch (Exception e) {
                         localizedMessage = messageKey;
                     }
