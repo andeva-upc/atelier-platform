@@ -3,7 +3,6 @@ package com.andeva.atelier.platform.iot.interfaces.rest;
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandFailure;
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandService;
 import com.andeva.atelier.platform.iot.application.queryservices.Obd2DeviceQueryService;
-import com.andeva.atelier.platform.iot.domain.model.commands.CreateObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeleteObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetAvailableObd2DevicesQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceByIdQuery;

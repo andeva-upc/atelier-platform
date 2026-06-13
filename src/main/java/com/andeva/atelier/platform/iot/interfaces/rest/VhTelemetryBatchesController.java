@@ -1,6 +1,5 @@
 package com.andeva.atelier.platform.iot.interfaces.rest;
 
-import com.andeva.atelier.platform.iot.application.commandservices.TelemetryCommandFailure;
 import com.andeva.atelier.platform.iot.application.commandservices.TelemetryCommandService;
 import com.andeva.atelier.platform.iot.application.queryservices.TelemetryQueryService;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetLatestTelemetrySnapshotQuery;
