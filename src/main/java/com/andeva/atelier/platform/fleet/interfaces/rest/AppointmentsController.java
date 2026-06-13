@@ -6,7 +6,6 @@ import com.andeva.atelier.platform.fleet.application.queryservices.AppointmentQu
 import com.andeva.atelier.platform.fleet.application.queryservices.AppointmentQueryService;
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentStatus;
 import com.andeva.atelier.platform.fleet.domain.model.commands.DeleteAppointmentCommand;
-import com.andeva.atelier.platform.fleet.interfaces.rest.resources.AppointmentResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.CreateAppointmentResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.UpdateAppointmentResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.AppointmentResourceFromAggregateAssembler;
@@ -14,20 +13,13 @@ import com.andeva.atelier.platform.fleet.interfaces.rest.transform.CreateAppoint
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.UpdateAppointmentCommandFromResourceAssembler;
 import com.andeva.atelier.platform.shared.application.result.ApplicationError;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
-import com.andeva.atelier.platform.shared.interfaces.rest.resources.ErrorResource;
 import com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -89,10 +81,6 @@ public class AppointmentsController {
 
         @GetMapping("/branch/{branchId}")
         @Operation(summary = "Get appointments by branch", description = "Returns all active appointments for a given branch ID")
-        @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Appointments retrieved successfully", content = @Content(array = @ArraySchema(schema = @Schema(implementation = AppointmentResource.class)))),
-                        @ApiResponse(responseCode = "400", description = "Invalid branch ID", content = @Content(schema = @Schema(implementation = ErrorResource.class)))
-        })
         public ResponseEntity<?> getByBranch(@PathVariable UUID branchId) {
                 var result = queryService.handle(new BranchId(branchId));
                 return result.fold(
@@ -105,10 +93,6 @@ public class AppointmentsController {
 
         @GetMapping("/branch/{branchId}/status/{status}")
         @Operation(summary = "Get appointments by branch and status", description = "Returns appointments filtered by branch ID and status. Values: PENDING, COMPLETED, CANCELED")
-        @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Appointments retrieved successfully", content = @Content(array = @ArraySchema(schema = @Schema(implementation = AppointmentResource.class)))),
-                        @ApiResponse(responseCode = "400", description = "Invalid parameters", content = @Content(schema = @Schema(implementation = ErrorResource.class)))
-        })
         public ResponseEntity<?> getByBranchAndStatus(
                         @PathVariable UUID branchId,
                         @PathVariable AppointmentStatus status) {
@@ -123,10 +107,6 @@ public class AppointmentsController {
 
         @GetMapping("/{appointmentId}")
         @Operation(summary = "Get appointment by ID", description = "Returns the detail of a single appointment by its ID")
-        @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Appointment found", content = @Content(schema = @Schema(implementation = AppointmentResource.class))),
-                        @ApiResponse(responseCode = "404", description = "Appointment not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
-        })
         public ResponseEntity<?> getById(@PathVariable UUID appointmentId) {
                 var result = queryService.handle(appointmentId);
                 return result.fold(
