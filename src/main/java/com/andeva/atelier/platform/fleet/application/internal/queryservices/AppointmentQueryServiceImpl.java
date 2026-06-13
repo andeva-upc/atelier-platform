@@ -10,6 +10,7 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AppointmentQueryServiceImpl implements AppointmentQueryService {
@@ -39,5 +40,12 @@ public class AppointmentQueryServiceImpl implements AppointmentQueryService {
         } catch (IllegalArgumentException e) {
             return Result.failure(AppointmentQueryFailure.INVALID_QUERY_PARAMS);
         }
+    }
+
+    @Override
+    public Result<Appointment, AppointmentQueryFailure> handle(UUID appointmentId) {
+        return appointmentRepository.findById(appointmentId)
+                .map(Result::<Appointment, AppointmentQueryFailure>success)
+                .orElse(Result.failure(AppointmentQueryFailure.APPOINTMENT_NOT_FOUND));
     }
 }

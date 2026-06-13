@@ -6,10 +6,12 @@ import com.andeva.atelier.platform.shared.application.result.Result;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface AppointmentQueryService {
 
     Result<List<Appointment>, AppointmentQueryFailure> handle(BranchId branchId);
     Result<List<Appointment>, AppointmentQueryFailure> handle(
             BranchId branchId, AppointmentStatus status);
+    Result<Appointment, AppointmentQueryFailure> handle(UUID appointmentId);
 }

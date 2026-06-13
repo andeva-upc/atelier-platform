@@ -27,6 +27,7 @@ import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -117,6 +118,21 @@ public class AppointmentsController {
                                                 appointments.stream()
                                                                 .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
                                                                 .toList()),
+                                this::handleQueryFailure);
+        }
+
+        @GetMapping("/{appointmentId}")
+        @Operation(summary = "Get appointment by ID", description = "Returns the detail of a single appointment by its ID")
+        @ApiResponses({
+                        @ApiResponse(responseCode = "200", description = "Appointment found", content = @Content(schema = @Schema(implementation = AppointmentResource.class))),
+                        @ApiResponse(responseCode = "404", description = "Appointment not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        })
+        public ResponseEntity<?> getById(@PathVariable UUID appointmentId) {
+                var result = queryService.handle(appointmentId);
+                return result.fold(
+                                appointment -> ResponseEntity.ok(
+                                                AppointmentResourceFromAggregateAssembler
+                                                                .toResourceFromAggregate(appointment)),
                                 this::handleQueryFailure);
         }
 
