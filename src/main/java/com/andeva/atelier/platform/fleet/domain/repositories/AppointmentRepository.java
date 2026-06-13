@@ -21,4 +21,6 @@ public interface AppointmentRepository {
             UUID appointmentId, LocalDateTime scheduledEnd, LocalDateTime scheduledStart);
 
     List<Appointment> findByBranchId(BranchId branchId);
+
+    List<Appointment> findByBranchIdAndStatus(BranchId branchId, AppointmentStatus status);
 }
