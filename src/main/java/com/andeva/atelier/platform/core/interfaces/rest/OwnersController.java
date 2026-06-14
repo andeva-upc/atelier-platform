@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.OwnerId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
 import com.andeva.atelier.platform.core.domain.model.queries.GetOwnerByIdQuery;
+import com.andeva.atelier.platform.core.domain.model.queries.GetOwnerByUserIdQuery;
 import com.andeva.atelier.platform.core.application.commandservices.OwnerCommandService;
 import com.andeva.atelier.platform.core.application.queryservices.OwnerQueryService;
 import com.andeva.atelier.platform.core.domain.model.commands.DeleteOwnerCommand;
@@ -65,6 +66,19 @@ public class OwnersController {
     @GetMapping("/{ownerId}")
     public ResponseEntity<OwnerResource> getOwnerById(@PathVariable UUID ownerId) {
         var query = new GetOwnerByIdQuery(new OwnerId(ownerId));
+        var owner = ownerQueryService.handle(query);
+        if (owner.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var ownerResource = OwnerResourceFromEntityAssembler.toResourceFromEntity(owner.get());
+        return ResponseEntity.ok(ownerResource);
+    }
+
+    @Operation(summary = "Get an owner profile by User ID", description = "Retrieves the details of a specific owner profile using the User ID")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<OwnerResource> getOwnerByUserId(@PathVariable UUID userId) {
+        var query = new GetOwnerByUserIdQuery(new UserId(userId));
         var owner = ownerQueryService.handle(query);
         if (owner.isEmpty()) {
             return ResponseEntity.notFound().build();
