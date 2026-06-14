@@ -16,8 +16,6 @@ public class ProductEntityAssembler {
         if (product.getVersion() != null) {
             entity.setId(product.getId());
             entity.setVersion(product.getVersion());
-        } else {
-            entity.setId(product.getId());
         }
         
         entity.setBranchId(product.getBranchId());
