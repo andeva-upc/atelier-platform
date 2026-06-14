@@ -70,7 +70,7 @@ public class ProductJpaEntity extends AuditableAbstractPersistenceEntity impleme
     private UUID updatedBy;
 
     @Version
-    private Long version;
+    private Long version = 0L;
 
     public ProductJpaEntity() {}
 
