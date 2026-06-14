@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
 import com.andeva.atelier.platform.core.domain.model.queries.GetCustomerByIdQuery;
+import com.andeva.atelier.platform.core.domain.model.queries.GetCustomerByUserIdQuery;
 import com.andeva.atelier.platform.core.domain.model.commands.DeleteCustomerCommand;
 import com.andeva.atelier.platform.core.application.commandservices.CustomerCommandService;
 import com.andeva.atelier.platform.core.application.queryservices.CustomerQueryService;
@@ -65,6 +66,19 @@ public class CustomersController {
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerResource> getCustomerById(@PathVariable UUID customerId) {
         var query = new GetCustomerByIdQuery(new CustomerId(customerId));
+        var customer = customerQueryService.handle(query);
+        if (customer.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var customerResource = CustomerResourceFromEntityAssembler.toResourceFromEntity(customer.get());
+        return ResponseEntity.ok(customerResource);
+    }
+
+    @Operation(summary = "Get a customer profile by User ID", description = "Retrieves the details of a specific customer profile using the User ID")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<CustomerResource> getCustomerByUserId(@PathVariable UUID userId) {
+        var query = new GetCustomerByUserIdQuery(new UserId(userId));
         var customer = customerQueryService.handle(query);
         if (customer.isEmpty()) {
             return ResponseEntity.notFound().build();

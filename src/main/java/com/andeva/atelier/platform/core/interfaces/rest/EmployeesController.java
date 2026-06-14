@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
 import com.andeva.atelier.platform.core.domain.model.queries.GetEmployeeByIdQuery;
+import com.andeva.atelier.platform.core.domain.model.queries.GetEmployeeByUserIdQuery;
 import com.andeva.atelier.platform.core.application.commandservices.EmployeeCommandService;
 import com.andeva.atelier.platform.core.application.queryservices.EmployeeQueryService;
 import com.andeva.atelier.platform.core.domain.model.commands.DeleteEmployeeCommand;
@@ -65,6 +66,19 @@ public class EmployeesController {
     @GetMapping("/{employeeId}")
     public ResponseEntity<EmployeeResource> getEmployeeById(@PathVariable UUID employeeId) {
         var query = new GetEmployeeByIdQuery(new EmployeeId(employeeId));
+        var employee = employeeQueryService.handle(query);
+        if (employee.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employee.get());
+        return ResponseEntity.ok(employeeResource);
+    }
+
+    @Operation(summary = "Get an employee profile by User ID", description = "Retrieves the details of a specific employee profile using the User ID")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<EmployeeResource> getEmployeeByUserId(@PathVariable UUID userId) {
+        var query = new GetEmployeeByUserIdQuery(new UserId(userId));
         var employee = employeeQueryService.handle(query);
         if (employee.isEmpty()) {
             return ResponseEntity.notFound().build();
