@@ -4,16 +4,19 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
+/**
+ * DTO representing the payload required to generate a new Voucher via the REST API.
+ */
 public record GenerateVoucherResource(
-        @NotNull
+        @NotNull(message = "billing.error.resource.quoteId.required")
         UUID quoteId,
-        @NotBlank
+        @NotBlank(message = "billing.error.resource.type.required")
         String type,
-        @NotBlank
+        @NotBlank(message = "billing.error.resource.customerDocumentType.required")
         String customerDocumentType,
-        @NotBlank
+        @NotBlank(message = "billing.error.resource.customerDocumentNumber.required")
         String customerDocumentNumber,
-        @NotBlank
+        @NotBlank(message = "billing.error.resource.customerName.required")
         String customerName
 ) {
 }

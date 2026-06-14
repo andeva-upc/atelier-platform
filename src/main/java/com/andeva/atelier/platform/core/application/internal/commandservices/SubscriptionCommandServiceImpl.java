@@ -3,7 +3,7 @@ package com.andeva.atelier.platform.core.application.internal.commandservices;
 import com.andeva.atelier.platform.core.application.commandservices.SubscriptionCommandService;
 import com.andeva.atelier.platform.core.domain.model.commands.AssignSubscriptionCommand;
 import com.andeva.atelier.platform.core.domain.model.commands.CancelSubscriptionCommand;
-import com.andeva.atelier.platform.core.domain.model.entities.BranchSubscription;
+import com.andeva.atelier.platform.core.domain.model.aggregates.BranchSubscription;
 import com.andeva.atelier.platform.core.domain.repositories.BranchRepository;
 import com.andeva.atelier.platform.core.domain.repositories.BranchSubscriptionRepository;
 import com.andeva.atelier.platform.core.domain.repositories.SubscriptionPlanRepository;
@@ -82,7 +82,6 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
         }
 
         var sub = existingSubscription.get();
-        // Just mark as CANCELED but it remains valid until endDate based on domain rules
         sub.cancel(new Date());
         subscriptionRepository.save(sub);
 

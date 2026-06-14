@@ -1,6 +1,7 @@
 package com.andeva.atelier.platform.operations.domain.model.commands;
 
-import java.util.UUID;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderTaskId;
 
 /**
  * Command representing the completion of a task within a work order. This command is used to indicate that a specific task has been completed, allowing the system to update the status of the task and potentially trigger subsequent actions, such as notifying relevant parties or updating the overall work order status.
@@ -8,4 +9,4 @@ import java.util.UUID;
  * @param taskId
  * @author Joel Huamani Estefanero
  */
-public record CompleteTaskCommand(UUID workOrderId, UUID taskId) {}
+public record CompleteTaskCommand(WorkOrderId workOrderId, WorkOrderTaskId taskId) {}

@@ -9,6 +9,9 @@ import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.repositori
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceStatus;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,7 +30,21 @@ public class Obd2DeviceRepositoryImpl implements Obd2DeviceRepository {
 
     @Override
     public Obd2Device save(Obd2Device obd2Device) {
-        Obd2DevicePersistenceEntity entity = Obd2DevicePersistenceAssembler.toPersistenceEntity(obd2Device);
+        Obd2DevicePersistenceEntity entity;
+        if (obd2Device.getId() != null) {
+            entity = persistenceRepository.findById(obd2Device.getId().value())
+                    .orElseGet(Obd2DevicePersistenceEntity::new);
+        } else {
+            entity = new Obd2DevicePersistenceEntity();
+        }
+
+        entity.setId(obd2Device.getId() != null ? obd2Device.getId().value() : null);
+        entity.setBranchId(obd2Device.getBranchId());
+        entity.setMacAddress(obd2Device.getMacAddress());
+        entity.setLastPing(obd2Device.getLastPing());
+        entity.setStatus(obd2Device.getStatus() != null ? obd2Device.getStatus().value() : null);
+        entity.setVersion(obd2Device.getVersion());
+
         Obd2DevicePersistenceEntity savedEntity = persistenceRepository.save(entity);
         Obd2Device savedDevice = Obd2DevicePersistenceAssembler.toDomainEntity(savedEntity);
 
@@ -54,5 +71,24 @@ public class Obd2DeviceRepositoryImpl implements Obd2DeviceRepository {
     @Override
     public boolean existsByMacAddress(String macAddress) {
         return persistenceRepository.existsByMacAddress(macAddress);
+    }
+
+    @Override
+    public void delete(Obd2DeviceId id) {
+        persistenceRepository.deleteById(id.value());
+    }
+
+    @Override
+    public List<Obd2Device> findAllByBranchId(BranchId branchId) {
+        return persistenceRepository.findAllByBranchId(branchId).stream()
+                .map(Obd2DevicePersistenceAssembler::toDomainEntity)
+                .toList();
+    }
+
+    @Override
+    public List<Obd2Device> findAllByBranchIdAndStatus(BranchId branchId, Obd2DeviceStatus status) {
+        return persistenceRepository.findAllByBranchIdAndStatus(branchId, status.value()).stream()
+                .map(Obd2DevicePersistenceAssembler::toDomainEntity)
+                .toList();
     }
 }

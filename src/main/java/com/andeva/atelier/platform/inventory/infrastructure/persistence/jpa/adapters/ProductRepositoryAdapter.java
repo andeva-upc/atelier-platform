@@ -26,9 +26,16 @@ public class ProductRepositoryAdapter implements ProductRepository {
     }
 
     @Override
-    public void save(Product product) {
-        ProductJpaEntity entity = ProductEntityAssembler.toEntity(product);
-        jpaRepository.save(entity);
+    public Product save(Product product) {
+        ProductJpaEntity entity;
+        if (product.getVersion() != null) {
+            entity = jpaRepository.findById(product.getId()).orElse(new ProductJpaEntity());
+        } else {
+            entity = new ProductJpaEntity();
+        }
+        ProductEntityAssembler.toEntity(product, entity);
+        var savedEntity = jpaRepository.save(entity);
+        return ProductEntityAssembler.toAggregate(savedEntity);
     }
 
     @Override
@@ -43,5 +50,15 @@ public class ProductRepositoryAdapter implements ProductRepository {
                 .stream()
                 .map(ProductEntityAssembler::toAggregate)
                 .toList();
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return jpaRepository.existsById(id);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
     }
 }

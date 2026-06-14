@@ -1,7 +1,6 @@
 package com.andeva.atelier.platform.operations.domain.model.commands;
+
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.*;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
-import java.util.UUID;
 
 /**
  * Command representing the intent to add a Product to a Task within a Work Order.
@@ -10,13 +9,11 @@ import java.util.UUID;
  * @param taskId
  * @param productId
  * @param quantity
- * @param unitPrice
  * @author Joel Huamani Estefanero
  */
 public record AddProductToTaskCommand(
-        UUID workOrderId,
-        UUID taskId,
+        WorkOrderId workOrderId,
+        WorkOrderTaskId taskId,
         ProductId productId,
-        Quantity quantity,
-        Money unitPrice
+        Quantity quantity
 ) {}

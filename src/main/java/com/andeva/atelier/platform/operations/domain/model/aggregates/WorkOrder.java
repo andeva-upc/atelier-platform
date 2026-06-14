@@ -1,5 +1,7 @@
 package com.andeva.atelier.platform.operations.domain.model.aggregates;
 
+import com.andeva.atelier.platform.operations.domain.model.entities.WorkOrderTask;
+import com.andeva.atelier.platform.operations.domain.model.entities.WorkOrderTaskProduct;
 import com.andeva.atelier.platform.operations.domain.model.events.ProductReservationCanceledEvent;
 import com.andeva.atelier.platform.operations.domain.model.events.ProductReservedEvent;
 import com.andeva.atelier.platform.operations.domain.model.events.WorkOrderPaidEvent;
@@ -19,10 +21,9 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 @Getter
-
 public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
 
-    private UUID id;
+    private WorkOrderId id;
     private AppointmentId appointmentId;
     private BranchId branchId;
     private VehicleId vehicleId;
@@ -42,7 +43,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
 
     public WorkOrder() {}
 
-    public WorkOrder(UUID id, AppointmentId appointmentId, BranchId branchId, VehicleId vehicleId, CustomerId customerId, Integer internalNumber, WorkOrderStatus status, DiagnosticSummary diagnosticSummary, Mileage mileageIn, Money totalAmount, List<WorkOrderTask> tasks, Instant createdAt, Instant updatedAt, Instant deletedAt, UUID createdBy, UUID updatedBy, Long version) {
+    public WorkOrder(WorkOrderId id, AppointmentId appointmentId, BranchId branchId, VehicleId vehicleId, CustomerId customerId, Integer internalNumber, WorkOrderStatus status, DiagnosticSummary diagnosticSummary, Mileage mileageIn, Money totalAmount, List<WorkOrderTask> tasks, Instant createdAt, Instant updatedAt, Instant deletedAt, UUID createdBy, UUID updatedBy, Long version) {
         this.id = id;
         this.appointmentId = appointmentId;
         this.branchId = branchId;
@@ -73,7 +74,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @param mileageIn the mileage of the vehicle at the time it was brought in for service, which can be relevant for certain types of maintenance tasks and for tracking the vehicle's service history
      */
     public WorkOrder(AppointmentId appointmentId, BranchId branchId, VehicleId vehicleId, CustomerId customerId, Integer internalNumber, DiagnosticSummary diagnosticSummary, Mileage mileageIn) {
-        this.id = UUID.randomUUID();
+        this.id = new WorkOrderId(UUID.randomUUID());
         this.appointmentId = appointmentId;
         this.branchId = branchId;
         this.vehicleId = vehicleId;
@@ -88,10 +89,10 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
 
     /**
      * Adds a new task to the work order. This method checks if the work order is in a state that allows modifications (not COMPLETED or PAID) before adding the task. It creates a new WorkOrderTask instance with the provided details and adds it to the list of tasks associated with this work order. After adding the task, it recalculates the total amount for the work order to reflect the addition of the new task.
-     * @param serviceId the unique identifier of the service that this task represents, which corresponds to a specific type of work that needs to be performed on the vehicle
-     * @param mechanicId the unique identifier of the mechanic assigned to perform this task, which allows for tracking who is responsible for each task and can be used for scheduling and workload management
+     *
+     * @param serviceId   the unique identifier of the service that this task represents, which corresponds to a specific type of work that needs to be performed on the vehicle
+     * @param mechanicId  the unique identifier of the mechanic assigned to perform this task, which allows for tracking who is responsible for each task and can be used for scheduling and workload management
      * @param description a textual description of the task, providing details about what needs to be done and any specific instructions or notes for the mechanic
-     * @param laborPrice the price for the labor associated with this task, which contributes to the total amount of the work order and can be used for billing purposes
      * @throws IllegalStateException if the work order is in a state that does not allow modifications (COMPLETED or PAID), which prevents adding tasks to a closed order
      */
     public void addTask(ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money laborPrice) {
@@ -105,13 +106,13 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
 
     /**
      * Adds a product to a specific task within the work order. This method first checks if the work order is in a state that allows modifications (not COMPLETED or PAID). It then finds the specified task by its ID and adds the product to that task using the provided details. After adding the product, it recalculates the total amount for the work order to reflect the addition of the new product. Additionally, it registers a ProductReservedEvent to notify the inventory system to reserve the quantity of the product that was added to the task.
-     * @param taskId the unique identifier of the task to which the product should be added, which allows for associating the product with the correct task within the work order
+     *
+     * @param taskId    the unique identifier of the task to which the product should be added, which allows for associating the product with the correct task within the work order
      * @param productId the unique identifier of the product being added, which corresponds to a specific item that is required for the task and can be used for inventory management and billing purposes
-     * @param quantity the quantity of the product being added, which indicates how many units of the product are needed for the task and can affect inventory levels and the total amount of the work order
-     * @param unitPrice the price per unit of the product being added, which contributes to the total amount of the work order and can be used for billing purposes
+     * @param quantity  the quantity of the product being added, which indicates how many units of the product are needed for the task and can affect inventory levels and the total amount of the work order
      * @throws IllegalStateException if the work order is in a state that does not allow modifications (COMPLETED or PAID), which prevents adding products to tasks of a closed order
      */
-    public void addProductToTask(UUID taskId, ProductId productId, Quantity quantity, Money unitPrice) {
+    public void addProductToTask(WorkOrderTaskId taskId, ProductId productId, Quantity quantity, Money unitPrice) {
         if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
         }
@@ -128,7 +129,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @throws IllegalStateException if the work order is in a state that does not allow modifications (COMPLETED or PAID), which prevents removing products from tasks of a closed order
      * @throws IllegalArgumentException if the specified product is not found within the task or is already marked as deleted, which prevents removing a product that does not exist or has already been removed from the task
      */
-    public void removeProductFromTask(UUID taskId, ProductId productId) {
+    public void removeProductFromTask(WorkOrderTaskId taskId, ProductId productId) {
         if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
         }
@@ -152,7 +153,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @throws IllegalStateException if the work order is in a state that does not allow modifications (COMPLETED or PAID), which prevents deleting tasks of a closed order
      * @throws IllegalStateException if the task to be removed is already marked as completed, which prevents deleting tasks that have already been finished and may have implications for record-keeping and accountability
      */
-    public void removeTask(UUID taskId) {
+    public void removeTask(WorkOrderTaskId taskId) {
         if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
         }
@@ -195,7 +196,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @param taskId the unique identifier of the task to be started, which allows for identifying the correct task within the work order to update its status
      * @throws IllegalStateException if the work order is in a state that does not allow modifications (COMPLETED or PAID), which prevents starting tasks of a closed order
      */
-    public void startTask(UUID taskId) {
+    public void startTask(WorkOrderTaskId taskId) {
         if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
         }
@@ -210,7 +211,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * Marks a specific task within the work order as completed. This method first checks if the work order is in a state that allows modifications (not COMPLETED or PAID). It then finds the specified task by its ID and calls the complete() method on that task, which changes its status to COMPLETED. After completing the task, it checks if all active tasks within the work order are now completed. If all tasks are completed, it automatically transitions the overall work order status to COMPLETED. If not all tasks are completed, it calls checkAutoCompletion() to ensure that the work order status is updated to IN_PROGRESS if it was previously in PENDING status.
      * @param taskId the unique identifier of the task to be marked as completed, which allows for identifying the correct task within the work order to update its status
      */
-    public void completeTask(UUID taskId) {
+    public void completeTask(WorkOrderTaskId taskId) {
         WorkOrderTask task = findTaskOrThrow(taskId);
         if (task.complete()) {
             boolean allTasksCompleted = this.tasks.stream()
@@ -230,7 +231,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @param taskId the unique identifier of the task to be reopened, which allows for identifying the correct task within the work order to update its status
      * @throws IllegalStateException if the work order is in a state that does not allow modifications (PAID), which prevents reopening tasks of a paid order
      */
-    public void reopenTask(UUID taskId) {
+    public void reopenTask(WorkOrderTaskId taskId) {
         if (this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotReopenTaskOfPaidOrder");
         }
@@ -282,7 +283,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
     }
 
     /**
-     * Recalculates the total amount for the work order by summing up the prices of all active tasks and their associated products. This method iterates through the list of tasks, retrieves the price for each task (which includes the labor price and the total price of its products), and sums them up to calculate the overall total amount for the work order. This method is called whenever there are changes to tasks or products that could affect the total cost, ensuring that the total amount remains accurate and up-to-date.
+     * Recalculates the total amount for the work order by summing up the prices of all active tasks and their associated products. This method iterates through the list of tasks, retrieves the price for each task (which includes the service price and the total price of its products), and sums them up to calculate the overall total amount for the work order. This method is called whenever there are changes to tasks or products that could affect the total cost, ensuring that the total amount remains accurate and up-to-date.
      */
     private void recalculateTotalAmount() {
         this.totalAmount = this.tasks.stream()
@@ -296,7 +297,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @return the WorkOrderTask instance that matches the provided taskId
      * @throws IllegalArgumentException if no task with the provided taskId is found within the
      */
-    private WorkOrderTask findTaskOrThrow(UUID taskId) {
+    private WorkOrderTask findTaskOrThrow(WorkOrderTaskId taskId) {
         return this.tasks.stream()
                 .filter(t -> t.getId().equals(taskId))
                 .findFirst()
@@ -318,20 +319,20 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
     }
 
     /**
-     * Updates the details of a specific task within the work order. This method first checks if the work order is in a state that allows modifications (not COMPLETED or PAID). It then finds the specified task by its ID and calls the updateDetails() method on that task, passing in the new serviceId, mechanicId, description, and laborPrice. After updating the task details, it recalculates the total amount for the work order to reflect any changes in the labor price or other cost-related details of the task.
-     * @param taskId the unique identifier of the task to be updated, which allows for identifying the correct task within the work order to modify its details
-     * @param serviceId the new service ID to be set for the task, which corresponds to a specific type of work that needs to be performed and can affect the labor price and overall cost of the task
-     * @param mechanicId the new mechanic ID to be set for the task, which allows for tracking who is responsible for the task and can be used for scheduling and workload management
+     * Updates the details of a specific task within the work order. This method first checks if the work order is in a state that allows modifications (not COMPLETED or PAID). It then finds the specified task by its ID and calls the updateDetails() method on that task, passing in the new serviceId, mechanicId, description, and price. After updating the task details, it recalculates the total amount for the work order to reflect any changes in the price or other cost-related details of the task.
+     *
+     * @param taskId      the unique identifier of the task to be updated, which allows for identifying the correct task within the work order to modify its details
+     * @param serviceId   the new service ID to be set for the task, which corresponds to a specific type of work that needs to be performed and can affect the service price and overall cost of the task
+     * @param mechanicId  the new mechanic ID to be set for the task, which allows for tracking who is responsible for the task and can be used for scheduling and workload management
      * @param description the new description to be set for the task, providing updated details about what needs to be done and any specific instructions or notes for the mechanic
-     * @param laborPrice the new labor price to be set for the task, which contributes to the total amount of the work order and can be used for billing purposes, especially if the type of service or the assigned mechanic changes
      * @throws IllegalStateException if the work order is in a state that does not allow
      */
-    public void updateTaskDetails(UUID taskId, ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money laborPrice) {
+    public void updateTaskDetails(WorkOrderTaskId taskId, ServiceId serviceId, MechanicId mechanicId, TaskDescription description, Money newLaborPrice) {
         if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
         }
         WorkOrderTask task = findTaskOrThrow(taskId);
-        task.updateDetails(serviceId, mechanicId, description, laborPrice);
+        task.updateDetails(serviceId, mechanicId, description, newLaborPrice);
         recalculateTotalAmount();
     }
 
@@ -342,7 +343,7 @@ public class WorkOrder extends AbstractDomainAggregateRoot<WorkOrder> {
      * @param newQuantity the new quantity to be set for the product, which indicates how many units of the product are needed for the task and can affect inventory levels and the total amount of the work order
      * @throws IllegalStateException if the work order is in a state that does not allow modifications (COMPLETED or PAID), which prevents changes to the product quantity after the work order has been finalized
      */
-    public void updateProductQuantityInTask(UUID taskId, ProductId productId, Quantity newQuantity) {
+    public void updateProductQuantityInTask(WorkOrderTaskId taskId, ProductId productId, Quantity newQuantity) {
         if (this.status == WorkOrderStatus.COMPLETED || this.status == WorkOrderStatus.PAID) {
             throw new IllegalStateException("operations.error.workOrder.cannotModifyClosedOrder");
         }

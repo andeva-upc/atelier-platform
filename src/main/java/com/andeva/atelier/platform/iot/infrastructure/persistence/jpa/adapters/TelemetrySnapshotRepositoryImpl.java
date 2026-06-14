@@ -10,6 +10,7 @@ import com.andeva.atelier.platform.iot.infrastructure.persistence.jpa.repositori
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -77,6 +78,19 @@ public class TelemetrySnapshotRepositoryImpl implements TelemetrySnapshotReposit
     @Override
     public List<TelemetrySnapshot> findAllByRegistrationId(Obd2DeviceRegistrationId registrationId) {
         return persistenceRepository.findAllByObd2DeviceRegistrationIdOrderByCreatedAtDesc(registrationId).stream()
+                .map(TelemetrySnapshotPersistenceAssembler::toDomainEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TelemetrySnapshot> findAllByRegistrationIdAndCreatedAtGreaterThanEqual(
+            Obd2DeviceRegistrationId registrationId,
+            Instant startTimestamp
+    ) {
+        return persistenceRepository.findAllByObd2DeviceRegistrationIdAndCreatedAtGreaterThanEqualOrderByCreatedAtDesc(
+                registrationId,
+                startTimestamp
+        ).stream()
                 .map(TelemetrySnapshotPersistenceAssembler::toDomainEntity)
                 .collect(Collectors.toList());
     }

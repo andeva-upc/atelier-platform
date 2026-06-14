@@ -3,8 +3,11 @@ package com.andeva.atelier.platform.iot.domain.repositories;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2DeviceRegistration;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceRegistrationId;
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2RegistrationStatus;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -39,4 +42,12 @@ public interface Obd2DeviceRegistrationRepository {
      * @return an Optional containing the active registration if found
      */
     Optional<Obd2DeviceRegistration> findActiveByVehicleId(VehicleId vehicleId);
+
+    /**
+     * Finds all registrations for a specific branch and status.
+     * @param branchId the branch identifier
+     * @param status the registration status
+     * @return the list of registrations matching branch and status
+     */
+    List<Obd2DeviceRegistration> findAllByBranchIdAndStatus(BranchId branchId, Obd2RegistrationStatus status);
 }

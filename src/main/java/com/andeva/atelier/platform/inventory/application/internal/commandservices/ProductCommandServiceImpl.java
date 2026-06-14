@@ -19,9 +19,9 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
     @Override
     public Optional<Product> handle(CreateProductCommand command) {
-        Product product = new Product(UUID.randomUUID(), command.branchId(), command.category(), command.name(), command.sku());
-        productRepository.save(product);
-        return Optional.of(product);
+        Product product = new Product(UUID.randomUUID(), command.branchId(), command.category(), command.name(), command.sku(), command.salePrice(), command.description(), command.minimumStock().value());
+        var savedProduct = productRepository.save(product);
+        return Optional.of(savedProduct);
     }
 
     @Override
@@ -36,7 +36,27 @@ public class ProductCommandServiceImpl implements ProductCommandService {
                 command.acquisitionCost()
         );
         product.get().addBatch(batch);
-        productRepository.save(product.get());
-        return Optional.of(batch);
+        var savedProduct = productRepository.save(product.get());
+        var savedBatch = savedProduct.getBatches().get(savedProduct.getBatches().size() - 1);
+        return Optional.of(savedBatch);
+    }
+
+    @Override
+    public Optional<Product> handle(com.andeva.atelier.platform.inventory.domain.model.commands.UpdateProductCommand command) {
+        var product = productRepository.findById(command.productId());
+        if (product.isEmpty()) {
+            return Optional.empty();
+        }
+        product.get().updateDetails(command.name(), command.category(), command.sku(), command.salePrice(), command.description(), command.minimumStock().value());
+        var savedProduct = productRepository.save(product.get());
+        return Optional.of(savedProduct);
+    }
+
+    @Override
+    public void handle(com.andeva.atelier.platform.inventory.domain.model.commands.DeleteProductCommand command) {
+        if (!productRepository.existsById(command.productId())) {
+            throw new IllegalArgumentException("inventory.error.product.notFound");
+        }
+        productRepository.deleteById(command.productId());
     }
 }

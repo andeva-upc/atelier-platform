@@ -10,6 +10,11 @@ import java.util.UUID;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
+/**
+ * JPA entity mapping for the Quote aggregate.
+ * Reflects the database structure for the 'quotes' table, including automatic
+ * persistence metadata (creation/update timestamps and users).
+ */
 @Entity
 @Table(name = "quotes")
 @Getter

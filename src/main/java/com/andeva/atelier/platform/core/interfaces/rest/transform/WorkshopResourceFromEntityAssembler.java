@@ -10,7 +10,7 @@ public class WorkshopResourceFromEntityAssembler {
                 entity.getOwnerId() != null ? entity.getOwnerId().value() : null,
                 entity.getBusinessName(),
                 entity.getBrandName(),
-                entity.getTaxId(),
+                entity.getTaxId() != null ? entity.getTaxId().value() : null,
                 entity.getMileageIntervalConfig()
         );
     }

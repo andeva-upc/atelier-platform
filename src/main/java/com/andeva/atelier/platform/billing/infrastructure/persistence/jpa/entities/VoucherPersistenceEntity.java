@@ -10,6 +10,11 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * JPA entity mapping for the Voucher aggregate.
+ * Stores billing document data (Invoices/Receipts) and maintains a one-to-many 
+ * relationship with its associated payments.
+ */
 @Entity
 @Table(name = "vouchers")
 @Getter
@@ -41,4 +46,7 @@ public class VoucherPersistenceEntity extends AuditableAbstractPersistenceEntity
 
     @Column(name = "external_invoice_id", nullable = false)
     private UUID externalInvoiceId;
+
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<PaymentPersistenceEntity> payments = new java.util.ArrayList<>();
 }

@@ -50,7 +50,7 @@ public class Obd2DeviceRegistration extends AbstractDomainAggregateRoot<Obd2Devi
      * Deactivates/Unlinks the device registration.
      */
     public void deactivate() {
-        if (this.status == Obd2RegistrationStatus.INACTIVE) {
+        if (Obd2RegistrationStatus.INACTIVE.equals(this.status)) {
             throw new IllegalStateException("iot.error.obd2DeviceRegistration.alreadyInactive");
         }
         this.status = Obd2RegistrationStatus.INACTIVE;

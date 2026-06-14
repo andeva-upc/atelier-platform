@@ -7,52 +7,52 @@ import com.andeva.atelier.platform.core.domain.repositories.EmployeeRepository;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.EmployeePersistenceAssembler;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.EmployeePersistenceEntity;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.EmployeePersistenceRepository;
-import org.springframework.stereotype.Component;
 
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
-@Component
+@Repository
 public class EmployeeRepositoryImpl implements EmployeeRepository {
 
-    private final EmployeePersistenceRepository jpaRepository;
+    private final EmployeePersistenceRepository employeePersistenceRepository;
 
-    public EmployeeRepositoryImpl(EmployeePersistenceRepository jpaRepository) {
-        this.jpaRepository = jpaRepository;
+    public EmployeeRepositoryImpl(EmployeePersistenceRepository employeePersistenceRepository) {
+        this.employeePersistenceRepository = employeePersistenceRepository;
     }
 
     @Override
     public Employee save(Employee employee) {
-        EmployeePersistenceEntity entity = null;
+        EmployeePersistenceEntity entity;
         if (employee.getId() != null) {
-            entity = jpaRepository.findById(employee.getId().value()).orElse(new EmployeePersistenceEntity());
+            entity = employeePersistenceRepository.findById(employee.getId().value()).orElse(new EmployeePersistenceEntity());
         } else {
             entity = new EmployeePersistenceEntity();
         }
         
         EmployeePersistenceAssembler.toEntity(employee, entity);
-        EmployeePersistenceEntity savedEntity = jpaRepository.save(entity);
+        EmployeePersistenceEntity savedEntity = employeePersistenceRepository.save(entity);
         return EmployeePersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Employee> findById(EmployeeId id) {
-        return jpaRepository.findById(id.value()).map(EmployeePersistenceAssembler::toDomain);
+        return employeePersistenceRepository.findById(id.value()).map(EmployeePersistenceAssembler::toDomain);
     }
 
     @Override
     public Optional<Employee> findByUserId(UserId userId) {
-        return jpaRepository.findByUserId(userId.value()).map(EmployeePersistenceAssembler::toDomain);
+        return employeePersistenceRepository.findByUserId(userId.value()).map(EmployeePersistenceAssembler::toDomain);
     }
 
     @Override
     public boolean existsByUserId(UserId userId) {
-        return jpaRepository.existsByUserId(userId.value());
+        return employeePersistenceRepository.existsByUserId(userId.value());
     }
 
     @Override
     public void delete(Employee employee) {
         if (employee.getId() != null) {
-            jpaRepository.findById(employee.getId().value()).ifPresent(jpaRepository::delete);
+            employeePersistenceRepository.findById(employee.getId().value()).ifPresent(employeePersistenceRepository::delete);
         }
     }
 }

@@ -2,6 +2,7 @@ package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.reposito
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionStatus;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.BranchSubscriptionPersistenceEntity;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

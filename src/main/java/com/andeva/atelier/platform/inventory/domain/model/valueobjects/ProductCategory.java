@@ -1,9 +1,9 @@
 package com.andeva.atelier.platform.inventory.domain.model.valueobjects;
 
-public enum ProductCategory {
-    SPARE_PART,
-    LUBRICANT,
-    ACCESSORY,
-    CONSUMABLE,
-    OTHER
+public record ProductCategory(String value) {
+    public ProductCategory {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("inventory.error.productCategory.required");
+        }
+    }
 }

@@ -45,7 +45,7 @@ public class ProductsController {
     public ResponseEntity<ProductResource> createProduct(@RequestBody CreateProductResource resource) {
         CreateProductCommand command = new CreateProductCommand(
                 new BranchId(java.util.UUID.fromString(resource.branchId())),
-                ProductCategory.valueOf(resource.category()),
+                new ProductCategory(resource.category()),
                 new ProductName(resource.name()),
                 new Sku(resource.sku()),
                 resource.description(),
@@ -97,5 +97,40 @@ public class ProductsController {
         return product.map(p -> ResponseEntity.ok(
                 com.andeva.atelier.platform.inventory.interfaces.rest.transform.ProductDetailsResourceFromAggregateAssembler.toResourceFromAggregate(p)
         )).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{productId}")
+    @Operation(summary = "Update product details", description = "Updates the basic details of a product (Name, Category, SKU)")
+    public ResponseEntity<ProductResource> updateProduct(
+            @PathVariable UUID productId,
+            @RequestBody com.andeva.atelier.platform.inventory.interfaces.rest.resources.UpdateProductResource resource) {
+            
+        var command = new com.andeva.atelier.platform.inventory.domain.model.commands.UpdateProductCommand(
+                productId,
+                new com.andeva.atelier.platform.inventory.domain.model.valueobjects.ProductName(resource.name()),
+                new com.andeva.atelier.platform.inventory.domain.model.valueobjects.ProductCategory(resource.category().toUpperCase()),
+                new com.andeva.atelier.platform.inventory.domain.model.valueobjects.Sku(resource.sku()),
+                resource.description(),
+                new Money(java.math.BigDecimal.valueOf(resource.salePrice())),
+                new InventoryQuantity(resource.minimumStock())
+        );
+        
+        var updatedProduct = productCommandService.handle(command);
+        
+        return updatedProduct.map(product -> ResponseEntity.ok(
+                ProductResourceFromAggregateAssembler.toResourceFromAggregate(product)
+        )).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{productId}")
+    @Operation(summary = "Delete a product", description = "Deletes a product and all its associated batches")
+    public ResponseEntity<?> deleteProduct(@PathVariable UUID productId) {
+        var command = new com.andeva.atelier.platform.inventory.domain.model.commands.DeleteProductCommand(productId);
+        try {
+            productCommandService.handle(command);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

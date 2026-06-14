@@ -2,7 +2,10 @@ package com.andeva.atelier.platform.iot.domain.repositories;
 
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
+import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceStatus;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,4 +40,25 @@ public interface Obd2DeviceRepository {
      * @return true if a device exists, false otherwise
      */
     boolean existsByMacAddress(String macAddress);
+
+    /**
+     * Deletes (unregisters) a device from the repository by its ID.
+     * @param id the unique identifier of the device
+     */
+    void delete(Obd2DeviceId id);
+
+    /**
+     * Finds all OBD2 devices registered in a specific branch.
+     * @param branchId the unique identifier of the branch
+     * @return the list of registered OBD2 devices
+     */
+    List<Obd2Device> findAllByBranchId(BranchId branchId);
+
+    /**
+     * Finds all OBD2 devices registered in a specific branch by their status.
+     * @param branchId the unique identifier of the branch
+     * @param status the device status
+     * @return the list of matching OBD2 devices
+     */
+    List<Obd2Device> findAllByBranchIdAndStatus(BranchId branchId, Obd2DeviceStatus status);
 }

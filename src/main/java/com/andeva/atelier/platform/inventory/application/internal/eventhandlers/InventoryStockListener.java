@@ -3,7 +3,6 @@ package com.andeva.atelier.platform.inventory.application.internal.eventhandlers
 import com.andeva.atelier.platform.inventory.domain.model.aggregates.Product;
 import com.andeva.atelier.platform.inventory.domain.model.valueobjects.InventoryQuantity;
 import com.andeva.atelier.platform.inventory.domain.repositories.ProductRepository;
-import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrderTaskProduct;
 import com.andeva.atelier.platform.operations.domain.model.events.ProductReservationCanceledEvent;
 import com.andeva.atelier.platform.operations.domain.model.events.ProductReservedEvent;
 import com.andeva.atelier.platform.operations.domain.model.events.WorkOrderPaidEvent;
@@ -40,12 +39,9 @@ public class InventoryStockListener {
 
     @EventListener
     public void on(WorkOrderPaidEvent event) {
-        for (WorkOrderTaskProduct dispatchedProduct : event.dispatchedProducts()) {
-            Optional<Product> productOpt = productRepository.findById(dispatchedProduct.getProductId().value());
-            productOpt.ifPresent(product -> {
-                product.dispatchStock(new InventoryQuantity(dispatchedProduct.getQuantity().value()));
-                productRepository.save(product);
-            });
-        }
+        // En la arquitectura definida con Operations, el stock se descuenta físicamente de los lotes 
+        // al momento de hacer la reserva (ProductReservedEvent). 
+        // El trigger de base de datos sync_product_stock() se encarga de actualizar el current_stock.
+        // Por lo tanto, al pagar la orden, no es necesario hacer ninguna deducción adicional.
     }
 }

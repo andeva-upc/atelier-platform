@@ -5,34 +5,53 @@ import com.andeva.atelier.platform.inventory.domain.model.entities.ProductBatch;
 import com.andeva.atelier.platform.inventory.domain.model.valueobjects.*;
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductBatchJpaEntity;
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductJpaEntity;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 
 import java.util.stream.Collectors;
 
 public class ProductEntityAssembler {
-    public static ProductJpaEntity toEntity(Product product) {
+    public static ProductJpaEntity toEntity(Product product, ProductJpaEntity entity) {
         if (product == null) return null;
-        ProductJpaEntity entity = new ProductJpaEntity();
-        entity.setId(product.getId());
-        entity.setBranchId(product.getBranchId().value().toString());
-        entity.setCategory(product.getCategory().name());
+        if (entity == null) entity = new ProductJpaEntity();
+        
+        if (product.getVersion() != null) {
+            entity.setId(product.getId());
+            entity.setVersion(product.getVersion());
+        } else {
+            entity.setId(product.getId());
+        }
+        
+        entity.setBranchId(product.getBranchId());
+        entity.setCategory(product.getCategory().value());
         entity.setName(product.getName().name());
         entity.setSku(product.getSku().value());
+        entity.setDescription(product.getDescription());
+        entity.setCurrentSellingPrice(product.getCurrentSellingPrice());
         entity.setCurrentStock(product.getCurrentStock().value());
-        entity.setReservedStock(product.getReservedStock().value());
+        entity.setMinimumStock(product.getMinimumStock());
 
-        var batchEntities = product.getBatches().stream().map(b -> {
-            ProductBatchJpaEntity be = new ProductBatchJpaEntity();
-            be.setBatchId(b.getBatchId());
-            be.setInitialQuantity(b.getInitialQuantity().value()); 
-            be.setAvailableQuantity(b.getAvailableQuantity().value());
-            be.setAcquisitionCost(b.getAcquisitionCost().amount().doubleValue());
-            be.setProduct(entity);
-            return be;
-        }).collect(Collectors.toList());
+        if (entity.getBatches() == null) {
+            entity.setBatches(new java.util.ArrayList<>());
+        }
+        
+        var productBatchIds = product.getBatches().stream().map(ProductBatch::getBatchId).collect(Collectors.toSet());
+        entity.getBatches().removeIf(b -> !productBatchIds.contains(b.getId()));
+        
+        for (ProductBatch b : product.getBatches()) {
+            var batchEntity = entity.getBatches().stream().filter(be -> be.getId() != null && be.getId().equals(b.getBatchId())).findFirst().orElse(null);
+            if (batchEntity == null) {
+                batchEntity = new ProductBatchJpaEntity();
+                batchEntity.setProduct(entity);
+                entity.getBatches().add(batchEntity);
+            }
+            if (b.getVersion() != null) {
+                batchEntity.setVersion(b.getVersion());
+            }
+            batchEntity.setBranchId(product.getBranchId());
+            batchEntity.setInitialQuantity(b.getInitialQuantity().value()); 
+            batchEntity.setAvailableQuantity(b.getAvailableQuantity().value());
+            batchEntity.setAcquisitionCost(b.getAcquisitionCost());
+        }
 
-        entity.setBatches(batchEntities);
         return entity;
     }
 
@@ -41,9 +60,27 @@ public class ProductEntityAssembler {
         java.util.List<ProductBatch> batches = new java.util.ArrayList<>();
         if (entity.getBatches() != null) {
             for (ProductBatchJpaEntity be : entity.getBatches()) {
-                batches.add(ProductBatch.reconstitute(be.getBatchId(), new InventoryQuantity(be.getInitialQuantity()), new InventoryQuantity(be.getAvailableQuantity()), new Money(java.math.BigDecimal.valueOf(be.getAcquisitionCost()))));
+                batches.add(ProductBatch.reconstitute(
+                    be.getId(), 
+                    new InventoryQuantity(be.getInitialQuantity()), 
+                    new InventoryQuantity(be.getAvailableQuantity()), 
+                    be.getAcquisitionCost(),
+                    be.getVersion()
+                ));
             }
         }
-        return Product.reconstitute(entity.getId(), new BranchId(java.util.UUID.fromString(entity.getBranchId())), ProductCategory.valueOf(entity.getCategory()), new ProductName(entity.getName()), new Sku(entity.getSku()), new InventoryQuantity(entity.getCurrentStock()), new InventoryQuantity(entity.getReservedStock()), batches);
+        return Product.reconstitute(
+            entity.getId(), 
+            entity.getBranchId(), 
+            new ProductCategory(entity.getCategory()), 
+            new ProductName(entity.getName()), 
+            new Sku(entity.getSku()), 
+            new InventoryQuantity(entity.getCurrentStock()), 
+            entity.getCurrentSellingPrice(),
+            entity.getDescription(),
+            entity.getMinimumStock(),
+            entity.getVersion(),
+            batches
+        );
     }
 }

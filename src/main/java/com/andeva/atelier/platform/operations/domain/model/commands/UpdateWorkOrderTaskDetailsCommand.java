@@ -1,8 +1,6 @@
 package com.andeva.atelier.platform.operations.domain.model.commands;
 
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.*;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
-import java.util.UUID;
 
 /**
  * Command representing the intent to update the details of a Task within a Work Order.
@@ -12,14 +10,12 @@ import java.util.UUID;
  * @param serviceId
  * @param mechanicId
  * @param description
- * @param laborPrice
  * @author Joel Huamani Estefanero
  */
 public record UpdateWorkOrderTaskDetailsCommand(
-        UUID workOrderId,
-        UUID taskId,
+        WorkOrderId workOrderId,
+        WorkOrderTaskId taskId,
         ServiceId serviceId,
         MechanicId mechanicId,
-        TaskDescription description,
-        Money laborPrice
+        TaskDescription description
 ) {}

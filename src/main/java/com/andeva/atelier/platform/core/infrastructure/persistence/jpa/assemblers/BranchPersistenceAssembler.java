@@ -7,13 +7,17 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.WorkshopId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.BranchPersistenceEntity;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Address;
 
-public class BranchPersistenceAssembler {
+public final class BranchPersistenceAssembler {
+
+    private BranchPersistenceAssembler() {}
 
     public static BranchPersistenceEntity toEntity(Branch branch, BranchPersistenceEntity entity) {
         if (entity == null) {
             entity = new BranchPersistenceEntity();
         }
-        entity.setId(branch.getId() != null ? branch.getId().value() : null);
+        if (branch.getVersion() != null) {
+            entity.setId(branch.getId() != null ? branch.getId().value() : null);
+        }
         entity.setWorkshopId(branch.getWorkshopId() != null ? branch.getWorkshopId().value() : null);
         entity.setCode(branch.getCode());
         entity.setName(branch.getName());
@@ -21,6 +25,12 @@ public class BranchPersistenceAssembler {
             entity.setAddress(branch.getAddress().value());
         }
         entity.setPhone(branch.getPhone() != null ? branch.getPhone().value() : null);
+        entity.setCreatedAt(branch.getCreatedAt());
+        entity.setUpdatedAt(branch.getUpdatedAt());
+        entity.setDeletedAt(branch.getDeletedAt());
+        entity.setCreatedBy(branch.getCreatedBy());
+        entity.setUpdatedBy(branch.getUpdatedBy());
+        entity.setVersion(branch.getVersion());
         return entity;
     }
 
@@ -31,7 +41,13 @@ public class BranchPersistenceAssembler {
                 entity.getCode(),
                 entity.getName(),
                 new Address(entity.getAddress()),
-                new Phone(entity.getPhone())
+                new Phone(entity.getPhone()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getCreatedBy(),
+                entity.getUpdatedBy(),
+                entity.getVersion()
         );
     }
 }

@@ -8,13 +8,17 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.CustomerPersistenceEntity;
 
-public class CustomerPersistenceAssembler {
+public final class CustomerPersistenceAssembler {
+
+    private CustomerPersistenceAssembler() {}
 
     public static CustomerPersistenceEntity toEntity(Customer customer, CustomerPersistenceEntity entity) {
         if (entity == null) {
             entity = new CustomerPersistenceEntity();
         }
-        entity.setId(customer.getId() != null ? customer.getId().value() : null);
+        if (customer.getVersion() != null) {
+            entity.setId(customer.getId() != null ? customer.getId().value() : null);
+        }
         entity.setUserId(customer.getUserId() != null ? customer.getUserId().value() : null);
         entity.setCorporate(customer.isCorporate());
         
@@ -31,6 +35,10 @@ public class CustomerPersistenceAssembler {
         }
         
         entity.setPhone(customer.getPhone() != null ? customer.getPhone().value() : null);
+        entity.setCreatedAt(customer.getCreatedAt());
+        entity.setUpdatedAt(customer.getUpdatedAt());
+        entity.setDeletedAt(customer.getDeletedAt());
+        entity.setVersion(customer.getVersion());
         return entity;
     }
 
@@ -52,7 +60,11 @@ public class CustomerPersistenceAssembler {
                 personName,
                 entity.getBusinessName(),
                 document,
-                new Phone(entity.getPhone())
+                new Phone(entity.getPhone()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getVersion()
         );
     }
 }

@@ -8,13 +8,17 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.OwnerPersistenceEntity;
 
-public class OwnerPersistenceAssembler {
+public final class OwnerPersistenceAssembler {
+
+    public OwnerPersistenceAssembler() {}
 
     public static OwnerPersistenceEntity toEntity(Owner owner, OwnerPersistenceEntity entity) {
         if (entity == null) {
             entity = new OwnerPersistenceEntity();
         }
-        entity.setId(owner.getId() != null ? owner.getId().value() : null);
+        if (owner.getVersion() != null) {
+            entity.setId(owner.getId() != null ? owner.getId().value() : null);
+        }
         entity.setUserId(owner.getUserId() != null ? owner.getUserId().value() : null);
         
         if (owner.getName() != null) {
@@ -28,6 +32,10 @@ public class OwnerPersistenceAssembler {
         }
         
         entity.setPhone(owner.getPhone() != null ? owner.getPhone().value() : null);
+        entity.setCreatedAt(owner.getCreatedAt());
+        entity.setUpdatedAt(owner.getUpdatedAt());
+        entity.setDeletedAt(owner.getDeletedAt());
+        entity.setVersion(owner.getVersion());
         return entity;
     }
 
@@ -40,7 +48,11 @@ public class OwnerPersistenceAssembler {
                 new UserId(entity.getUserId()),
                 personName,
                 document,
-                new Phone(entity.getPhone())
+                new Phone(entity.getPhone()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getVersion()
         );
     }
 }

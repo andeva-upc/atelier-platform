@@ -8,7 +8,9 @@ public record ProductResource(
         String category,
         String name,
         String sku,
-        Integer currentStock,
-        Integer reservedStock
+        String description,
+        Double salePrice,
+        Integer minimumStock,
+        Integer currentStock
 ) {
 }

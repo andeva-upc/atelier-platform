@@ -6,47 +6,47 @@ import com.andeva.atelier.platform.core.domain.repositories.SubscriptionPlanRepo
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.assemblers.SubscriptionPlanPersistenceAssembler;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.SubscriptionPlanPersistenceEntity;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.SubscriptionPlanPersistenceRepository;
-import org.springframework.stereotype.Component;
 
+import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component
+@Repository
 public class SubscriptionPlanRepositoryImpl implements SubscriptionPlanRepository {
 
-    private final SubscriptionPlanPersistenceRepository jpaRepository;
+    private final SubscriptionPlanPersistenceRepository subscriptionPlanPersistenceRepository;
 
-    public SubscriptionPlanRepositoryImpl(SubscriptionPlanPersistenceRepository jpaRepository) {
-        this.jpaRepository = jpaRepository;
+    public SubscriptionPlanRepositoryImpl(SubscriptionPlanPersistenceRepository subscriptionPlanPersistenceRepository) {
+        this.subscriptionPlanPersistenceRepository = subscriptionPlanPersistenceRepository;
     }
 
     @Override
     public SubscriptionPlan save(SubscriptionPlan subscriptionPlan) {
-        SubscriptionPlanPersistenceEntity entity = null;
+        SubscriptionPlanPersistenceEntity entity;
         if (subscriptionPlan.getId() != null) {
-            entity = jpaRepository.findById(subscriptionPlan.getId().value()).orElse(new SubscriptionPlanPersistenceEntity());
+            entity = subscriptionPlanPersistenceRepository.findById(subscriptionPlan.getId().value()).orElse(new SubscriptionPlanPersistenceEntity());
         } else {
             entity = new SubscriptionPlanPersistenceEntity();
         }
         SubscriptionPlanPersistenceAssembler.toEntity(subscriptionPlan, entity);
-        SubscriptionPlanPersistenceEntity savedEntity = jpaRepository.save(entity);
+        SubscriptionPlanPersistenceEntity savedEntity = subscriptionPlanPersistenceRepository.save(entity);
         return SubscriptionPlanPersistenceAssembler.toDomain(savedEntity);
     }
 
     @Override
     public Optional<SubscriptionPlan> findById(SubscriptionPlanId id) {
-        return jpaRepository.findById(id.value()).map(SubscriptionPlanPersistenceAssembler::toDomain);
+        return subscriptionPlanPersistenceRepository.findById(id.value()).map(SubscriptionPlanPersistenceAssembler::toDomain);
     }
 
     @Override
     public Optional<SubscriptionPlan> findByName(String name) {
-        return jpaRepository.findByName(name).map(SubscriptionPlanPersistenceAssembler::toDomain);
+        return subscriptionPlanPersistenceRepository.findByName(name).map(SubscriptionPlanPersistenceAssembler::toDomain);
     }
 
     @Override
     public List<SubscriptionPlan> findAll() {
-        return jpaRepository.findAll().stream()
+        return subscriptionPlanPersistenceRepository.findAll().stream()
                 .map(SubscriptionPlanPersistenceAssembler::toDomain)
                 .collect(Collectors.toList());
     }

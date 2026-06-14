@@ -3,7 +3,7 @@ package com.andeva.atelier.platform.inventory.domain.model.valueobjects;
 public record InventoryQuantity(Integer value) {
     public InventoryQuantity {
         if (value == null || value < 0) {
-            throw new IllegalArgumentException("Quantity cannot be null or negative");
+            throw new IllegalArgumentException("inventory.error.quantity.invalid");
         }
     }
 
@@ -13,7 +13,7 @@ public record InventoryQuantity(Integer value) {
 
     public InventoryQuantity subtract(InventoryQuantity quantity) {
         if (this.value < quantity.value()) {
-            throw new IllegalArgumentException("Resulting quantity cannot be negative");
+            throw new IllegalArgumentException("inventory.error.quantity.resultingNegative");
         }
         return new InventoryQuantity(this.value - quantity.value());
     }

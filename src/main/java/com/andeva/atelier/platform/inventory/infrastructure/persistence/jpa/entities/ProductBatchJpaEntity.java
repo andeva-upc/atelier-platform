@@ -1,39 +1,68 @@
 package com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities;
 
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
+import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MoneyAttributeConverter;
+import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "inventory_product_batches")
+@Table(name = "product_batches")
 @EntityListeners(AuditingEntityListener.class)
-public class ProductBatchJpaEntity {
-    @Id
-    private UUID batchId;
-    private Integer initialQuantity;
-    private Integer availableQuantity;
-    private Double acquisitionCost;
+@SQLDelete(sql = "UPDATE product_batches SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?")
+@SQLRestriction("deleted_at IS NULL")
+public class ProductBatchJpaEntity extends AuditableAbstractPersistenceEntity implements Persistable<UUID> {
 
-    @CreatedDate
-    private Date receptionDate;
+    @Override
+    public boolean isNew() {
+        return getCreatedAt() == null;
+    }
+
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "branch_id", nullable = false))
+    private BranchId branchId;
+
+    @Column(name = "initial_quantity", nullable = false)
+    private Integer initialQuantity;
+
+    @Column(name = "available_quantity", nullable = false)
+    private Integer availableQuantity;
+
+    @Column(name = "acquisition_cost", nullable = false)
+    @Convert(converter = MoneyAttributeConverter.class)
+    private Money acquisitionCost;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private ProductJpaEntity product;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
+    @Version
+    private Long version;
 
     public ProductBatchJpaEntity() {}
 
-    public UUID getBatchId() { return batchId; }
-    public void setBatchId(UUID batchId) { this.batchId = batchId; }
+    public BranchId getBranchId() { return branchId; }
+    public void setBranchId(BranchId branchId) { this.branchId = branchId; }
     public Integer getInitialQuantity() { return initialQuantity; }
     public void setInitialQuantity(Integer initialQuantity) { this.initialQuantity = initialQuantity; }
     public Integer getAvailableQuantity() { return availableQuantity; }
     public void setAvailableQuantity(Integer availableQuantity) { this.availableQuantity = availableQuantity; }
-    public Double getAcquisitionCost() { return acquisitionCost; }
-    public void setAcquisitionCost(Double acquisitionCost) { this.acquisitionCost = acquisitionCost; }
+    public Money getAcquisitionCost() { return acquisitionCost; }
+    public void setAcquisitionCost(Money acquisitionCost) { this.acquisitionCost = acquisitionCost; }
     public ProductJpaEntity getProduct() { return product; }
     public void setProduct(ProductJpaEntity product) { this.product = product; }
+    public Instant getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(Instant deletedAt) { this.deletedAt = deletedAt; }
+    public Long getVersion() { return version; }
+    public void setVersion(Long version) { this.version = version; }
 }

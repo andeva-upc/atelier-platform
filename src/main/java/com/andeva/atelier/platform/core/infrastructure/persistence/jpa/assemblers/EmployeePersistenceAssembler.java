@@ -8,13 +8,17 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.EmployeePersistenceEntity;
 
-public class EmployeePersistenceAssembler {
+public final class EmployeePersistenceAssembler {
+
+    public EmployeePersistenceAssembler() {}
 
     public static EmployeePersistenceEntity toEntity(Employee employee, EmployeePersistenceEntity entity) {
         if (entity == null) {
             entity = new EmployeePersistenceEntity();
         }
-        entity.setId(employee.getId() != null ? employee.getId().value() : null);
+        if (employee.getVersion() != null) {
+            entity.setId(employee.getId() != null ? employee.getId().value() : null);
+        }
         entity.setUserId(employee.getUserId() != null ? employee.getUserId().value() : null);
         
         if (employee.getName() != null) {
@@ -28,6 +32,10 @@ public class EmployeePersistenceAssembler {
         }
         
         entity.setPhone(employee.getPhone() != null ? employee.getPhone().value() : null);
+        entity.setCreatedAt(employee.getCreatedAt());
+        entity.setUpdatedAt(employee.getUpdatedAt());
+        entity.setDeletedAt(employee.getDeletedAt());
+        entity.setVersion(employee.getVersion());
         return entity;
     }
 
@@ -40,7 +48,11 @@ public class EmployeePersistenceAssembler {
                 new UserId(entity.getUserId()),
                 personName,
                 document,
-                new Phone(entity.getPhone())
+                new Phone(entity.getPhone()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt(),
+                entity.getVersion()
         );
     }
 }

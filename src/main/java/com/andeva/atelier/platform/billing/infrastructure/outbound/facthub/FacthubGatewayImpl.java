@@ -14,13 +14,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Implementation of the FacthubGateway outbound service interface.
+ * Acts as an Anti-Corruption Layer (ACL) client connecting to the external Facthub REST API.
+ * This integration enables electronic voucher emission to SUNAT.
+ */
 @Service
 public class FacthubGatewayImpl implements FacthubGateway {
 
-    private static final String FACTHUB_API_URL = "https://facthub-service.onrender.com/api/invoices/issue";
+    private final String facthubApiUrl;
     private final RestTemplate restTemplate;
 
-    public FacthubGatewayImpl(RestTemplate restTemplate) {
+    public FacthubGatewayImpl(
+            @org.springframework.beans.factory.annotation.Value("${facthub.api.url}") String facthubApiUrl,
+            RestTemplate restTemplate) {
+        this.facthubApiUrl = facthubApiUrl;
         this.restTemplate = restTemplate;
     }
 
@@ -58,7 +66,7 @@ public class FacthubGatewayImpl implements FacthubGateway {
             HttpEntity<FacthubIssueInvoiceRequest> requestEntity = new HttpEntity<>(requestDto, headers);
 
             var response = restTemplate.postForObject(
-                    FACTHUB_API_URL, 
+                    facthubApiUrl, 
                     requestEntity, 
                     FacthubIssueInvoiceResponse.class
             );

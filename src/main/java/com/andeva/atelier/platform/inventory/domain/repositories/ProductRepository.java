@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Adiel Sanchez
  */
 public interface ProductRepository {
-    void save(Product product);
+    Product save(Product product);
     Optional<Product> findById(UUID id);
 
     /**
@@ -22,4 +22,7 @@ public interface ProductRepository {
      * @return list of products for that branch, may be empty
      */
     List<Product> findAllByBranchId(BranchId branchId);
+    
+    boolean existsById(UUID id);
+    void deleteById(UUID id);
 }

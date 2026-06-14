@@ -4,24 +4,33 @@ import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entitie
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "branches")
-@SQLDelete(sql = "UPDATE branches SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLDelete(sql = "UPDATE branches SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?")
 @SQLRestriction("deleted_at IS NULL")
 @Getter
 @Setter
 @NoArgsConstructor
-public class BranchPersistenceEntity extends AuditableAbstractPersistenceEntity {
+public class BranchPersistenceEntity extends AuditableAbstractPersistenceEntity implements Persistable<UUID> {
+
+    @Override
+    public boolean isNew() {
+        return getCreatedAt() == null;
+    }
 
     @Column(name = "workshop_id", nullable = false)
     private UUID workshopId;
@@ -41,11 +50,14 @@ public class BranchPersistenceEntity extends AuditableAbstractPersistenceEntity 
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
-    @org.springframework.data.annotation.CreatedBy
+    @CreatedBy
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
 
-    @org.springframework.data.annotation.LastModifiedBy
+    @LastModifiedBy
     @Column(name = "updated_by")
     private UUID updatedBy;
+
+    @Version
+    private Long version;
 }

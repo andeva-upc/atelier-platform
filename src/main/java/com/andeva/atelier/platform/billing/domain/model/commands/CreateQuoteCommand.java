@@ -10,13 +10,13 @@ public record CreateQuoteCommand(
 ) {
     public CreateQuoteCommand {
         if (workOrderId == null) {
-            throw new IllegalArgumentException("Work Order ID cannot be null");
+            throw new IllegalArgumentException("billing.error.command.workOrderIdRequired");
         }
         if (branchId == null) {
-            throw new IllegalArgumentException("Branch ID cannot be null");
+            throw new IllegalArgumentException("billing.error.command.branchIdRequired");
         }
         if (discountPercentage == null || discountPercentage < 0 || discountPercentage > 100) {
-            throw new IllegalArgumentException("Discount percentage must be between 0 and 100");
+            throw new IllegalArgumentException("billing.error.quote.invalidDiscount");
         }
     }
 }

@@ -12,6 +12,8 @@ public record VoucherResource(
         String customerName,
         BigDecimal totalAmount,
         String status,
-        UUID externalInvoiceId
+        UUID externalInvoiceId,
+        java.util.List<PaymentResource> payments,
+        BigDecimal totalPaid
 ) {
 }

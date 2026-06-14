@@ -4,7 +4,9 @@ import com.andeva.atelier.platform.core.domain.model.aggregates.SubscriptionPlan
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionPlanId;
 import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.SubscriptionPlanPersistenceEntity;
 
-public class SubscriptionPlanPersistenceAssembler {
+public final class SubscriptionPlanPersistenceAssembler {
+
+    public SubscriptionPlanPersistenceAssembler() {}
 
     public static SubscriptionPlanPersistenceEntity toEntity(SubscriptionPlan subscriptionPlan, SubscriptionPlanPersistenceEntity entity) {
         if (entity == null) {

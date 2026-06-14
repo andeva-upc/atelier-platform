@@ -2,7 +2,6 @@ package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.BillingCycle;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.SubscriptionStatus;
-import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,6 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.UUID;
 
-import java.util.UUID;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

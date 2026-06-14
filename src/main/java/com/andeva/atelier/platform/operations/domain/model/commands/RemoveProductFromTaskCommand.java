@@ -1,7 +1,8 @@
 package com.andeva.atelier.platform.operations.domain.model.commands;
 
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.ProductId;
-import java.util.UUID;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderTaskId;
 
 /**
  * Command to remove a Product from a Task within a Work Order. This command encapsulates the necessary identifiers to perform the operation, including the Work Order ID, Task ID, and Product ID.
@@ -11,7 +12,7 @@ import java.util.UUID;
  * @author Joel Huamani Estefanero
  */
 public record RemoveProductFromTaskCommand(
-        UUID workOrderId,
-        UUID taskId,
+        WorkOrderId workOrderId,
+        WorkOrderTaskId taskId,
         ProductId productId
 ) {}

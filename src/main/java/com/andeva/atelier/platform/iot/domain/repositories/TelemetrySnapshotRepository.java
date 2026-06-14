@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.iot.domain.model.aggregates.TelemetrySnapshot
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceRegistrationId;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.TelemetrySnapshotId;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +47,15 @@ public interface TelemetrySnapshotRepository {
      * @return the list of snapshots ordered by creation date descending
      */
     List<TelemetrySnapshot> findAllByRegistrationId(Obd2DeviceRegistrationId registrationId);
+
+    /**
+     * Finds all TelemetrySnapshots for a given device registration starting from a specific timestamp.
+     * @param registrationId the unique identifier of the registration
+     * @param startTimestamp the start timestamp
+     * @return the list of snapshots ordered by creation date descending
+     */
+    List<TelemetrySnapshot> findAllByRegistrationIdAndCreatedAtGreaterThanEqual(
+            Obd2DeviceRegistrationId registrationId,
+            Instant startTimestamp
+    );
 }
