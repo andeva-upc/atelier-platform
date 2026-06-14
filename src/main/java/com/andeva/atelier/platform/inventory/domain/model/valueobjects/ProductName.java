@@ -3,7 +3,7 @@ package com.andeva.atelier.platform.inventory.domain.model.valueobjects;
 public record ProductName(String name) {
     public ProductName {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Product name cannot be null or blank");
+            throw new IllegalArgumentException("inventory.error.productName.required");
         }
     }
 }
