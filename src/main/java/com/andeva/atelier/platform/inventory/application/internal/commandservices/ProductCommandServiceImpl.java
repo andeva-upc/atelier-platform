@@ -55,7 +55,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     @Override
     public void handle(com.andeva.atelier.platform.inventory.domain.model.commands.DeleteProductCommand command) {
         if (!productRepository.existsById(command.productId())) {
-            throw new IllegalArgumentException("Product not found");
+            throw new IllegalArgumentException("inventory.error.product.notFound");
         }
         productRepository.deleteById(command.productId());
     }
