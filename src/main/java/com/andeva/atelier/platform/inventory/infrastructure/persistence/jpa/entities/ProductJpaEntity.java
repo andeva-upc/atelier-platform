@@ -1,6 +1,5 @@
 package com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities;
 
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MoneyAttributeConverter;
 import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
@@ -29,9 +28,8 @@ public class ProductJpaEntity extends AuditableAbstractPersistenceEntity impleme
         return getCreatedAt() == null;
     }
 
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "branch_id", nullable = false))
-    private BranchId branchId;
+    @Column(name = "branch_id", nullable = false)
+    private UUID branchId;
 
     @Column(nullable = false)
     private String category;
@@ -74,8 +72,8 @@ public class ProductJpaEntity extends AuditableAbstractPersistenceEntity impleme
 
     public ProductJpaEntity() {}
 
-    public BranchId getBranchId() { return branchId; }
-    public void setBranchId(BranchId branchId) { this.branchId = branchId; }
+    public UUID getBranchId() { return branchId; }
+    public void setBranchId(UUID branchId) { this.branchId = branchId; }
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
     public String getName() { return name; }

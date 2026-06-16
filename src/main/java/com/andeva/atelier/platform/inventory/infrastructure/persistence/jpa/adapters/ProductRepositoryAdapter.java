@@ -6,7 +6,7 @@ import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.asse
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductJpaEntity;
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.repositories.ProductJpaRepository;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,7 @@ import java.util.UUID;
  * Translates domain calls to JPA operations using the ProductEntityAssembler.
  * @author Adiel Sanchez
  */
-@Component
+@Repository
 public class ProductRepositoryAdapter implements ProductRepository {
     private final ProductJpaRepository jpaRepository;
 
@@ -45,8 +45,7 @@ public class ProductRepositoryAdapter implements ProductRepository {
 
     @Override
     public List<Product> findAllByBranchId(BranchId branchId) {
-        String branchIdStr = branchId.value().toString();
-        return jpaRepository.findAllByBranchId(branchIdStr)
+        return jpaRepository.findAllByBranchId(branchId.value())
                 .stream()
                 .map(ProductEntityAssembler::toAggregate)
                 .toList();

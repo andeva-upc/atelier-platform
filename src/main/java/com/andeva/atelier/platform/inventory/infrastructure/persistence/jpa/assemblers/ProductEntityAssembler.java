@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.inventory.domain.model.entities.ProductBatch;
 import com.andeva.atelier.platform.inventory.domain.model.valueobjects.*;
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductBatchJpaEntity;
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductJpaEntity;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 
 import java.util.stream.Collectors;
 
@@ -18,7 +19,7 @@ public class ProductEntityAssembler {
             entity.setVersion(product.getVersion());
         }
         
-        entity.setBranchId(product.getBranchId());
+        entity.setBranchId(product.getBranchId().value());
         entity.setCategory(product.getCategory().value());
         entity.setName(product.getName().name());
         entity.setSku(product.getSku().value());
@@ -44,7 +45,7 @@ public class ProductEntityAssembler {
             if (b.getVersion() != null) {
                 batchEntity.setVersion(b.getVersion());
             }
-            batchEntity.setBranchId(product.getBranchId());
+            batchEntity.setBranchId(product.getBranchId().value());
             batchEntity.setInitialQuantity(b.getInitialQuantity().value()); 
             batchEntity.setAvailableQuantity(b.getAvailableQuantity().value());
             batchEntity.setAcquisitionCost(b.getAcquisitionCost());
@@ -69,7 +70,7 @@ public class ProductEntityAssembler {
         }
         return Product.reconstitute(
             entity.getId(), 
-            entity.getBranchId(), 
+            new BranchId(entity.getBranchId()), 
             new ProductCategory(entity.getCategory()), 
             new ProductName(entity.getName()), 
             new Sku(entity.getSku()), 

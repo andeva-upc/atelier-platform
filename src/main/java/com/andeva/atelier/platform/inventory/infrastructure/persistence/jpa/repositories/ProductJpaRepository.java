@@ -2,6 +2,7 @@ package com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.rep
 
 import com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities.ProductJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,13 +12,14 @@ import java.util.UUID;
  * Provides derived query methods that translate to SQL automatically.
  * @author Adiel Sanchez
  */
+@Repository
 public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, UUID> {
 
     /**
      * Finds all products whose branchId column matches the given string.
      * Note: branchId is stored as a String (UUID.toString()) in the database.
-     * @param branchId the branch UUID serialized as String
+     * @param branchId the branch UUID
      * @return list of matching product entities
      */
-    List<ProductJpaEntity> findAllByBranchId(String branchId);
+    List<ProductJpaEntity> findAllByBranchId(UUID branchId);
 }

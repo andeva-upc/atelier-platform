@@ -1,6 +1,5 @@
 package com.andeva.atelier.platform.inventory.infrastructure.persistence.jpa.entities;
 
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.Money;
 import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.converters.MoneyAttributeConverter;
 import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
@@ -25,9 +24,8 @@ public class ProductBatchJpaEntity extends AuditableAbstractPersistenceEntity im
         return getCreatedAt() == null;
     }
 
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "branch_id", nullable = false))
-    private BranchId branchId;
+    @Column(name = "branch_id", nullable = false)
+    private UUID branchId;
 
     @Column(name = "initial_quantity", nullable = false)
     private Integer initialQuantity;
@@ -51,8 +49,8 @@ public class ProductBatchJpaEntity extends AuditableAbstractPersistenceEntity im
 
     public ProductBatchJpaEntity() {}
 
-    public BranchId getBranchId() { return branchId; }
-    public void setBranchId(BranchId branchId) { this.branchId = branchId; }
+    public UUID getBranchId() { return branchId; }
+    public void setBranchId(UUID branchId) { this.branchId = branchId; }
     public Integer getInitialQuantity() { return initialQuantity; }
     public void setInitialQuantity(Integer initialQuantity) { this.initialQuantity = initialQuantity; }
     public Integer getAvailableQuantity() { return availableQuantity; }
