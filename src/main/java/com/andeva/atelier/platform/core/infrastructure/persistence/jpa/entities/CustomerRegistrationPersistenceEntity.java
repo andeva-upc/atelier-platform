@@ -4,7 +4,6 @@ import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entitie
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +17,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "customer_registrations")
-@SQLDelete(sql = "UPDATE customer_registrations SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?")
+@SQLDelete(sql = "UPDATE customer_registrations SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 @Getter
 @Setter
@@ -41,8 +40,4 @@ public class CustomerRegistrationPersistenceEntity extends AuditableAbstractPers
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
-
-    @Version
-    private Long version;
 }
-
