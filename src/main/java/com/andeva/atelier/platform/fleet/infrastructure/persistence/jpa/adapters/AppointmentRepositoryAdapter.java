@@ -79,6 +79,14 @@ public class AppointmentRepositoryAdapter implements AppointmentRepository {
     }
 
     @Override
+    public List<Appointment> findByVehicleId(com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId vehicleId) {
+        return appointmentJpaRepository.findByVehicleId(vehicleId)
+                .stream()
+                .map(AppointmentPersistenceAssembler::toAggregateFromEntity)
+                .toList();
+    }
+
+    @Override
     public List<Appointment> findByBranchIdAndStatus(BranchId branchId, AppointmentStatus status) {
         return appointmentJpaRepository.findByBranchIdAndStatus(branchId, status)
                 .stream()

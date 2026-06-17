@@ -58,4 +58,14 @@ public class AppointmentQueryServiceImpl implements AppointmentQueryService {
             return Result.failure(AppointmentQueryFailure.INVALID_QUERY_PARAMS);
         }
     }
+
+    @Override
+    public Result<List<Appointment>, AppointmentQueryFailure> handle(com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId vehicleId) {
+        try {
+            var appointments = appointmentRepository.findByVehicleId(vehicleId);
+            return Result.success(appointments);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(AppointmentQueryFailure.INVALID_QUERY_PARAMS);
+        }
+    }
 }
