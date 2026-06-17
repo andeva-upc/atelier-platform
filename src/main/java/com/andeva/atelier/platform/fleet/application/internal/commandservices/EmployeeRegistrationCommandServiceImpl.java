@@ -1,0 +1,40 @@
+package com.andeva.atelier.platform.fleet.application.internal.commandservices;
+
+import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeRegistrationCommandFailure;
+import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeRegistrationCommandService;
+import com.andeva.atelier.platform.fleet.domain.model.aggregates.EmployeeRegistration;
+import com.andeva.atelier.platform.fleet.domain.model.commands.CreateEmployeeRegistrationCommand;
+import com.andeva.atelier.platform.fleet.domain.repositories.EmployeeRegistrationRepository;
+import com.andeva.atelier.platform.shared.application.result.Result;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class EmployeeRegistrationCommandServiceImpl implements EmployeeRegistrationCommandService {
+
+    private final EmployeeRegistrationRepository repository;
+
+    public EmployeeRegistrationCommandServiceImpl(EmployeeRegistrationRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    @Transactional
+    public Result<EmployeeRegistration, EmployeeRegistrationCommandFailure> handle(
+            CreateEmployeeRegistrationCommand command) {
+        try {
+            if (repository.existsByEmployeeIdAndBranchId(command.employeeId().value(), command.branchId().value()))
+                return Result.failure(EmployeeRegistrationCommandFailure.REGISTRATION_ALREADY_EXISTS);
+
+            var registration = new EmployeeRegistration(
+                    command.employeeId().value(),
+                    command.branchId(),
+                    command.speciality(),
+                    command.specialityName(),
+                    command.salary());
+            return Result.success(repository.save(registration));
+        } catch (IllegalArgumentException ex) {
+            return Result.failure(EmployeeRegistrationCommandFailure.INVALID_REGISTRATION_DATA);
+        }
+    }
+}
