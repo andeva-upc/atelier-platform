@@ -11,8 +11,10 @@ import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistr
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.EmployeeRegistrationStatus;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.CreateEmployeeRegistrationResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.EmployeeRegistrationResource;
+import com.andeva.atelier.platform.fleet.interfaces.rest.resources.UpdateEmployeeRegistrationResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.CreateEmployeeRegistrationCommandFromResourceAssembler;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.EmployeeRegistrationResourceFromAggregateAssembler;
+import com.andeva.atelier.platform.fleet.interfaces.rest.transform.UpdateEmployeeRegistrationCommandFromResourceAssembler;
 import com.andeva.atelier.platform.shared.application.result.ApplicationError;
 import com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -88,6 +90,21 @@ public class EmployeeRegistrationsController {
                 .map(EmployeeRegistrationResourceFromAggregateAssembler::toResourceFromAggregate)
                 .toList();
         return ResponseEntity.ok(resources);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an employee registration", description = "Updates the speciality and salary of an existing employee registration")
+    public ResponseEntity<?> updateEmployeeRegistration(
+            @PathVariable UUID id,
+            @RequestBody UpdateEmployeeRegistrationResource resource) {
+        
+        var command = UpdateEmployeeRegistrationCommandFromResourceAssembler.toCommandFromResource(id, resource);
+        var result = commandService.handle(command);
+        
+        return result.fold(
+                registration -> ResponseEntity.ok(EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration)),
+                this::handleCommandFailure
+        );
     }
 
     private ResponseEntity<?> handleCommandFailure(EmployeeRegistrationCommandFailure failure) {
