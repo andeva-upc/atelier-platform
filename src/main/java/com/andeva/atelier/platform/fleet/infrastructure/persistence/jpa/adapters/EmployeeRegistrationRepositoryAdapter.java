@@ -8,6 +8,7 @@ import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.assemble
 import org.springframework.stereotype.Repository;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.EmployeeRegistrationStatus;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import java.util.Optional;
 import java.util.List;
@@ -44,6 +45,14 @@ public class EmployeeRegistrationRepositoryAdapter implements EmployeeRegistrati
     @Override
     public List<EmployeeRegistration> findByBranchId(BranchId branchId) {
         return persistenceRepository.findByBranchId(branchId.value())
+                .stream()
+                .map(EmployeeRegistrationPersistenceAssembler::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<EmployeeRegistration> findByBranchIdAndStatus(BranchId branchId, EmployeeRegistrationStatus status) {
+        return persistenceRepository.findByBranchIdAndStatus(branchId.value(), status.value())
                 .stream()
                 .map(EmployeeRegistrationPersistenceAssembler::toDomain)
                 .toList();
