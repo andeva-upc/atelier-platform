@@ -25,34 +25,42 @@ public class EmployeeRegistration extends AbstractDomainAggregateRoot<EmployeeRe
     private Instant deletedAt;
 
     @SuppressWarnings("unused")
-    public EmployeeRegistration() {}
+    public EmployeeRegistration() {
+    }
 
     public EmployeeRegistration(UUID employeeId, BranchId branchId,
-                                String speciality, String specialityName, BigDecimal salary) {
-        this.id          = new EmployeeId(UUID.randomUUID());
-        this.employeeId  = employeeId;
-        this.branchId    = branchId;
-        this.speciality  = speciality;
+            String speciality, String specialityName, BigDecimal salary) {
+        this.id = new EmployeeId(UUID.randomUUID());
+        this.employeeId = employeeId;
+        this.branchId = branchId;
+        this.speciality = speciality;
         this.specialityName = specialityName;
-        this.salary      = salary;
-        this.status      = EmployeeRegistrationStatus.ACTIVE;
-        this.createdAt   = Instant.now();
-        this.updatedAt   = Instant.now();
+        this.salary = salary;
+        this.status = EmployeeRegistrationStatus.ACTIVE;
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
     }
 
     public EmployeeRegistration(EmployeeId id, UUID employeeId, BranchId branchId,
-                                String speciality, String specialityName, BigDecimal salary,
-                                EmployeeRegistrationStatus status,
-                                Instant createdAt, Instant updatedAt, Instant deletedAt) {
-        this.id             = id;
-        this.employeeId     = employeeId;
-        this.branchId       = branchId;
-        this.speciality     = speciality;
+            String speciality, String specialityName, BigDecimal salary,
+            EmployeeRegistrationStatus status,
+            Instant createdAt, Instant updatedAt, Instant deletedAt) {
+        this.id = id;
+        this.employeeId = employeeId;
+        this.branchId = branchId;
+        this.speciality = speciality;
         this.specialityName = specialityName;
-        this.salary         = salary;
-        this.status         = status;
-        this.createdAt      = createdAt;
-        this.updatedAt      = updatedAt;
-        this.deletedAt      = deletedAt;
+        this.salary = salary;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
+
+    public void deactivate() {
+        this.status = EmployeeRegistrationStatus.INACTIVE;
+        this.updatedAt = Instant.now();
+        this.deletedAt = Instant.now();
+    }
+
 }
