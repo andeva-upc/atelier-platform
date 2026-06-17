@@ -3,6 +3,7 @@ package com.andeva.atelier.platform.fleet.domain.model.aggregates;
 import com.andeva.atelier.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.CustomerRegistrationStatus;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -14,7 +15,7 @@ public class CustomerRegistration extends AbstractDomainAggregateRoot<CustomerRe
     private CustomerId id;
     private UUID customerId;
     private BranchId branchId;
-    private String status;
+    private CustomerRegistrationStatus status;
     private Instant createdAt;
     private Instant deletedAt;
 
@@ -25,11 +26,11 @@ public class CustomerRegistration extends AbstractDomainAggregateRoot<CustomerRe
         this.id = new CustomerId(UUID.randomUUID());
         this.customerId = customerId;
         this.branchId = branchId;
-        this.status = "ACTIVE";
+        this.status = CustomerRegistrationStatus.ACTIVE;
         this.createdAt = Instant.now();
     }
 
-    public CustomerRegistration(CustomerId id, UUID customerId, BranchId branchId, String status, Instant createdAt, Instant deletedAt) {
+    public CustomerRegistration(CustomerId id, UUID customerId, BranchId branchId, CustomerRegistrationStatus status, Instant createdAt, Instant deletedAt) {
         this.id = id;
         this.customerId = customerId;
         this.branchId = branchId;
@@ -39,7 +40,7 @@ public class CustomerRegistration extends AbstractDomainAggregateRoot<CustomerRe
     }
 
     public void deactivate() {
-        this.status = "INACTIVE";
+        this.status = CustomerRegistrationStatus.INACTIVE;
         this.deletedAt = Instant.now();
     }
 }
