@@ -19,6 +19,8 @@ public interface AppointmentJpaRepository extends JpaRepository<AppointmentPersi
 
         List<AppointmentPersistenceEntity> findByBranchId(BranchId branchId);
 
+        List<AppointmentPersistenceEntity> findByCustomerId(UUID customerId);
+
         List<AppointmentPersistenceEntity> findByBranchIdAndStatus(
                         BranchId branchId, AppointmentStatus status);
 }
