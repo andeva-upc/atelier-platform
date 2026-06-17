@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.fleet.application.queryservices.EmployeeRegis
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.EmployeeRegistration;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationByIdQuery;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdQuery;
+import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdAndStatusQuery;
 import com.andeva.atelier.platform.fleet.domain.repositories.EmployeeRegistrationRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,5 +28,10 @@ public class EmployeeRegistrationQueryServiceImpl implements EmployeeRegistratio
     @Override
     public List<EmployeeRegistration> handle(GetEmployeeRegistrationsByBranchIdQuery query) {
         return employeeRegistrationRepository.findByBranchId(query.branchId());
+    }
+
+    @Override
+    public List<EmployeeRegistration> handle(GetEmployeeRegistrationsByBranchIdAndStatusQuery query) {
+        return employeeRegistrationRepository.findByBranchIdAndStatus(query.branchId(), query.status());
     }
 }

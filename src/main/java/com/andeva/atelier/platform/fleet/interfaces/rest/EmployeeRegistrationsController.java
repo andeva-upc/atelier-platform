@@ -7,6 +7,8 @@ import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeReg
 import com.andeva.atelier.platform.fleet.application.queryservices.EmployeeRegistrationQueryService;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationByIdQuery;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdQuery;
+import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdAndStatusQuery;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.EmployeeRegistrationStatus;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.CreateEmployeeRegistrationResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.EmployeeRegistrationResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.CreateEmployeeRegistrationCommandFromResourceAssembler;
@@ -70,6 +72,17 @@ public class EmployeeRegistrationsController {
     @Operation(summary = "Get employee registrations by branch", description = "Retrieves a list of employee registrations for a specific branch")
     public ResponseEntity<List<EmployeeRegistrationResource>> getByBranchId(@PathVariable UUID branchId) {
         var query = new GetEmployeeRegistrationsByBranchIdQuery(new BranchId(branchId));
+        var registrations = queryService.handle(query);
+        var resources = registrations.stream()
+                .map(EmployeeRegistrationResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+        return ResponseEntity.ok(resources);
+    }
+
+    @GetMapping("/branch/{branchId}/status/{status}")
+    @Operation(summary = "Get employee registrations by branch and status", description = "Retrieves a list of employee registrations for a specific branch filtered by status")
+    public ResponseEntity<List<EmployeeRegistrationResource>> getByBranchIdAndStatus(@PathVariable UUID branchId, @PathVariable String status) {
+        var query = new GetEmployeeRegistrationsByBranchIdAndStatusQuery(new BranchId(branchId), new EmployeeRegistrationStatus(status.toUpperCase()));
         var registrations = queryService.handle(query);
         var resources = registrations.stream()
                 .map(EmployeeRegistrationResourceFromAggregateAssembler::toResourceFromAggregate)
