@@ -2,6 +2,7 @@ package com.andeva.atelier.platform.fleet.domain.repositories;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.EmployeeRegistration;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.EmployeeRegistrationStatus;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 
 import java.util.List;
@@ -12,5 +13,6 @@ public interface EmployeeRegistrationRepository {
     EmployeeRegistration save(EmployeeRegistration registration);
     Optional<EmployeeRegistration> findById(EmployeeId id);
     List<EmployeeRegistration> findByBranchId(BranchId branchId);
+    List<EmployeeRegistration> findByBranchIdAndStatus(BranchId branchId, EmployeeRegistrationStatus status);
     boolean existsByEmployeeIdAndBranchId(UUID employeeId, UUID branchId);
 }
