@@ -57,6 +57,13 @@ public class EmployeeRegistration extends AbstractDomainAggregateRoot<EmployeeRe
         this.deletedAt = deletedAt;
     }
 
+    public void update(String speciality, String specialityName, BigDecimal salary) {
+        this.speciality = speciality;
+        this.specialityName = specialityName;
+        this.salary = salary;
+        this.updatedAt = Instant.now();
+    }
+
     public void deactivate() {
         this.status = EmployeeRegistrationStatus.INACTIVE;
         this.updatedAt = Instant.now();
