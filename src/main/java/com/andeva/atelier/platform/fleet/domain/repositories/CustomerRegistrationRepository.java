@@ -2,7 +2,6 @@ package com.andeva.atelier.platform.fleet.domain.repositories;
 
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.CustomerRegistration;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
-import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 
 import java.util.List;
 import java.util.Optional;

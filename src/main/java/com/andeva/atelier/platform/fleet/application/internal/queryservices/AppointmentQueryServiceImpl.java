@@ -48,4 +48,14 @@ public class AppointmentQueryServiceImpl implements AppointmentQueryService {
                 .map(Result::<Appointment, AppointmentQueryFailure>success)
                 .orElse(Result.failure(AppointmentQueryFailure.APPOINTMENT_NOT_FOUND));
     }
+
+    @Override
+    public Result<List<Appointment>, AppointmentQueryFailure> handle(com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId customerId) {
+        try {
+            var appointments = appointmentRepository.findByCustomerId(customerId);
+            return Result.success(appointments);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(AppointmentQueryFailure.INVALID_QUERY_PARAMS);
+        }
+    }
 }

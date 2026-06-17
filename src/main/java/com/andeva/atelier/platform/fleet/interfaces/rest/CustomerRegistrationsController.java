@@ -68,7 +68,6 @@ public class CustomerRegistrationsController {
 
     @DeleteMapping("/{registrationId}")
     @Operation(summary = "Delete (deactivate) a customer registration", description = "Soft-deactivates a customer registration by ID")
-    @SuppressWarnings("unused")
     public ResponseEntity<?> delete(@PathVariable UUID registrationId) {
         var command = new DeleteCustomerRegistrationCommand(registrationId);
         var result = commandService.handle(command);

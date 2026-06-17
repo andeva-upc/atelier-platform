@@ -3,6 +3,7 @@ package com.andeva.atelier.platform.fleet.domain.repositories;
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.Appointment;
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentStatus;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,8 @@ public interface AppointmentRepository {
             UUID appointmentId, LocalDateTime scheduledEnd, LocalDateTime scheduledStart);
 
     List<Appointment> findByBranchId(BranchId branchId);
+
+    List<Appointment> findByCustomerId(CustomerId customerId);
 
     List<Appointment> findByBranchIdAndStatus(BranchId branchId, AppointmentStatus status);
 }

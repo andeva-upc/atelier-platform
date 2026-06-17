@@ -13,6 +13,7 @@ import com.andeva.atelier.platform.fleet.interfaces.rest.transform.CreateAppoint
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.UpdateAppointmentCommandFromResourceAssembler;
 import com.andeva.atelier.platform.shared.application.result.ApplicationError;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -97,6 +98,18 @@ public class AppointmentsController {
                         @PathVariable UUID branchId,
                         @PathVariable AppointmentStatus status) {
                 var result = queryService.handle(new BranchId(branchId), status);
+                return result.fold(
+                                appointments -> ResponseEntity.ok(
+                                                appointments.stream()
+                                                                .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
+                                                                .toList()),
+                                this::handleQueryFailure);
+        }
+
+        @GetMapping("/customer/{customerId}")
+        @Operation(summary = "Get appointments by customer", description = "Returns all appointments for a given customer ID")
+        public ResponseEntity<?> getByCustomer(@PathVariable UUID customerId) {
+                var result = queryService.handle(new CustomerId(customerId));
                 return result.fold(
                                 appointments -> ResponseEntity.ok(
                                                 appointments.stream()
