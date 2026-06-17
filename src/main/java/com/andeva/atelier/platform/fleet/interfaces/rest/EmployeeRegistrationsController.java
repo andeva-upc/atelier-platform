@@ -1,7 +1,10 @@
 package com.andeva.atelier.platform.fleet.interfaces.rest;
 
+import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
 import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeRegistrationCommandFailure;
 import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeRegistrationCommandService;
+import com.andeva.atelier.platform.fleet.application.queryservices.EmployeeRegistrationQueryService;
+import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationByIdQuery;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.CreateEmployeeRegistrationResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.CreateEmployeeRegistrationCommandFromResourceAssembler;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.EmployeeRegistrationResourceFromAggregateAssembler;
@@ -16,17 +19,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping(value = "/api/v1/employee-registrations", produces = "application/json")
 @Tag(name = "EmployeeRegistrations", description = "Employee Registration Management Endpoints")
 public class EmployeeRegistrationsController {
 
     private final EmployeeRegistrationCommandService commandService;
+    private final EmployeeRegistrationQueryService queryService;
     private final MessageSource messageSource;
 
     public EmployeeRegistrationsController(EmployeeRegistrationCommandService commandService,
+                                           EmployeeRegistrationQueryService queryService,
                                            MessageSource messageSource) {
         this.commandService = commandService;
+        this.queryService = queryService;
         this.messageSource = messageSource;
     }
 
@@ -40,6 +48,18 @@ public class EmployeeRegistrationsController {
                         .body(EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration)),
                 this::handleCommandFailure
         );
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get an employee registration by ID", description = "Retrieves an employee registration by ID")
+    public ResponseEntity<?> getById(@PathVariable UUID id) {
+        var query = new GetEmployeeRegistrationByIdQuery(new EmployeeId(id));
+        var registration = queryService.handle(query);
+        if (registration.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        var resource = EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration.get());
+        return ResponseEntity.ok(resource);
     }
 
     private ResponseEntity<?> handleCommandFailure(EmployeeRegistrationCommandFailure failure) {

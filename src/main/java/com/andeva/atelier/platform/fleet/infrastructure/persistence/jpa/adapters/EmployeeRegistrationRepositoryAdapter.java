@@ -7,6 +7,8 @@ import com.andeva.atelier.platform.fleet.domain.repositories.EmployeeRegistratio
 import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.assemblers.EmployeeRegistrationPersistenceAssembler;
 import org.springframework.stereotype.Repository;
 
+import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -29,6 +31,12 @@ public class EmployeeRegistrationRepositoryAdapter implements EmployeeRegistrati
         }
         EmployeeRegistrationPersistenceAssembler.toEntity(registration, entity);
         return EmployeeRegistrationPersistenceAssembler.toDomain(persistenceRepository.save(entity));
+    }
+
+    @Override
+    public Optional<EmployeeRegistration> findById(EmployeeId id) {
+        return persistenceRepository.findById(id.value())
+                .map(EmployeeRegistrationPersistenceAssembler::toDomain);
     }
 
     @Override
