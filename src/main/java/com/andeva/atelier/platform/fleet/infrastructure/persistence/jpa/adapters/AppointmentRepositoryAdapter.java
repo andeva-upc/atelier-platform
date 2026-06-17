@@ -72,7 +72,7 @@ public class AppointmentRepositoryAdapter implements AppointmentRepository {
 
     @Override
     public List<Appointment> findByCustomerId(CustomerId customerId) {
-        return appointmentJpaRepository.findByCustomerId(customerId.customerId())
+        return appointmentJpaRepository.findByCustomerId(customerId.value())
                 .stream()
                 .map(AppointmentPersistenceAssembler::toAggregateFromEntity)
                 .toList();
