@@ -8,6 +8,7 @@ import com.andeva.atelier.platform.fleet.application.queryservices.EmployeeRegis
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationByIdQuery;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdQuery;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.CreateEmployeeRegistrationResource;
+import com.andeva.atelier.platform.fleet.interfaces.rest.resources.EmployeeRegistrationResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.CreateEmployeeRegistrationCommandFromResourceAssembler;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.EmployeeRegistrationResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.shared.application.result.ApplicationError;
