@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeReg
 import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeRegistrationCommandService;
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.EmployeeRegistration;
 import com.andeva.atelier.platform.fleet.domain.model.commands.CreateEmployeeRegistrationCommand;
+import com.andeva.atelier.platform.fleet.domain.model.commands.UpdateEmployeeRegistrationCommand;
 import com.andeva.atelier.platform.fleet.domain.repositories.EmployeeRegistrationRepository;
 import com.andeva.atelier.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
@@ -36,5 +37,20 @@ public class EmployeeRegistrationCommandServiceImpl implements EmployeeRegistrat
         } catch (IllegalArgumentException ex) {
             return Result.failure(EmployeeRegistrationCommandFailure.INVALID_REGISTRATION_DATA);
         }
+    }
+
+    @Override
+    @Transactional
+    public Result<EmployeeRegistration, EmployeeRegistrationCommandFailure> handle(UpdateEmployeeRegistrationCommand command) {
+        var registrationOptional = repository.findById(command.id());
+        if (registrationOptional.isEmpty()) {
+            return Result.failure(EmployeeRegistrationCommandFailure.REGISTRATION_NOT_FOUND);
+        }
+
+        var registration = registrationOptional.get();
+        registration.update(command.speciality(), command.specialityName(), command.salary());
+        
+        var savedRegistration = repository.save(registration);
+        return Result.success(savedRegistration);
     }
 }
