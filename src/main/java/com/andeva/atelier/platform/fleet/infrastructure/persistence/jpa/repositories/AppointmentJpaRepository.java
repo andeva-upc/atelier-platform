@@ -22,6 +22,8 @@ public interface AppointmentJpaRepository extends JpaRepository<AppointmentPersi
 
         List<AppointmentPersistenceEntity> findByCustomerId(CustomerId customerId);
 
+        List<AppointmentPersistenceEntity> findByVehicleId(com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId vehicleId);
+
         List<AppointmentPersistenceEntity> findByBranchIdAndStatus(
                         BranchId branchId, AppointmentStatus status);
 }
