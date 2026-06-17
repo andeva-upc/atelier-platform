@@ -1,10 +1,12 @@
 package com.andeva.atelier.platform.fleet.interfaces.rest;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeRegistrationCommandFailure;
 import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeRegistrationCommandService;
 import com.andeva.atelier.platform.fleet.application.queryservices.EmployeeRegistrationQueryService;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationByIdQuery;
+import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdQuery;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.CreateEmployeeRegistrationResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.CreateEmployeeRegistrationCommandFromResourceAssembler;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.EmployeeRegistrationResourceFromAggregateAssembler;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -60,6 +63,17 @@ public class EmployeeRegistrationsController {
         }
         var resource = EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration.get());
         return ResponseEntity.ok(resource);
+    }
+
+    @GetMapping("/branch/{branchId}")
+    @Operation(summary = "Get employee registrations by branch", description = "Retrieves a list of employee registrations for a specific branch")
+    public ResponseEntity<List<EmployeeRegistrationResource>> getByBranchId(@PathVariable UUID branchId) {
+        var query = new GetEmployeeRegistrationsByBranchIdQuery(new BranchId(branchId));
+        var registrations = queryService.handle(query);
+        var resources = registrations.stream()
+                .map(EmployeeRegistrationResourceFromAggregateAssembler::toResourceFromAggregate)
+                .toList();
+        return ResponseEntity.ok(resources);
     }
 
     private ResponseEntity<?> handleCommandFailure(EmployeeRegistrationCommandFailure failure) {
