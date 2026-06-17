@@ -19,6 +19,7 @@ public class CustomerRegistration extends AbstractDomainAggregateRoot<CustomerRe
     private Instant createdAt;
     private Instant deletedAt;
 
+    @SuppressWarnings("unused")
     public CustomerRegistration() {
     }
 
@@ -39,6 +40,7 @@ public class CustomerRegistration extends AbstractDomainAggregateRoot<CustomerRe
         this.deletedAt = deletedAt;
     }
 
+    @SuppressWarnings("unused")
     public void deactivate() {
         this.status = CustomerRegistrationStatus.INACTIVE;
         this.deletedAt = Instant.now();
