@@ -4,8 +4,7 @@ import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.CustomerRegistration;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
-
-import java.util.UUID;
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.CustomerRegistrationStatus;
 
 public class CustomerRegistrationPersistenceAssembler {
 
@@ -15,7 +14,7 @@ public class CustomerRegistrationPersistenceAssembler {
                 new CustomerId(entity.getId()),
                 entity.getCustomerId(),
                 new BranchId(entity.getBranchId()),
-                entity.getStatus(),
+                entity.getStatus() != null ? new CustomerRegistrationStatus(entity.getStatus()) : null,
                 entity.getCreatedAt(),
                 entity.getDeletedAt()
         );
@@ -28,7 +27,7 @@ public class CustomerRegistrationPersistenceAssembler {
         entity.setId(domain.getId() != null ? domain.getId().value() : null);
         entity.setCustomerId(domain.getCustomerId());
         entity.setBranchId(domain.getBranchId() != null ? domain.getBranchId().value() : null);
-        entity.setStatus(domain.getStatus());
+        entity.setStatus(domain.getStatus() != null ? domain.getStatus().value() : null);
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setDeletedAt(domain.getDeletedAt());
         return entity;
