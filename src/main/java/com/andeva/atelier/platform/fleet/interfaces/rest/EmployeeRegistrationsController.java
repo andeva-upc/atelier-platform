@@ -94,19 +94,17 @@ public class EmployeeRegistrationsController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an employee registration", description = "Updates the speciality and salary of an existing employee registration")
-    public ResponseEntity<EmployeeRegistrationResource> updateEmployeeRegistration(
+    public ResponseEntity<?> updateEmployeeRegistration(
             @PathVariable UUID id,
             @RequestBody UpdateEmployeeRegistrationResource resource) {
         
         var command = UpdateEmployeeRegistrationCommandFromResourceAssembler.toCommandFromResource(id, resource);
         var result = commandService.handle(command);
         
-        if (result.isFailure()) {
-            return (ResponseEntity<EmployeeRegistrationResource>) handleCommandFailure(result.getFailure());
-        }
-
-        var registrationResource = EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(result.getValue());
-        return ResponseEntity.ok(registrationResource);
+        return result.fold(
+                registration -> ResponseEntity.ok(EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration)),
+                this::handleCommandFailure
+        );
     }
 
     private ResponseEntity<?> handleCommandFailure(EmployeeRegistrationCommandFailure failure) {
