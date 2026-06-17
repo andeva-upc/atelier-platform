@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeRegistrationCommandFailure;
 import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeRegistrationCommandService;
 import com.andeva.atelier.platform.fleet.application.queryservices.EmployeeRegistrationQueryService;
+import com.andeva.atelier.platform.fleet.domain.model.commands.DeleteEmployeeRegistrationCommand;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationByIdQuery;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdQuery;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdAndStatusQuery;
@@ -99,6 +100,18 @@ public class EmployeeRegistrationsController {
             @RequestBody UpdateEmployeeRegistrationResource resource) {
         
         var command = UpdateEmployeeRegistrationCommandFromResourceAssembler.toCommandFromResource(id, resource);
+        var result = commandService.handle(command);
+        
+        return result.fold(
+                registration -> ResponseEntity.ok(EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration)),
+                this::handleCommandFailure
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Deactivate an employee registration", description = "Performs a soft delete on an employee registration, marking it as inactive")
+    public ResponseEntity<?> deactivateEmployeeRegistration(@PathVariable UUID id) {
+        var command = new DeleteEmployeeRegistrationCommand(new EmployeeId(id));
         var result = commandService.handle(command);
         
         return result.fold(
