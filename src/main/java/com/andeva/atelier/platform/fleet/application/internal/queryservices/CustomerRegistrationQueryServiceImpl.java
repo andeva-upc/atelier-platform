@@ -6,6 +6,7 @@ import com.andeva.atelier.platform.fleet.domain.model.aggregates.CustomerRegistr
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.CustomerRegistrationStatus;
 import com.andeva.atelier.platform.fleet.domain.repositories.CustomerRegistrationRepository;
 import com.andeva.atelier.platform.shared.application.result.Result;
+import com.andeva.atelier.platform.fleet.domain.model.queries.GetCustomerRegistrationByCustomerIdQuery;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,17 @@ public class CustomerRegistrationQueryServiceImpl implements CustomerRegistratio
     public Result<CustomerRegistration, CustomerRegistrationQueryFailure> handle(UUID registrationId) {
         try {
             var opt = repository.findById(registrationId);
+            if (opt.isEmpty()) return Result.failure(CustomerRegistrationQueryFailure.REGISTRATION_NOT_FOUND);
+            return Result.success(opt.get());
+        } catch (IllegalArgumentException ex) {
+            return Result.failure(CustomerRegistrationQueryFailure.INVALID_QUERY_PARAMS);
+        }
+    }
+
+    @Override
+    public Result<CustomerRegistration, CustomerRegistrationQueryFailure> handle(GetCustomerRegistrationByCustomerIdQuery query) {
+        try {
+            var opt = repository.findByCustomerId(query.customerId());
             if (opt.isEmpty()) return Result.failure(CustomerRegistrationQueryFailure.REGISTRATION_NOT_FOUND);
             return Result.success(opt.get());
         } catch (IllegalArgumentException ex) {
