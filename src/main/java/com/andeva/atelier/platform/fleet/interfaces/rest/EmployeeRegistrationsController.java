@@ -7,6 +7,7 @@ import com.andeva.atelier.platform.fleet.application.commandservices.EmployeeReg
 import com.andeva.atelier.platform.fleet.application.queryservices.EmployeeRegistrationQueryService;
 import com.andeva.atelier.platform.fleet.domain.model.commands.DeleteEmployeeRegistrationCommand;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationByIdQuery;
+import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationByEmployeeIdQuery;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdQuery;
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdAndStatusQuery;
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.EmployeeRegistrationStatus;
@@ -63,6 +64,18 @@ public class EmployeeRegistrationsController {
     @Operation(summary = "Get an employee registration by ID", description = "Retrieves an employee registration by ID")
     public ResponseEntity<?> getById(@PathVariable UUID id) {
         var query = new GetEmployeeRegistrationByIdQuery(new EmployeeId(id));
+        var registration = queryService.handle(query);
+        if (registration.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        var resource = EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration.get());
+        return ResponseEntity.ok(resource);
+    }
+
+    @GetMapping("/employee/{employeeId}")
+    @Operation(summary = "Get an employee registration by employee ID", description = "Retrieves an employee registration by employee ID")
+    public ResponseEntity<?> getByEmployeeId(@PathVariable UUID employeeId) {
+        var query = new GetEmployeeRegistrationByEmployeeIdQuery(employeeId);
         var registration = queryService.handle(query);
         if (registration.isEmpty()) {
             return ResponseEntity.notFound().build();
