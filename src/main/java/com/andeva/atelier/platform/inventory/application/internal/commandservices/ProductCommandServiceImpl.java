@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.inventory.domain.model.aggregates.Product;
 import com.andeva.atelier.platform.inventory.domain.model.commands.CreateProductCommand;
 import com.andeva.atelier.platform.inventory.domain.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +19,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
+    @Transactional
     public Optional<Product> handle(CreateProductCommand command) {
         Product product = new Product(UUID.randomUUID(), command.branchId(), command.category(), command.name(), command.sku(), command.salePrice(), command.description(), command.minimumStock().value());
         var savedProduct = productRepository.save(product);
@@ -25,6 +27,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
+    @Transactional
     public Optional<com.andeva.atelier.platform.inventory.domain.model.entities.ProductBatch> handle(com.andeva.atelier.platform.inventory.domain.model.commands.AddBatchToProductCommand command) {
         var product = productRepository.findById(command.productId());
         if (product.isEmpty()) {
@@ -42,6 +45,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
+    @Transactional
     public Optional<Product> handle(com.andeva.atelier.platform.inventory.domain.model.commands.UpdateProductCommand command) {
         var product = productRepository.findById(command.productId());
         if (product.isEmpty()) {
@@ -53,6 +57,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
+    @Transactional
     public void handle(com.andeva.atelier.platform.inventory.domain.model.commands.DeleteProductCommand command) {
         if (!productRepository.existsById(command.productId())) {
             throw new IllegalArgumentException("inventory.error.product.notFound");
