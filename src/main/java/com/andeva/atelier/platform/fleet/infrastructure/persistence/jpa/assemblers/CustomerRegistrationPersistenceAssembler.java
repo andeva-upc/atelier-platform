@@ -28,7 +28,9 @@ public class CustomerRegistrationPersistenceAssembler {
         entity.setCustomerId(domain.getCustomerId());
         entity.setBranchId(domain.getBranchId() != null ? domain.getBranchId().value() : null);
         entity.setStatus(domain.getStatus() != null ? domain.getStatus().value() : null);
-        entity.setCreatedAt(domain.getCreatedAt());
+        if (entity.getCreatedAt() != null) {
+            entity.setCreatedAt(domain.getCreatedAt());
+        }
         entity.setDeletedAt(domain.getDeletedAt());
         return entity;
     }
