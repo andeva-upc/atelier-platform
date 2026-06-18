@@ -11,6 +11,7 @@ import java.util.UUID;
 @Repository
 public interface EmployeeRegistrationPersistenceRepository extends JpaRepository<EmployeeRegistrationPersistenceEntity, UUID> {
     Optional<EmployeeRegistrationPersistenceEntity> findByEmployeeIdAndBranchId(UUID employeeId, UUID branchId);
+    Optional<EmployeeRegistrationPersistenceEntity> findByEmployeeId(UUID employeeId);
     List<EmployeeRegistrationPersistenceEntity> findByBranchId(UUID branchId);
     List<EmployeeRegistrationPersistenceEntity> findByBranchIdAndStatus(UUID branchId, String status);
 }
