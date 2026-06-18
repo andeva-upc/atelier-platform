@@ -87,7 +87,6 @@ public sealed interface Result<T, E> permits Result.Success, Result.Failure {
             T value = ((Success<T, E>) success).value();
             return onSuccess.apply(value);
         }
-        @SuppressWarnings("unchecked")
         E error = ((Failure<T, E>) this).error();
         return onFailure.apply(error);
     }

@@ -6,6 +6,7 @@ import com.andeva.atelier.platform.fleet.domain.repositories.AppointmentReposito
 import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.assemblers.AppointmentPersistenceAssembler;
 import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.repositories.AppointmentJpaRepository;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -64,6 +65,22 @@ public class AppointmentRepositoryAdapter implements AppointmentRepository {
     @Override
     public List<Appointment> findByBranchId(BranchId branchId) {
         return appointmentJpaRepository.findByBranchId(branchId)
+                .stream()
+                .map(AppointmentPersistenceAssembler::toAggregateFromEntity)
+                .toList();
+    }
+
+    @Override
+    public List<Appointment> findByCustomerId(CustomerId customerId) {
+        return appointmentJpaRepository.findByCustomerId(customerId)
+                .stream()
+                .map(AppointmentPersistenceAssembler::toAggregateFromEntity)
+                .toList();
+    }
+
+    @Override
+    public List<Appointment> findByVehicleId(com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId vehicleId) {
+        return appointmentJpaRepository.findByVehicleId(vehicleId)
                 .stream()
                 .map(AppointmentPersistenceAssembler::toAggregateFromEntity)
                 .toList();
