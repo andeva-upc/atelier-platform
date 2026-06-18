@@ -24,7 +24,9 @@ public class CustomerRegistrationPersistenceAssembler {
         if (domain == null) return null;
         if (entity == null) entity = new CustomerRegistrationPersistenceEntity();
         // map fields
-        entity.setId(domain.getId() != null ? domain.getId().value() : null);
+        if (entity.getId() != null) {
+            entity.setId(domain.getId() != null ? domain.getId().value() : null);
+        }
         entity.setCustomerId(domain.getCustomerId());
         entity.setBranchId(domain.getBranchId() != null ? domain.getBranchId().value() : null);
         entity.setStatus(domain.getStatus() != null ? domain.getStatus().value() : null);
