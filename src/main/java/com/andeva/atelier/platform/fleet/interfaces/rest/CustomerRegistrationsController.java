@@ -4,6 +4,7 @@ import com.andeva.atelier.platform.fleet.application.commandservices.CustomerReg
 import com.andeva.atelier.platform.fleet.application.commandservices.CustomerRegistrationCommandService;
 import com.andeva.atelier.platform.fleet.application.queryservices.CustomerRegistrationQueryFailure;
 import com.andeva.atelier.platform.fleet.application.queryservices.CustomerRegistrationQueryService;
+import com.andeva.atelier.platform.fleet.domain.model.queries.GetCustomerRegistrationByCustomerIdQuery;
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.CustomerRegistrationStatus;
 import com.andeva.atelier.platform.fleet.domain.model.commands.DeleteCustomerRegistrationCommand;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.CreateCustomerRegistrationResource;
@@ -103,6 +104,16 @@ public class CustomerRegistrationsController {
     @Operation(summary = "Get registration by ID", description = "Returns the detail of a single registration by its ID")
     public ResponseEntity<?> getById(@PathVariable UUID registrationId) {
         var result = queryService.handle(registrationId);
+        return result.fold(
+                reg -> ResponseEntity.ok(CustomerRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(reg)),
+                this::handleQueryFailure
+        );
+    }
+
+    @GetMapping("/customer/{customerId}")
+    @Operation(summary = "Get registration by customer ID", description = "Returns the registration for a given customer ID")
+    public ResponseEntity<?> getByCustomerId(@PathVariable UUID customerId) {
+        var result = queryService.handle(new GetCustomerRegistrationByCustomerIdQuery(customerId));
         return result.fold(
                 reg -> ResponseEntity.ok(CustomerRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(reg)),
                 this::handleQueryFailure

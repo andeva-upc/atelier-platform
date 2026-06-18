@@ -43,6 +43,12 @@ public class EmployeeRegistrationRepositoryAdapter implements EmployeeRegistrati
     }
 
     @Override
+    public Optional<EmployeeRegistration> findByEmployeeId(UUID employeeId) {
+        return persistenceRepository.findByEmployeeId(employeeId)
+                .map(EmployeeRegistrationPersistenceAssembler::toDomain);
+    }
+
+    @Override
     public List<EmployeeRegistration> findByBranchId(BranchId branchId) {
         return persistenceRepository.findByBranchId(branchId.value())
                 .stream()

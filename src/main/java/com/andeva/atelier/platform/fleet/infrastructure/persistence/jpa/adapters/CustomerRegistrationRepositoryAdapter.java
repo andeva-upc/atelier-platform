@@ -42,6 +42,14 @@ public class CustomerRegistrationRepositoryAdapter implements CustomerRegistrati
     }
 
     @Override
+    public Optional<CustomerRegistration> findByCustomerId(UUID customerId) {
+        return persistenceRepository.findByCustomerId(customerId)
+                .stream()
+                .findFirst()
+                .map(CustomerRegistrationPersistenceAssembler::toDomain);
+    }
+
+    @Override
     public Optional<CustomerRegistration> findByCustomerIdAndBranchId(UUID customerId, UUID branchId) {
         return persistenceRepository.findByCustomerIdAndBranchId(customerId, branchId).map(CustomerRegistrationPersistenceAssembler::toDomain);
     }

@@ -12,6 +12,7 @@ import java.util.UUID;
 public interface EmployeeRegistrationRepository {
     EmployeeRegistration save(EmployeeRegistration registration);
     Optional<EmployeeRegistration> findById(EmployeeId id);
+    Optional<EmployeeRegistration> findByEmployeeId(UUID employeeId);
     List<EmployeeRegistration> findByBranchId(BranchId branchId);
     List<EmployeeRegistration> findByBranchIdAndStatus(BranchId branchId, EmployeeRegistrationStatus status);
     boolean existsByEmployeeIdAndBranchId(UUID employeeId, UUID branchId);
