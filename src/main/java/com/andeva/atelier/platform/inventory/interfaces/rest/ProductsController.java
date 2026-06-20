@@ -58,9 +58,9 @@ public class ProductsController {
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
-    @GetMapping("/branch/{branchId}")
+    @GetMapping
     @Operation(summary = "Get all products for a branch", description = "Retrieves all products in the inventory belonging to the specified branch (multi-tenant query)")
-    public ResponseEntity<List<ProductResource>> getProductsByBranch(@PathVariable UUID branchId) {
+    public ResponseEntity<List<ProductResource>> getProductsByBranch(@RequestParam UUID branchId) {
         var query = new GetProductsByBranchIdQuery(new BranchId(branchId));
         List<Product> products = productQueryService.handle(query);
         List<ProductResource> resources = products.stream()
