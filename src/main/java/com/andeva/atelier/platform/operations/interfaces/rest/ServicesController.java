@@ -50,7 +50,7 @@ public class ServicesController {
     }
 
     @Operation(summary = "Update a service", description = "Updates an existing service using the service ID")
-    @PutMapping("/service/{serviceId}")
+    @PutMapping("/{serviceId}")
     public ResponseEntity<ServiceResource> updateService(@PathVariable UUID serviceId, @RequestBody UpdateServiceResource resource) {
         var command = UpdateServiceCommandFromResourceAssembler.toCommandFromResource(serviceId, resource);
         var service = serviceCommandService.handle(command);
@@ -63,7 +63,7 @@ public class ServicesController {
     }
 
     @Operation(summary = "Delete a service", description = "Deletes an existing service using the service ID")
-    @DeleteMapping("/service/{serviceId}")
+    @DeleteMapping("/{serviceId}")
     public ResponseEntity<?> deleteService(@PathVariable UUID serviceId) {
         var command = new DeleteServiceCommand(new ServiceId(serviceId));
         serviceCommandService.handle(command);
@@ -71,8 +71,8 @@ public class ServicesController {
     }
 
     @Operation(summary = "Get services by branch ID", description = "Retrieves all services belonging to a specific branch")
-    @GetMapping("/service/{branchId}")
-    public ResponseEntity<List<ServiceResource>> getBranchesByWorkshopId(@PathVariable UUID branchId) {
+    @GetMapping
+    public ResponseEntity<List<ServiceResource>> getServicesByBranchId(@RequestParam(name = "branchId") UUID branchId) {
         var query = new GetAllServicesByBranchIdQuery(new BranchId(branchId));
         var services = serviceQueryService.handle(query);
 

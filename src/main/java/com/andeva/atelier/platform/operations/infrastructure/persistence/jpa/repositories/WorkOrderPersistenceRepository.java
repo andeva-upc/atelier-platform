@@ -30,6 +30,9 @@ public interface WorkOrderPersistenceRepository extends JpaRepository<WorkOrderP
 
     Optional<WorkOrderPersistenceEntity> findByInternalNumberAndBranchId(Integer internalNumber, BranchId branchId);
 
+    @Query("SELECT w FROM WorkOrderPersistenceEntity w JOIN w.tasks t WHERE t.id = :taskId")
+    Optional<WorkOrderPersistenceEntity> findByTaskId(@Param("taskId") UUID taskId);
+
     @Query("SELECT COALESCE(MAX(w.internalNumber), 0) FROM WorkOrderPersistenceEntity w WHERE w.branchId = :branchId")
     int findMaxInternalNumberByBranchId(@Param("branchId") BranchId branchId);
 }

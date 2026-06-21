@@ -3,6 +3,7 @@ package com.andeva.atelier.platform.operations.domain.repositories;
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.AppointmentId;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderTaskId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.VehicleId;
@@ -15,6 +16,8 @@ public interface WorkOrderRepository {
     WorkOrder save(WorkOrder workOrder);
 
     Optional<WorkOrder> findById(WorkOrderId id);
+
+    Optional<WorkOrder> findByTaskId(WorkOrderTaskId taskId);
 
     List<WorkOrder> findAllByBranchId(BranchId branchId);
 

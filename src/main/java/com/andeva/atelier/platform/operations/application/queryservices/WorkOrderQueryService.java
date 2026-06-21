@@ -20,6 +20,13 @@ public interface WorkOrderQueryService {
     Optional<WorkOrder> handle(GetWorkOrderByIdQuery query);
 
     /**
+     * Handles the retrieval of a Work Order by one of its task's unique identifier.
+     * @param query The query object containing the unique identifier of the task.
+     * @return An Optional containing the Work Order if found, or an empty Optional if not found.
+     */
+    Optional<WorkOrder> handle(GetWorkOrderByTaskIdQuery query);
+
+    /**
      * Handles the retrieval of all Work Orders associated with a specific Branch ID. This method takes a GetWorkOrdersByBranchIdQuery as input and returns a list of Work Orders that are associated with the given Branch ID.
      * @param query The query object containing the Branch ID for which to retrieve the associated Work Orders.
      * @return A list of Work Orders associated with the specified Branch ID.

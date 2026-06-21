@@ -3,6 +3,7 @@ package com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.ad
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.AppointmentId;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderTaskId;
 import com.andeva.atelier.platform.operations.domain.repositories.WorkOrderRepository;
 import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.assemblers.WorkOrderPersistenceAssembler;
 import com.andeva.atelier.platform.operations.infrastructure.persistence.jpa.entities.WorkOrderPersistenceEntity;
@@ -42,6 +43,12 @@ public class WorkOrderRepositoryImpl implements WorkOrderRepository {
     @Override
     public Optional<WorkOrder> findById(WorkOrderId id) {
         return workOrderPersistenceRepository.findById(id.value())
+                .map(WorkOrderPersistenceAssembler::toDomainEntity);
+    }
+
+    @Override
+    public Optional<WorkOrder> findByTaskId(WorkOrderTaskId taskId) {
+        return workOrderPersistenceRepository.findByTaskId(taskId.value())
                 .map(WorkOrderPersistenceAssembler::toDomainEntity);
     }
 
