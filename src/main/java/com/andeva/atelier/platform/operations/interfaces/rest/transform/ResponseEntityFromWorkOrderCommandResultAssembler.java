@@ -29,11 +29,19 @@ public final class ResponseEntityFromWorkOrderCommandResultAssembler {
             Result<WorkOrder, WorkOrderCommandFailure> result,
             MessageSource messageSource,
             String branchCode) {
+        return toResponseEntityFromResult(result, messageSource, branchCode, HttpStatus.OK);
+    }
+
+    public static ResponseEntity<?> toResponseEntityFromResult(
+            Result<WorkOrder, WorkOrderCommandFailure> result,
+            MessageSource messageSource,
+            String branchCode,
+            HttpStatus successStatus) {
 
         return result.fold(
                 workOrder -> new ResponseEntity<>(
                         WorkOrderResourceFromAggregateAssembler.toResourceFromAggregate(workOrder, branchCode),
-                        HttpStatus.OK
+                        successStatus
                 ),
                 failure -> {
                     HttpStatus status = statusFromFailure(failure);
