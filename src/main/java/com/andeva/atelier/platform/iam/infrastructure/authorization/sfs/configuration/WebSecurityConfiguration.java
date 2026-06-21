@@ -62,6 +62,7 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
+    @SuppressWarnings("RedundantThrows")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
