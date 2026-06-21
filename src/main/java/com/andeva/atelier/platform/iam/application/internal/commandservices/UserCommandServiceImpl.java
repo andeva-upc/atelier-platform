@@ -79,7 +79,7 @@ public class UserCommandServiceImpl implements UserCommandService {
 
             if (user == null) {
                 // Register new user with a secure random password since they use Google
-                String randomPassword = UUID.randomUUID().toString() + UUID.randomUUID().toString();
+                String randomPassword = String.format("%s%s", UUID.randomUUID(), UUID.randomUUID());
                 user = new User(new com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress(email), new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(hashingService.encode(randomPassword)), new com.andeva.atelier.platform.iam.domain.model.valueobjects.GoogleId(googleId));
                 userRepository.save(user);
             } else {
