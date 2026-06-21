@@ -7,8 +7,12 @@ import com.andeva.atelier.platform.core.domain.repositories.EmployeeRepository;
 import com.andeva.atelier.platform.core.domain.repositories.OwnerRepository;
 import org.springframework.stereotype.Service;
 
+import com.andeva.atelier.platform.core.domain.model.queries.GetProfileByDocumentNumberQuery;
+import com.andeva.atelier.platform.core.domain.model.queries.responses.ProfileSummary;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProfileQueryServiceImpl implements ProfileQueryService {
@@ -41,5 +45,30 @@ public class ProfileQueryServiceImpl implements ProfileQueryService {
         }
 
         return roles;
+    }
+
+    @Override
+    public Optional<ProfileSummary> handle(GetProfileByDocumentNumberQuery query) {
+        var customer = customerRepository.findByDocumentNumber(query.documentNumber());
+        if (customer.isPresent()) {
+            var c = customer.get();
+            String firstName = c.getName() != null ? c.getName().firstName() : c.getBusinessName();
+            String lastName = c.getName() != null ? c.getName().lastName() : "";
+            return Optional.of(new ProfileSummary(c.getId().value(), c.getUserId().value(), firstName, lastName, c.getDocument().getDocumentType().name(), c.getDocument().getDocumentNumber(), "CUSTOMER"));
+        }
+
+        var employee = employeeRepository.findByDocumentNumber(query.documentNumber());
+        if (employee.isPresent()) {
+            var e = employee.get();
+            return Optional.of(new ProfileSummary(e.getId().value(), e.getUserId().value(), e.getName().firstName(), e.getName().lastName(), e.getDocument().getDocumentType().name(), e.getDocument().getDocumentNumber(), "EMPLOYEE"));
+        }
+
+        var owner = ownerRepository.findByDocumentNumber(query.documentNumber());
+        if (owner.isPresent()) {
+            var o = owner.get();
+            return Optional.of(new ProfileSummary(o.getId().value(), o.getUserId().value(), o.getName().firstName(), o.getName().lastName(), o.getDocument().getDocumentType().name(), o.getDocument().getDocumentNumber(), "OWNER"));
+        }
+
+        return Optional.empty();
     }
 }

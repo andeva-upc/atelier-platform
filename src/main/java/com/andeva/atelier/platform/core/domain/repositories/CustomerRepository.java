@@ -11,6 +11,7 @@ public interface CustomerRepository {
     Optional<Customer> findById(CustomerId id);
     Optional<Customer> findByUserId(UserId userId);
     boolean existsByUserId(UserId userId);
+    Optional<Customer> findByDocumentNumber(String documentNumber);
     void delete(Customer customer);
 }
 

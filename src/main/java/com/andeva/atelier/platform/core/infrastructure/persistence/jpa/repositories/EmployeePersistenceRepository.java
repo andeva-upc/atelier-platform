@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface EmployeePersistenceRepository extends JpaRepository<EmployeePersistenceEntity, UUID> {
     Optional<EmployeePersistenceEntity> findByUserId(UUID userId);
     boolean existsByUserId(UUID userId);
+    Optional<EmployeePersistenceEntity> findByDocumentNumber(String documentNumber);
 }

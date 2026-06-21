@@ -186,6 +186,31 @@ Para que tengas una visión global, aquí tienes el listado de todas las rutas (
 
 A continuación, se detalla **CADA ENDPOINT** disponible en el sistema con sus parámetros, body a enviar y lo que vas a recibir.
 
+### `GET /api/v1/profiles`
+**Propósito:** Get profile by document number
+
+*Searches for a user profile using their DNI/RUC. Useful for finding a user before registering them as an employee.*
+
+**📍 Parámetros (URL / Query):**
+- `documentNumber` (query):  (Requerido: true)
+
+**📥 Qué vas a recibir (Responses):**
+- **Código HTTP 200**: OK
+  ```json
+  {
+    "profileId": "string",
+    "userId": "string",
+    "firstName": "string",
+    "lastName": "string",
+    "documentType": "string",
+    "documentNumber": "string",
+    "profileType": "CUSTOMER"
+  }
+  ```
+- **Código HTTP 404**: Not Found
+
+---
+
 ### `GET /api/v1/workshops/{workshopId}`
 **Propósito:** Get a workshop by ID
 

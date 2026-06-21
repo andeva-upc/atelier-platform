@@ -11,5 +11,6 @@ public interface EmployeeRepository {
     Optional<Employee> findById(EmployeeId id);
     Optional<Employee> findByUserId(UserId userId);
     boolean existsByUserId(UserId userId);
+    Optional<Employee> findByDocumentNumber(String documentNumber);
     void delete(Employee employee);
 }
