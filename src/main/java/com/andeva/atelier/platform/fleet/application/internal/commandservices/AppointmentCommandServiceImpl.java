@@ -85,6 +85,7 @@ public class AppointmentCommandServiceImpl implements AppointmentCommandService 
                     command.customerId(),
                     command.vehicleId(),
                     scheduledStart,
+                    command.status(),
                     command.notes()
             );
 
