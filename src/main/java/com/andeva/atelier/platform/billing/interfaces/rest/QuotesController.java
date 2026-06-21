@@ -90,7 +90,7 @@ public class QuotesController {
      * @return A ResponseEntity with the approved quote resource and a 200 OK status, 
      *         or an appropriate error status based on the business failure.
      */
-    @PostMapping("/{id}/approve")
+    @PostMapping("/{id}/approvals")
     @Operation(summary = "Approve a quote", description = "Approves a Quote, transitioning its state from DRAFT to APPROVED")
     public ResponseEntity<?> approveQuote(@PathVariable UUID id) {
         var command = new ApproveQuoteCommand(id);
@@ -109,7 +109,7 @@ public class QuotesController {
      * @return A ResponseEntity with the canceled quote resource and a 200 OK status, 
      *         or an appropriate error status based on the business failure.
      */
-    @PostMapping("/{id}/cancel")
+    @PostMapping("/{id}/cancellations")
     @Operation(summary = "Cancel a quote", description = "Cancels a Quote, transitioning its state to CANCELED")
     public ResponseEntity<?> cancelQuote(@PathVariable UUID id) {
         var command = new CancelQuoteCommand(id);
@@ -146,9 +146,9 @@ public class QuotesController {
      * @param branchId The unique identifier of the branch.
      * @return A ResponseEntity containing a list of quote resources and a 200 OK status.
      */
-    @GetMapping("/branch/{branchId}")
+    @GetMapping(params = "branchId")
     @Operation(summary = "Get quotes by branch ID", description = "Retrieves all Quotes belonging to a specific branch")
-    public ResponseEntity<List<QuoteResource>> getQuotesByBranchId(@PathVariable UUID branchId) {
+    public ResponseEntity<List<QuoteResource>> getQuotesByBranchId(@RequestParam UUID branchId) {
         var query = new GetQuotesByBranchIdQuery(new BranchId(branchId));
         var quotes = queryService.handle(query);
         var resources = quotes.stream()
