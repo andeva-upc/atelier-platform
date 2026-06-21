@@ -25,7 +25,7 @@ public class PasswordRecoveryTokenPersistenceEntity {
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "token_hash", nullable = false, length = 255)
+    @Column(name = "token_hash", nullable = false)
     private String tokenHash;
 
     @Column(name = "created_at", nullable = false, updatable = false)
