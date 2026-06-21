@@ -8,7 +8,10 @@ public class AppointmentPersistenceAssembler {
     public static AppointmentPersistenceEntity toEntityFromAggregate(Appointment aggregate) {
         var entity = new AppointmentPersistenceEntity();
 
-        entity.setId(aggregate.getId());
+        if (aggregate.getVersion() != null) {
+            entity.setId(aggregate.getId());
+            entity.setVersion(aggregate.getVersion());
+        }
         entity.setBranchId(aggregate.getBranchId());
         entity.setCustomerId(aggregate.getCustomerId());
         entity.setVehicleId(aggregate.getVehicleId());
@@ -19,7 +22,6 @@ public class AppointmentPersistenceAssembler {
         entity.setDeletedAt(aggregate.getDeletedAt());
         entity.setCreatedBy(aggregate.getCreatedBy());
         entity.setUpdatedBy(aggregate.getUpdatedBy());
-        entity.setVersion(aggregate.getVersion());
 
         if (aggregate.getCreatedAt() != null) {
             entity.setCreatedAt(aggregate.getCreatedAt());
