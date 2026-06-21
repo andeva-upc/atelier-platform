@@ -3,6 +3,7 @@ package com.andeva.atelier.platform.core.domain.model.queries.responses;
 import java.util.UUID;
 
 public record ProfileSummary(
+        UUID profileId,
         UUID userId,
         String firstName,
         String lastName,

@@ -198,6 +198,7 @@ A continuación, se detalla **CADA ENDPOINT** disponible en el sistema con sus p
 - **Código HTTP 200**: OK
   ```json
   {
+    "profileId": "string",
     "userId": "string",
     "firstName": "string",
     "lastName": "string",
