@@ -1,64 +1,63 @@
-# Identity & Access Management (IAM) Bounded Context
+# Guía de Integración Frontend: IAM Bounded Context
 
-Este documento describe en detalle todas las funcionalidades implementadas en el **Bounded Context de IAM (Identity & Access Management)** de la plataforma Atelier. Este módulo provee toda la infraestructura y lógica de negocio para la autenticación de usuarios, registro de cuentas, manejo de sesiones, tokens de seguridad, recuperación de contraseñas y control de acceso.
+Este documento describe el flujo y uso de los endpoints del Bounded Context de **IAM (Identity & Access Management)** desde la perspectiva del Frontend. En este sprint, nos centraremos exclusivamente en los flujos principales de autenticación (Registro, Inicio de Sesión y Recuperación de Contraseña), ignorando por el momento los endpoints de configuración.
 
-## 1. Registro e Inicio de Sesión (Sign Up / Sign In)
-
-El agregado raíz de este contexto es el **Usuario (`User`)**, el cual representa una cuenta de autenticación válida dentro de la plataforma.
-
-*   **Registro de Usuarios (`SignUpCommand`)**:
-    *   Permite registrar una nueva cuenta de usuario en el sistema utilizando una dirección de correo electrónico (`email`) y una contraseña (`password`).
-    *   Soporta alternativamente el registro federado mediante un identificador de Google (`googleId`).
-    *   Por defecto, toda nueva cuenta de usuario se inicializa en estado `ACTIVE`.
-*   **Inicio de Sesión (`SignInCommand`)**:
-    *   Valida las credenciales del usuario (correo y contraseña).
-    *   Genera y retorna un token de autenticación (JWT o similar) y los detalles del usuario autenticado (`AuthenticatedUserResource`) para iniciar sesión de forma segura.
+El objetivo principal de IAM es manejar la seguridad, generar credenciales y proveer al frontend del identificador base: el `userId`.
 
 ---
 
-## 2. Gestión de Cuentas de Usuario
+## 🔐 1. Flujo de Registro (Sign-Up)
 
-Provee las funciones necesarias para que el usuario pueda administrar y actualizar las propiedades críticas de su identidad.
+**Endpoint:** `POST /api/v1/authentication/sign-up`
 
-*   **Actualizar Correo Electrónico (`UpdateUserEmailCommand`)**:
-    *   Permite al usuario cambiar su dirección de correo de acceso (`email`), previa validación de unicidad.
-*   **Actualizar Contraseña (`UpdateUserPasswordCommand`)**:
-    *   Permite al usuario cambiar su contraseña actual, solicitando su clave anterior por motivos de seguridad y encriptando la nueva credencial.
-*   **Desactivar Cuenta (`deactivate()`)**:
-    *   Cambia el estado del usuario a `INACTIVE`, impidiendo cualquier inicio de sesión posterior sin eliminar físicamente el registro (borrado lógico).
-
----
-
-## 3. Recuperación de Contraseña (Password Recovery)
-
-Ofrece un flujo de autoservicio seguro para usuarios que han olvidado sus credenciales, evitando la intervención manual de los administradores.
-
-*   **Solicitud de Recuperación (`GeneratePasswordRecoveryTokenCommand`)**:
-    *   Genera un token de recuperación único y de corta duración (`PasswordRecoveryToken`) asociado al correo electrónico del usuario.
-    *   Registra la fecha de expiración del token para evitar usos maliciosos.
-    *   Dispara el proceso de envío de un correo electrónico con el token/enlace de recuperación.
-*   **Restablecer Contraseña con Token (`ResetPasswordCommand`)**:
-    *   Valida la vigencia y correspondencia del token de recuperación.
-    *   Actualiza la contraseña del usuario con el nuevo valor provisto y marca el token como utilizado o lo elimina para que no pueda reusarse.
+### ¿Cómo lo usa el Frontend?
+1. El usuario navega a la página de registro.
+2. Ingresa sus credenciales base (correo electrónico y contraseña).
+3. El frontend envía estos datos al endpoint de `sign-up`.
+4. Si la respuesta es exitosa, se crea la cuenta de autenticación y la plataforma devuelve o permite acceder al `userId` del nuevo usuario.
+5. **Paso Siguiente:** A partir de aquí, el flujo pasa al dominio `core`. Como la cuenta es totalmente nueva, el frontend le pregunta al usuario qué tipo de perfil quiere (Customer, Employee u Owner) y desencadena los flujos explicados en la guía de `core-bounded-context`. Si el usuario ya era "Customer", el frontend solo le ofrecería crear un perfil secundario como "Employee" u "Owner".
 
 ---
 
-## 4. Consultas (Queries)
+## 🔑 2. Flujo de Inicio de Sesión (Sign-In)
 
-El módulo provee endpoints y servicios de consulta para mapear la identidad de los usuarios y verificar sus roles:
+**Endpoint:** `POST /api/v1/authentication/sign-in`
 
-*   **Obtener Usuario por ID (`GetUserByIdQuery`)**:
-    *   Recupera el perfil de autenticación básico de un usuario (ID, email, status).
-*   **Obtener Usuario por Email (`GetUserByEmailQuery`)**:
-    *   Utilizado para verificaciones internas, validaciones de unicidad y flujos de soporte.
-*   **Obtener Roles de Perfil por ID de Usuario (`GetProfileRolesByUserIdQuery`)**:
-    *   Permite consultar la relación entre la identidad de autenticación (`User`) y sus perfiles de negocio en el Bounded Context de Core (ej. saber si el usuario posee un rol de mecánico, administrador, cliente, etc., cruzando la información con las entidades de Core).
+### ¿Cómo lo usa el Frontend?
+1. El usuario (que ya tiene una cuenta) navega a la página de login.
+2. Ingresa su correo electrónico y su contraseña.
+3. El frontend envía la petición al endpoint de `sign-in`.
+4. **Respuesta Exitosamente:** El API devuelve el JWT Token y los datos de la sesión, incluyendo el **`userId`**. El frontend guarda el Token en `localStorage/cookies` para autorizar futuras peticiones.
+5. **Paso Siguiente (Redirección Inteligente):**
+   *   El frontend invoca el endpoint `GET /api/v1/profiles/roles?userId={userId}` (del módulo `core`).
+   *   Si el usuario tiene múltiples roles (ej. es Customer y también Owner), se le muestra una pantalla intermedia consultando: *"¿Cómo deseas ingresar hoy?"*.
+   *   Si tiene solo un rol, el frontend lo redirige automáticamente a su Dashboard respectivo (Dashboard Customer, Employee o Owner).
 
 ---
 
-## 5. Diseño REST Pragmático y Seguridad
+## 🆘 3. Flujo de Olvidé mi Contraseña (Forgot & Reset Password)
 
-El API REST para el Bounded Context de IAM implementa estándares de seguridad modernos para la protección de recursos:
-*   Los endpoints de autenticación se encuentran expuestos bajo la ruta `POST /api/v1/authentication/sign-in` y `POST /api/v1/authentication/sign-up`.
-*   Los flujos de recuperación operan en `POST /api/v1/authentication/forgot-password` y `POST /api/v1/authentication/reset-password`.
-*   Las modificaciones a cuentas existentes se exponen como recursos del usuario utilizando rutas RESTful específicas con verbos `PUT` (Ej. `PUT /api/v1/users/{userId}/email` y `PUT /api/v1/users/{userId}/password`), limitando así el riesgo de mutaciones accidentales o escalamiento de privilegios.
+Cuando el usuario olvida su contraseña, el frontend debe manejar un flujo de dos pasos: enviar el enlace de recuperación y procesar el cambio.
+
+### A. Solicitar Recuperación (Forgot Password)
+**Endpoint:** `POST /api/v1/authentication/forgot-password`
+
+1. El usuario hace clic en *"Olvidé mi contraseña"*.
+2. El frontend muestra una vista pidiendo el correo electrónico de la cuenta comprometida.
+3. El frontend hace un POST al endpoint enviando ese correo.
+4. El backend genera un token de recuperación y simula (o realiza) el envío de un email al usuario.
+5. El correo contiene un enlace con esta estructura (gestionada por el frontend):
+   `https://atelier-webapp-11848.vercel.app/reset-password?token=55f75b85-4eb3-4d9d-9a9b-71e35ad450a9`
+
+### B. Restablecer la Contraseña (Reset Password)
+**Endpoint:** `POST /api/v1/authentication/reset-password`
+
+1. El usuario abre su correo, hace clic en el enlace y aterriza en la vista `/reset-password` del Frontend.
+2. **¡Importante!** El usuario **NUNCA** introduce el token manualmente. El frontend debe leer el parámetro `?token=...` directamente desde la URL.
+3. El frontend muestra una pantalla para que el usuario ingrese y confirme su **nueva contraseña**.
+4. Al darle a guardar, el frontend hace un POST al endpoint `reset-password` enviando la `nueva contraseña` y el `token` extraído de la URL.
+5. Si es exitoso, el frontend redirige automáticamente a la página de **Sign-in**, donde el usuario ahora podrá iniciar sesión de forma normal con su nueva contraseña.
+
+---
+
+*Nota: Cualquier otro endpoint de IAM relacionado con configuraciones, edición interna de cuentas, o desactivación no se evaluará en este sprint.*
