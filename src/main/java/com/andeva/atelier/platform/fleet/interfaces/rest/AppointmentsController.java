@@ -81,54 +81,49 @@ public class AppointmentsController {
                                 this::handleCommandFailure);
         }
 
-        @GetMapping("/branch/{branchId}")
-        @Operation(summary = "Get appointments by branch", description = "Returns all active appointments for a given branch ID")
-        public ResponseEntity<?> getByBranch(@PathVariable UUID branchId) {
-                var result = queryService.handle(new BranchId(branchId));
-                return result.fold(
-                                appointments -> ResponseEntity.ok(
-                                                appointments.stream()
-                                                                .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
-                                                                .toList()),
-                                this::handleQueryFailure);
-        }
+        @GetMapping
+        @Operation(summary = "Get appointments", description = "Get appointments filtered by branch, branch and status, customer, or vehicle ID")
+        public ResponseEntity<?> getAppointments(
+                        @RequestParam(required = false) UUID branchId,
+                        @RequestParam(required = false) AppointmentStatus status,
+                        @RequestParam(required = false) UUID customerId,
+                        @RequestParam(required = false) UUID vehicleId) {
 
-        @GetMapping("/branch/{branchId}/status/{status}")
-        @Operation(summary = "Get appointments by branch and status", description = "Returns appointments filtered by branch ID and status. Values: PENDING, COMPLETED, CANCELED")
-        public ResponseEntity<?> getByBranchAndStatus(
-                        @PathVariable UUID branchId,
-                        @PathVariable AppointmentStatus status) {
-                var result = queryService.handle(new BranchId(branchId), status);
-                return result.fold(
-                                appointments -> ResponseEntity.ok(
-                                                appointments.stream()
-                                                                .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
-                                                                .toList()),
-                                this::handleQueryFailure);
-        }
+                if (branchId != null && status != null) {
+                        var result = queryService.handle(new BranchId(branchId), status);
+                        return result.fold(
+                                        appointments -> ResponseEntity.ok(
+                                                        appointments.stream()
+                                                                        .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
+                                                                        .toList()),
+                                        this::handleQueryFailure);
+                } else if (branchId != null) {
+                        var result = queryService.handle(new BranchId(branchId));
+                        return result.fold(
+                                        appointments -> ResponseEntity.ok(
+                                                        appointments.stream()
+                                                                        .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
+                                                                        .toList()),
+                                        this::handleQueryFailure);
+                } else if (customerId != null) {
+                        var result = queryService.handle(new CustomerId(customerId));
+                        return result.fold(
+                                        appointments -> ResponseEntity.ok(
+                                                        appointments.stream()
+                                                                        .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
+                                                                        .toList()),
+                                        this::handleQueryFailure);
+                } else if (vehicleId != null) {
+                        var result = queryService.handle(new VehicleId(vehicleId));
+                        return result.fold(
+                                        appointments -> ResponseEntity.ok(
+                                                        appointments.stream()
+                                                                        .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
+                                                                        .toList()),
+                                        this::handleQueryFailure);
+                }
 
-        @GetMapping("/customer/{customerId}")
-        @Operation(summary = "Get appointments by customer", description = "Returns all appointments for a given customer ID")
-        public ResponseEntity<?> getByCustomer(@PathVariable UUID customerId) {
-                var result = queryService.handle(new CustomerId(customerId));
-                return result.fold(
-                                appointments -> ResponseEntity.ok(
-                                                appointments.stream()
-                                                                .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
-                                                                .toList()),
-                                this::handleQueryFailure);
-        }
-
-        @GetMapping("/vehicle/{vehicleId}")
-        @Operation(summary = "Get appointments by vehicle", description = "Returns all appointments for a given vehicle ID")
-        public ResponseEntity<?> getByVehicle(@PathVariable UUID vehicleId) {
-                var result = queryService.handle(new VehicleId(vehicleId));
-                return result.fold(
-                                appointments -> ResponseEntity.ok(
-                                                appointments.stream()
-                                                                .map(AppointmentResourceFromAggregateAssembler::toResourceFromAggregate)
-                                                                .toList()),
-                                this::handleQueryFailure);
+                return handleQueryFailure(AppointmentQueryFailure.INVALID_QUERY_PARAMS);
         }
 
         @GetMapping("/{appointmentId}")
