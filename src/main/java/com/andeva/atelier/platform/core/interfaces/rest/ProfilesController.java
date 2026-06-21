@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import com.andeva.atelier.platform.core.domain.model.queries.GetProfileByDocumentNumberQuery;
+import com.andeva.atelier.platform.core.domain.model.queries.responses.ProfileSummary;
+
 @RestController
 @RequestMapping("/api/v1/profiles")
 @Tag(name = "Profiles", description = "Operations related to user profiles")
@@ -28,5 +31,14 @@ public class ProfilesController {
         var query = new GetProfileRolesByUserIdQuery(new UserId(userId));
         var roles = profileQueryService.handle(query);
         return ResponseEntity.ok(roles);
+    }
+
+    @GetMapping(params = "documentNumber")
+    @Operation(summary = "Get profile by document number", description = "Searches for a user profile using their DNI/RUC")
+    public ResponseEntity<ProfileSummary> getProfileByDocumentNumber(@RequestParam String documentNumber) {
+        var query = new GetProfileByDocumentNumberQuery(documentNumber);
+        var result = profileQueryService.handle(query);
+        return result.map(ResponseEntity::ok)
+                     .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

@@ -63,6 +63,10 @@ Cuando un usuario que ya existe coloca su correo y contraseña en el login (llam
 
 ## 📖 Referencia Rápida de Endpoints
 
+### Profiles
+*   **Obtener Roles por User ID:** `GET /api/v1/profiles/roles?userId={userId}`
+*   **Buscar Perfil por Número de Documento:** `GET /api/v1/profiles?documentNumber={documentNumber}`
+
 ### Customers
 *   **Crear:** `POST /api/v1/customers` (enviar `userId`)
 *   **Obtener por User ID:** `GET /api/v1/customers?userId={userId}` (Sirve para extraer el `customerId`)
