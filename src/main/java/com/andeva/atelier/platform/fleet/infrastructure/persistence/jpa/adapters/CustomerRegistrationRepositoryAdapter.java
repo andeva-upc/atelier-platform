@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.adapters;
 
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.CustomerRegistrationPersistenceEntity;
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.CustomerRegistrationPersistenceRepository;
+import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.entities.CustomerRegistrationPersistenceEntity;
+import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.repositories.CustomerRegistrationPersistenceRepository;
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.CustomerRegistration;
 import com.andeva.atelier.platform.fleet.domain.repositories.CustomerRegistrationRepository;
 import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.assemblers.CustomerRegistrationPersistenceAssembler;
