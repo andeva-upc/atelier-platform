@@ -26,6 +26,7 @@ public class TokenServiceImpl implements BearerTokenService {
     private int expirationDays;
 
     @Override
+    @SuppressWarnings("unused")
     public String generateToken(Authentication authentication) {
         return generateToken(authentication.getName());
     }
