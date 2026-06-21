@@ -78,26 +78,36 @@ public class CustomerRegistrationsController {
         );
     }
 
-    @GetMapping("/branch/{branchId}")
-    @Operation(summary = "Get registrations by branch", description = "Returns all active registrations for a given branch ID")
-    public ResponseEntity<?> getByBranch(@PathVariable UUID branchId) {
-        var result = queryService.handle(new BranchId(branchId));
-        return result.fold(
-                regs -> ResponseEntity.ok(regs.stream()
-                        .map(CustomerRegistrationResourceFromAggregateAssembler::toResourceFromAggregate).toList()),
-                this::handleQueryFailure
-        );
-    }
+    @GetMapping
+    @Operation(summary = "Get registrations", description = "Get registrations filtered by branch, branch and status, or customer ID")
+    public ResponseEntity<?> getRegistrations(
+            @RequestParam(required = false) UUID branchId,
+            @RequestParam(required = false) CustomerRegistrationStatus status,
+            @RequestParam(required = false) UUID customerId) {
 
-    @GetMapping("/branch/{branchId}/status/{status}")
-    @Operation(summary = "Get registrations by branch and status", description = "Returns registrations filtered by branch ID and status. Values: ACTIVE, INACTIVE")
-    public ResponseEntity<?> getByBranchAndStatus(@PathVariable UUID branchId, @PathVariable CustomerRegistrationStatus status) {
-        var result = queryService.handle(new BranchId(branchId), status);
-        return result.fold(
-                regs -> ResponseEntity.ok(regs.stream()
-                        .map(CustomerRegistrationResourceFromAggregateAssembler::toResourceFromAggregate).toList()),
-                this::handleQueryFailure
-        );
+        if (customerId != null) {
+            var result = queryService.handle(new GetCustomerRegistrationByCustomerIdQuery(customerId));
+            return result.fold(
+                    reg -> ResponseEntity.ok(CustomerRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(reg)),
+                    this::handleQueryFailure
+            );
+        } else if (branchId != null && status != null) {
+            var result = queryService.handle(new BranchId(branchId), status);
+            return result.fold(
+                    regs -> ResponseEntity.ok(regs.stream()
+                            .map(CustomerRegistrationResourceFromAggregateAssembler::toResourceFromAggregate).toList()),
+                    this::handleQueryFailure
+            );
+        } else if (branchId != null) {
+            var result = queryService.handle(new BranchId(branchId));
+            return result.fold(
+                    regs -> ResponseEntity.ok(regs.stream()
+                            .map(CustomerRegistrationResourceFromAggregateAssembler::toResourceFromAggregate).toList()),
+                    this::handleQueryFailure
+            );
+        }
+
+        return handleQueryFailure(CustomerRegistrationQueryFailure.INVALID_QUERY_PARAMS);
     }
 
     @GetMapping("/{registrationId}")
@@ -110,15 +120,7 @@ public class CustomerRegistrationsController {
         );
     }
 
-    @GetMapping("/customer/{customerId}")
-    @Operation(summary = "Get registration by customer ID", description = "Returns the registration for a given customer ID")
-    public ResponseEntity<?> getByCustomerId(@PathVariable UUID customerId) {
-        var result = queryService.handle(new GetCustomerRegistrationByCustomerIdQuery(customerId));
-        return result.fold(
-                reg -> ResponseEntity.ok(CustomerRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(reg)),
-                this::handleQueryFailure
-        );
-    }
+
 
     private ResponseEntity<?> handleCommandFailure(CustomerRegistrationCommandFailure failure) {
         String messageKey = switch (failure) {
