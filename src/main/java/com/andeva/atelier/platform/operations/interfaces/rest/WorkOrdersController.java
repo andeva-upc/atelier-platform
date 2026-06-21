@@ -6,7 +6,6 @@ import com.andeva.atelier.platform.operations.application.queryservices.WorkOrde
 import com.andeva.atelier.platform.operations.domain.model.aggregates.WorkOrder;
 import com.andeva.atelier.platform.operations.domain.model.commands.*;
 import com.andeva.atelier.platform.operations.domain.model.queries.*;
-import com.andeva.atelier.platform.operations.domain.model.valueobjects.ProductId;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
 import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderTaskId;
 import com.andeva.atelier.platform.operations.interfaces.rest.resources.*;
