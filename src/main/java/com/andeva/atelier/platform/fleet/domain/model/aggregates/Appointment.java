@@ -99,6 +99,7 @@ public class Appointment extends AbstractDomainAggregateRoot<Appointment> {
             CustomerId customerId,
             VehicleId vehicleId,
             LocalDateTime scheduledStart,
+            AppointmentStatus status,
             AppointmentSummary notes
     ) {
         if (branchId == null) {
@@ -113,12 +114,16 @@ public class Appointment extends AbstractDomainAggregateRoot<Appointment> {
         if (scheduledStart == null) {
             throw new IllegalArgumentException("Scheduled start is required");
         }
+        if (status == null) {
+            throw new IllegalArgumentException("Status is required");
+        }
 
         this.branchId = branchId;
         this.customerId = customerId;
         this.vehicleId = vehicleId;
         this.scheduledStart = scheduledStart;
         this.scheduledEnd = scheduledStart.plusHours(1);
+        this.status = status;
         this.notes = notes;
     }
 }
