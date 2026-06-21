@@ -14,8 +14,8 @@ public class ProductEntityAssembler {
         if (product == null) return null;
         if (entity == null) entity = new ProductJpaEntity();
         
-        entity.setId(product.getId());
         if (product.getVersion() != null) {
+            entity.setId(product.getId());
             entity.setVersion(product.getVersion());
         }
         
