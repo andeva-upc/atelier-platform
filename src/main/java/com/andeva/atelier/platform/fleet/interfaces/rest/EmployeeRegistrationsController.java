@@ -72,38 +72,35 @@ public class EmployeeRegistrationsController {
         return ResponseEntity.ok(resource);
     }
 
-    @GetMapping("/employee/{employeeId}")
-    @Operation(summary = "Get an employee registration by employee ID", description = "Retrieves an employee registration by employee ID")
-    public ResponseEntity<?> getByEmployeeId(@PathVariable UUID employeeId) {
-        var query = new GetEmployeeRegistrationByEmployeeIdQuery(employeeId);
-        var registration = queryService.handle(query);
-        if (registration.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    @GetMapping
+    @Operation(summary = "Get employee registrations", description = "Get registrations filtered by branch, branch and status, or employee ID")
+    public ResponseEntity<?> getRegistrations(
+            @RequestParam(required = false) UUID branchId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) UUID employeeId) {
+
+        if (employeeId != null) {
+            var query = new GetEmployeeRegistrationByEmployeeIdQuery(employeeId);
+            var registration = queryService.handle(query);
+            if (registration.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration.get()));
+        } else if (branchId != null && status != null) {
+            var query = new GetEmployeeRegistrationsByBranchIdAndStatusQuery(new BranchId(branchId), new EmployeeRegistrationStatus(status.toUpperCase()));
+            var registrations = queryService.handle(query);
+            return ResponseEntity.ok(registrations.stream()
+                    .map(EmployeeRegistrationResourceFromAggregateAssembler::toResourceFromAggregate)
+                    .toList());
+        } else if (branchId != null) {
+            var query = new GetEmployeeRegistrationsByBranchIdQuery(new BranchId(branchId));
+            var registrations = queryService.handle(query);
+            return ResponseEntity.ok(registrations.stream()
+                    .map(EmployeeRegistrationResourceFromAggregateAssembler::toResourceFromAggregate)
+                    .toList());
         }
-        var resource = EmployeeRegistrationResourceFromAggregateAssembler.toResourceFromAggregate(registration.get());
-        return ResponseEntity.ok(resource);
-    }
 
-    @GetMapping("/branch/{branchId}")
-    @Operation(summary = "Get employee registrations by branch", description = "Retrieves a list of employee registrations for a specific branch")
-    public ResponseEntity<List<EmployeeRegistrationResource>> getByBranchId(@PathVariable UUID branchId) {
-        var query = new GetEmployeeRegistrationsByBranchIdQuery(new BranchId(branchId));
-        var registrations = queryService.handle(query);
-        var resources = registrations.stream()
-                .map(EmployeeRegistrationResourceFromAggregateAssembler::toResourceFromAggregate)
-                .toList();
-        return ResponseEntity.ok(resources);
-    }
-
-    @GetMapping("/branch/{branchId}/status/{status}")
-    @Operation(summary = "Get employee registrations by branch and status", description = "Retrieves a list of employee registrations for a specific branch filtered by status")
-    public ResponseEntity<List<EmployeeRegistrationResource>> getByBranchIdAndStatus(@PathVariable UUID branchId, @PathVariable String status) {
-        var query = new GetEmployeeRegistrationsByBranchIdAndStatusQuery(new BranchId(branchId), new EmployeeRegistrationStatus(status.toUpperCase()));
-        var registrations = queryService.handle(query);
-        var resources = registrations.stream()
-                .map(EmployeeRegistrationResourceFromAggregateAssembler::toResourceFromAggregate)
-                .toList();
-        return ResponseEntity.ok(resources);
+        return ResponseEntity.badRequest().build();
     }
 
     @PutMapping("/{id}")
