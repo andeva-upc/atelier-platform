@@ -34,5 +34,3 @@ build/
 
 ### Others ###
 .gitattributes
-.agents/
-/skills-lock.json
