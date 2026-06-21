@@ -4,15 +4,15 @@ import com.andeva.atelier.platform.core.domain.model.commands.UpdateCustomerComm
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
+import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.core.interfaces.rest.resources.UpdateCustomerResource;
 
 import java.util.UUID;
 
 public class UpdateCustomerCommandFromResourceAssembler {
-    public static UpdateCustomerCommand toCommandFromResource(UUID userId, UpdateCustomerResource resource) {
+    public static UpdateCustomerCommand toCommandFromResource(UUID customerId, UpdateCustomerResource resource) {
         return new UpdateCustomerCommand(
-                new UserId(userId),
+                new CustomerId(customerId),
                 new PersonName(resource.firstName(), resource.lastName()),
                 resource.businessName(),
                 new Document(resource.documentType(), resource.documentNumber()),
