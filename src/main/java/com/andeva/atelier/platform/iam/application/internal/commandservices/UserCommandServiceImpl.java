@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.iam.application.internal.commandservices;
 
-import com.andeva.atelier.platform.iam.application.internal.outboundservices.HashingService;
-import com.andeva.atelier.platform.iam.application.internal.outboundservices.TokenService;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.hashing.HashingService;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.tokens.TokenService;
 import com.andeva.atelier.platform.iam.domain.model.aggregates.User;
 import com.andeva.atelier.platform.iam.domain.model.commands.SignInCommand;
 import com.andeva.atelier.platform.iam.domain.model.commands.SignUpCommand;
