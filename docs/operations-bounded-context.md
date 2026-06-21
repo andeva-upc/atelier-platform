@@ -1,81 +1,83 @@
-# Operations Bounded Context
+# Guía de Integración Frontend: Operations Bounded Context
 
-Este documento describe en detalle todas las funcionalidades implementadas en el **Bounded Context de Operations** de la plataforma Atelier. Este módulo se encarga de gestionar el flujo completo de las órdenes de trabajo (Work Orders), las tareas asignadas a los mecánicos y el uso de productos/repuestos.
+Este documento describe el flujo y uso de los endpoints del Bounded Context de **Operations** desde la perspectiva del Frontend. Este módulo es el corazón del taller: se encarga de gestionar el flujo completo de las órdenes de trabajo (Work Orders), las tareas asignadas a los mecánicos y el uso de productos/repuestos.
 
-## 1. Gestión de Órdenes de Trabajo (Work Orders)
+Tras la refactorización para seguir estándares de **API REST Pura**, la API tiene una restricción estricta de anidamiento (máximo 2 niveles de URL) y los endpoints para creación de recursos ahora retornan un código `201 Created`.
 
-La Orden de Trabajo (Work Order) es el Aggregate Root principal de este bounded context. Representa el documento central sobre el que se registra el estado del vehículo y todas las reparaciones o servicios a realizar.
+---
 
-*   **Crear Orden de Trabajo (`CreateWorkOrderCommand`)**:
-    *   Permite generar una nueva Work Order asociada a una cita (`Appointment`), sucursal (`Branch`), vehículo (`Vehicle`) y cliente (`Customer`).
-    *   Registra el diagnóstico inicial (`DiagnosticSummary`) y el kilometraje de entrada (`MileageIn`).
-    *   Asigna automáticamente un número interno consecutivo (`InternalNumber`) único por sucursal.
-    *   La orden inicia en estado `PENDING` (Pendiente).
-*   **Actualizar Detalles de la Orden (`UpdateWorkOrderDetailsCommand`)**:
-    *   Permite modificar el resumen de diagnóstico y el kilometraje, siempre y cuando la orden no esté en estado `COMPLETED` o `PAID`.
-*   **Eliminar Orden de Trabajo (`DeleteWorkOrderCommand`)**:
-    *   Realiza un borrado lógico (*soft delete*) de la orden cambiando el campo `deleted_at`.
-    *   Libera automáticamente cualquier producto o repuesto que hubiera estado reservado en las tareas de esta orden.
-*   **Marcar Orden como Pagada (`MarkWorkOrderAsPaidCommand`)**:
-    *   Cambia el estado de la Work Order a `PAID`.
-    *   Desencadena eventos de dominio para notificar a otros bounded contexts (como el módulo de inventario) sobre el despacho definitivo de los productos utilizados.
-*   **Completar Orden de Trabajo**:
-    *   El sistema permite completar automáticamente la orden cuando todas las tareas en su interior pasan a estado `COMPLETED`.
+## 🧠 Lógica Principal: ¿Cómo lidiar con los anidamientos y los IDs?
 
-## 2. Gestión de Tareas (Tasks)
+En versiones anteriores, una URL podía anidar hasta 4 niveles (ej. `/work-orders/{id}/tasks/{taskId}/products`). Para cumplir con API REST Pura, el backend ahora expone controladores separados:
 
-Las tareas representan el trabajo específico que realizará un mecánico sobre el vehículo.
+1. **Creación:** Todas las entidades secundarias (Tareas) se crean *a través* del Aggregate Root (`WorkOrder`). Esto significa que para crear una tarea haces `POST /api/v1/work-orders/{workOrderId}/tasks`.
+2. **Acciones Directas:** Una vez que la tarea existe y el frontend tiene su `taskId`, todas las modificaciones de estado o adiciones (como agregar productos, cambiar el estado a iniciado/completado) se hacen **directamente sobre el endpoint de tareas** (`/api/v1/tasks/{taskId}...`). **No** es necesario enviar ni conocer el ID de la Work Order para estas acciones.
+3. **Obtención del Contexto:** El backend resuelve internamente a qué Work Order pertenece una Tarea mediante consultas a base de datos usando el `taskId`.
 
-*   **Agregar Tarea (`AddTaskToWorkOrderCommand`)**:
-    *   Permite añadir un nuevo servicio o tarea a la orden de trabajo.
-    *   Requiere especificar el servicio, el mecánico asignado, una descripción y el precio de la mano de obra.
-    *   La tarea inicia en estado `PENDING`.
-*   **Actualizar Detalles de la Tarea (`UpdateWorkOrderTaskDetailsCommand`)**:
-    *   Permite modificar el servicio, el mecánico, la descripción y el costo de mano de obra de una tarea existente.
-    *   Recalcula automáticamente el costo total de la orden.
-*   **Eliminar Tarea (`RemoveTaskFromWorkOrderCommand`)**:
-    *   Borra una tarea específica y libera cualquier reserva de stock (productos) que estuviera asociada a la misma.
-    *   No se puede eliminar una tarea si ya está marcada como completada.
-*   **Iniciar Tarea (`StartTaskCommand`)**:
-    *   Cambia el estado de la tarea de `PENDING` a `IN_PROGRESS` y registra la fecha de inicio.
-    *   Si la Work Order estaba en `PENDING`, automáticamente cambia su estado a `IN_PROGRESS`.
-*   **Completar Tarea (`CompleteTaskCommand`)**:
-    *   Cambia el estado de la tarea a `COMPLETED` y registra la fecha de finalización.
-    *   Si es la última tarea pendiente de la orden, la Work Order completa pasará a estado `COMPLETED`.
-*   **Reabrir Tarea (`ReopenTaskCommand`)**:
-    *   Devuelve una tarea completada a estado `IN_PROGRESS`, eliminando su fecha de finalización.
-    *   Si la Work Order estaba como `COMPLETED`, retrocede automáticamente su estado a `IN_PROGRESS`.
+---
 
-## 3. Gestión de Productos/Repuestos en Tareas
+## 🚀 Flujos Principales de la Aplicación
 
-Los mecánicos pueden asociar repuestos físicos a las tareas, lo cual tiene un impacto directo en el inventario.
+### 1. Flujo de la Orden de Trabajo (Work Order)
 
-*   **Agregar Producto a una Tarea (`AddProductToTaskCommand`)**:
-    *   Añade un repuesto a la tarea indicando la cantidad y el precio unitario.
-    *   El costo del producto se suma al costo total de la orden.
-    *   Dispara un evento de dominio (`ProductReservedEvent`) para reservar el inventario en el almacén de la sucursal correspondiente.
-*   **Actualizar Cantidad del Producto (`UpdateProductQuantityInTaskCommand`)**:
-    *   Modifica la cantidad de un repuesto en la tarea.
-    *   Recalcula el total de la orden de trabajo.
-    *   Calcula la diferencia (delta) y emite un evento de reserva (`ProductReservedEvent`) si la cantidad aumentó, o de cancelación de reserva (`ProductReservationCanceledEvent`) si la cantidad disminuyó.
-*   **Eliminar Producto de la Tarea (`RemoveProductFromTaskCommand`)**:
-    *   Quita el repuesto de la tarea.
-    *   Emite un evento (`ProductReservationCanceledEvent`) para devolver las cantidades reservadas de nuevo al stock disponible.
+La Orden de Trabajo (Work Order) es el documento central sobre el que se registra el estado del vehículo y todas las reparaciones a realizar.
 
-## 4. Consultas (Queries)
+*   **A. Crear una Nueva Orden:**
+    El frontend recopila los datos de la cita, la sucursal, el vehículo y el diagnóstico inicial. Se envía una petición `POST /api/v1/work-orders`. La respuesta será un `201 Created` y devolverá la orden creada con su `workOrderId`. La orden inicia en estado `PENDING`.
+*   **B. Actualizar la Orden:**
+    Si el mecánico o el asesor necesitan actualizar el diagnóstico o el kilometraje, se envía un `PUT /api/v1/work-orders/{workOrderId}`.
+*   **C. Marcar como Pagada:**
+    Una vez que el cliente paga (gestionado en Billing), el frontend (o el backend internamente) puede notificar este estado con `POST /api/v1/work-orders/{workOrderId}/mark-as-paid`. Esto cambia el estado a `PAID` y emite eventos de dominio para retirar permanentemente del inventario los productos usados.
 
-El módulo provee capacidades de lectura optimizadas para consultar el estado de las operaciones:
+### 2. Flujo de las Tareas (Tasks)
 
-*   **Obtener Orden por ID (`GetWorkOrderByIdQuery`)**:
-    *   Recupera toda la información detallada de una orden de trabajo, incluyendo sus tareas, productos y el prefijo formateado de la sucursal.
-*   **Listar Órdenes por Sucursal (`GetWorkOrdersByBranchIdQuery`)**:
-    *   Endpoint multi-tenant diseñado para retornar todas las órdenes de trabajo activas de una sucursal (`Branch`) específica.
-*   **Historial de Servicio por Vehículo (`GetWorkOrdersByVehicleIdQuery`)**:
-    *   Retorna el historial completo de todas las órdenes de trabajo realizadas a un vehículo específico, independientemente de la sucursal en donde se atendió.
+Las tareas representan el trabajo específico asignado a un mecánico.
 
-## 5. Diseño REST Pragmático
+*   **A. Agregar Tarea:**
+    Dentro de la vista de una orden, el frontend solicita agregar una tarea. Se envía `POST /api/v1/work-orders/{workOrderId}/tasks` enviando el servicio, el mecánico (`employeeId`), descripción y precio de mano de obra. La tarea se crea con código `201 Created` en estado `PENDING` y se obtiene un `taskId`.
+*   **B. Modificar Tarea:**
+    Si hay un error en los datos iniciales o se debe reasignar de mecánico, el frontend hace un `PUT /api/v1/work-orders/{workOrderId}/tasks/{taskId}`.
+*   **C. Cambios de Estado:**
+    El mecánico, desde su vista, interactúa directamente con la tarea usando su `taskId`.
+    *   Para iniciar: `POST /api/v1/tasks/{taskId}/start`
+    *   Para finalizar: `POST /api/v1/tasks/{taskId}/complete`
+    *   Para reabrir: `POST /api/v1/tasks/{taskId}/reopen`
+    *Estos endpoints desencadenan automáticamente cambios de estado en la Work Order padre (ej. pasar de PENDING a IN_PROGRESS si se inicia la primera tarea).*
 
-El API REST para este bounded context sigue buenas prácticas, dividiendo adecuadamente las ediciones CRUD tradicionales de las **intenciones de negocio**:
-*   Mutaciones directas utilizan `PUT` (ej. actualizar detalles).
-*   Mutaciones de recursos hijos utilizan `POST` (ej. crear tareas o agregar productos).
-*   Las acciones de negocio o cambios de estado complejos (`start`, `complete`, `reopen`) se exponen como sub-recursos con el verbo `POST` para indicar con claridad su intención operativa (Ej. `POST /api/v1/work-orders/{id}/tasks/{taskId}/start`).
+### 3. Flujo de Productos en Tareas (Repuestos)
+
+Los mecánicos pueden asociar repuestos físicos a sus tareas. Esto afecta el inventario y el costo total de la orden. Al estar bajo un controlador propio de tareas (`WorkOrderTasksController`), se evita romper la regla de máximo 2 niveles.
+
+*   **A. Agregar Producto a Tarea:**
+    Dentro del detalle de una tarea, el mecánico elige un repuesto. El frontend envía `POST /api/v1/tasks/{taskId}/products` indicando el producto y su precio/cantidad. (Responde `201 Created`). Esto efectúa una "reserva" lógica en el inventario.
+*   **B. Modificar Cantidad:**
+    Si el mecánico usa más o menos cantidad de un producto ya agregado, el frontend envía `PUT /api/v1/tasks/{taskId}/products/{productId}`. El backend calculará la diferencia (delta) para ajustar las reservas de inventario a favor o en contra.
+*   **C. Eliminar Producto:**
+    Si se retira el producto de la tarea por error, el frontend envía `DELETE /api/v1/tasks/{taskId}/products/{productId}`. El backend liberará la reserva de inventario al 100%.
+
+---
+
+## 📖 Referencia Rápida de Endpoints
+
+### Work Orders
+*   **Crear:** `POST /api/v1/work-orders` *(201 Created)*
+*   **Listar (Por Sucursal):** `GET /api/v1/work-orders?branchId={branchId}`
+*   **Listar (Por Vehículo):** `GET /api/v1/work-orders?vehicleId={vehicleId}`
+*   **Obtener por ID:** `GET /api/v1/work-orders/{workOrderId}`
+*   **Actualizar Detalles:** `PUT /api/v1/work-orders/{workOrderId}`
+*   **Marcar como Pagada:** `POST /api/v1/work-orders/{workOrderId}/mark-as-paid`
+*   **Eliminar (Soft Delete):** `DELETE /api/v1/work-orders/{workOrderId}`
+
+### Tareas desde Work Orders (Gestión Inicial)
+*   **Crear Tarea:** `POST /api/v1/work-orders/{workOrderId}/tasks` *(201 Created)*
+*   **Actualizar Detalles de Tarea:** `PUT /api/v1/work-orders/{workOrderId}/tasks/{taskId}`
+*   **Eliminar Tarea:** `DELETE /api/v1/work-orders/{workOrderId}/tasks/{taskId}`
+
+### Acciones Directas en Tareas (Límite 2 Niveles)
+*   **Iniciar:** `POST /api/v1/tasks/{taskId}/start`
+*   **Completar:** `POST /api/v1/tasks/{taskId}/complete`
+*   **Reabrir:** `POST /api/v1/tasks/{taskId}/reopen`
+*   **Agregar Producto:** `POST /api/v1/tasks/{taskId}/products` *(201 Created)*
+*   **Obtener Productos:** `GET /api/v1/tasks/{taskId}/products`
+*   **Actualizar Producto:** `PUT /api/v1/tasks/{taskId}/products/{productId}`
+*   **Eliminar Producto:** `DELETE /api/v1/tasks/{taskId}/products/{productId}`
