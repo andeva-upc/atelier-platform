@@ -6,7 +6,6 @@ import com.andeva.atelier.platform.iam.interfaces.rest.resources.*;
 import com.andeva.atelier.platform.iam.interfaces.rest.transform.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,7 @@ public class AuthenticationController {
         this.passwordRecoveryCommandService = passwordRecoveryCommandService;
     }
 
-    @PostMapping("/sign-in")
+    @PostMapping("/sessions")
     @Operation(summary = "Sign in", description = "Authenticate a user and return a token")
     public ResponseEntity<AuthenticatedUserResource> signIn(@RequestBody SignInResource signInResource) {
         var signInCommand = SignInCommandFromResourceAssembler.toCommandFromResource(signInResource);
@@ -36,19 +35,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticatedUserResource);
     }
 
-    @PostMapping("/sign-up")
-    @Operation(summary = "Sign up", description = "Register a new user")
-    public ResponseEntity<UserResource> signUp(@RequestBody SignUpResource signUpResource) {
-        var signUpCommand = SignUpCommandFromResourceAssembler.toCommandFromResource(signUpResource);
-        var user = userCommandService.handle(signUpCommand);
-        if (user.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
-        return new ResponseEntity<>(userResource, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/google-sign-in")
+    @PostMapping("/sessions/google")
     @Operation(summary = "Google sign in", description = "Authenticate a user using Google and return a token")
     public ResponseEntity<AuthenticatedUserResource> googleSignIn(@RequestBody GoogleSignInResource resource) {
         var googleSignInCommand = GoogleSignInCommandFromResourceAssembler.toCommandFromResource(resource);
@@ -60,7 +47,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticatedUserResource);
     }
 
-    @PostMapping("/forgot-password")
+    @PostMapping("/password-recoveries")
     @Operation(summary = "Forgot password", description = "Send a password recovery email")
     public ResponseEntity<Void> forgotPassword(@RequestBody PasswordRecoveryResource resource) {
         var command = GeneratePasswordRecoveryTokenCommandFromResourceAssembler.toCommandFromResource(resource);
@@ -68,7 +55,7 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reset-password")
+    @PostMapping("/password-resets")
     @Operation(summary = "Reset password", description = "Reset user password using recovery token")
     public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordResource resource) {
         var command = ResetPasswordCommandFromResourceAssembler.toCommandFromResource(resource);
