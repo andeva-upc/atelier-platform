@@ -50,6 +50,11 @@ public class OwnerRepositoryImpl implements OwnerRepository {
     }
 
     @Override
+    public Optional<Owner> findByDocumentNumber(String documentNumber) {
+        return ownerPersistenceRepository.findByDocumentNumber(documentNumber).map(OwnerPersistenceAssembler::toDomain);
+    }
+
+    @Override
     public boolean existsById(OwnerId id) {
         return ownerPersistenceRepository.existsById(id.value());
     }

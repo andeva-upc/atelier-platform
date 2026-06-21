@@ -50,6 +50,11 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     @Override
+    public Optional<Customer> findByDocumentNumber(String documentNumber) {
+        return customerPersistenceRepository.findByDocumentNumber(documentNumber).map(CustomerPersistenceAssembler::toDomain);
+    }
+
+    @Override
     public void delete(Customer customer) {
         if (customer.getId() != null) {
             customerPersistenceRepository.findById(customer.getId().value()).ifPresent(customerPersistenceRepository::delete);

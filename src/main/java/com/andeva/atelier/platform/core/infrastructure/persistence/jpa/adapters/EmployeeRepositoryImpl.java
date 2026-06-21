@@ -50,6 +50,11 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     }
 
     @Override
+    public Optional<Employee> findByDocumentNumber(String documentNumber) {
+        return employeePersistenceRepository.findByDocumentNumber(documentNumber).map(EmployeePersistenceAssembler::toDomain);
+    }
+
+    @Override
     public void delete(Employee employee) {
         if (employee.getId() != null) {
             employeePersistenceRepository.findById(employee.getId().value()).ifPresent(employeePersistenceRepository::delete);

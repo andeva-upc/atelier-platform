@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface OwnerPersistenceRepository extends JpaRepository<OwnerPersistenceEntity, UUID> {
     Optional<OwnerPersistenceEntity> findByUserId(UUID userId);
     boolean existsByUserId(UUID userId);
+    Optional<OwnerPersistenceEntity> findByDocumentNumber(String documentNumber);
 }
