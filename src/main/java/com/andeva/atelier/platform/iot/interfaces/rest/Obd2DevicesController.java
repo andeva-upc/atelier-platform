@@ -3,20 +3,25 @@ package com.andeva.atelier.platform.iot.interfaces.rest;
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandFailure;
 import com.andeva.atelier.platform.iot.application.commandservices.Obd2DeviceCommandService;
 import com.andeva.atelier.platform.iot.application.queryservices.Obd2DeviceQueryService;
+import com.andeva.atelier.platform.iot.application.queryservices.TelemetryQueryService;
 import com.andeva.atelier.platform.iot.domain.model.commands.DeleteObd2DeviceCommand;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetAvailableObd2DevicesQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetLatestTelemetrySnapshotQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DeviceByIdQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetObd2DevicesByBranchIdQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetTelemetrySnapshotHistoryQuery;
 import com.andeva.atelier.platform.iot.domain.model.valueobjects.Obd2DeviceId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 
 import java.util.List;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.CreateObd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.Obd2DeviceResource;
+import com.andeva.atelier.platform.iot.interfaces.rest.resources.TelemetrySnapshotResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.UpdateObd2DeviceResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.CreateObd2DeviceCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.Obd2DeviceResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromObd2DeviceCommandResultAssembler;
+import com.andeva.atelier.platform.iot.interfaces.rest.transform.TelemetrySnapshotResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.UpdateObd2DeviceCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,15 +45,18 @@ public class Obd2DevicesController {
 
     private final Obd2DeviceCommandService commandService;
     private final Obd2DeviceQueryService queryService;
+    private final TelemetryQueryService telemetryQueryService;
     private final MessageSource messageSource;
 
     public Obd2DevicesController(
             Obd2DeviceCommandService commandService,
             Obd2DeviceQueryService queryService,
+            TelemetryQueryService telemetryQueryService,
             MessageSource messageSource
     ) {
         this.commandService = commandService;
         this.queryService = queryService;
+        this.telemetryQueryService = telemetryQueryService;
         this.messageSource = messageSource;
     }
 
@@ -132,33 +140,68 @@ public class Obd2DevicesController {
     }
 
     /**
-     * Retrieves all registered OBD2 devices, optionally filtered by branch ID.
+     * Retrieves all registered OBD2 devices under a branch, optionally filtered by status.
+     * Use ?status=available to retrieve only unlinked devices.
      * @param branchId the branch identifier to filter devices
+     * @param status optional status filter (e.g. "available")
      * @return a ResponseEntity containing the list of device resources
      */
     @GetMapping
-    @Operation(summary = "Get all OBD2 devices by branch", description = "Retrieves all registered OBD2 devices under a specific branch")
-    public ResponseEntity<List<Obd2DeviceResource>> getObd2DevicesByBranchId(@RequestParam UUID branchId) {
-        var query = new GetObd2DevicesByBranchIdQuery(new BranchId(branchId));
-        var list = queryService.handle(query);
+    @Operation(summary = "Get OBD2 devices by branch", description = "Retrieves all registered OBD2 devices under a specific branch. Use ?status=available to filter by availability.")
+    public ResponseEntity<List<Obd2DeviceResource>> getObd2Devices(
+            @RequestParam UUID branchId,
+            @RequestParam(required = false) String status
+    ) {
+        List<?> list;
+        if ("available".equalsIgnoreCase(status)) {
+            var query = new GetAvailableObd2DevicesQuery(new BranchId(branchId));
+            list = queryService.handle(query);
+        } else {
+            var query = new GetObd2DevicesByBranchIdQuery(new BranchId(branchId));
+            list = queryService.handle(query);
+        }
         var resources = list.stream()
-                .map(Obd2DeviceResourceFromAggregateAssembler::toResourceFromAggregate)
+                .map(device -> Obd2DeviceResourceFromAggregateAssembler.toResourceFromAggregate(
+                        (com.andeva.atelier.platform.iot.domain.model.aggregates.Obd2Device) device))
                 .toList();
         return ResponseEntity.ok(resources);
     }
 
     /**
-     * Retrieves all available (unlinked) OBD2 devices registered in a specific branch.
-     * @param branchId the branch identifier to filter devices
-     * @return a ResponseEntity containing the list of available device resources
+     * Retrieves the most recent telemetry snapshot for a specific OBD2 device.
+     * @param deviceId the unique identifier of the OBD2 device
+     * @return a ResponseEntity containing the latest snapshot or 404 ProblemDetail if not found
      */
-    @GetMapping("/available")
-    @Operation(summary = "Get available OBD2 devices by branch", description = "Retrieves all available (unlinked) OBD2 devices registered under a specific branch")
-    public ResponseEntity<List<Obd2DeviceResource>> getAvailableObd2Devices(@RequestParam UUID branchId) {
-        var query = new GetAvailableObd2DevicesQuery(new BranchId(branchId));
-        var list = queryService.handle(query);
+    @GetMapping("/{deviceId}/telemetry-snapshots/latest")
+    @Operation(summary = "Get latest telemetry snapshot for a device", description = "Retrieves the most recent telemetry capture from a specific OBD2 device")
+    public ResponseEntity<?> getLatestTelemetrySnapshot(@PathVariable UUID deviceId) {
+        var query = new GetLatestTelemetrySnapshotQuery(new Obd2DeviceId(deviceId));
+        var result = telemetryQueryService.handle(query);
+
+        return result
+                .map(snapshot -> ResponseEntity.ok(
+                        TelemetrySnapshotResourceFromAggregateAssembler.toResourceFromAggregate(snapshot)))
+                .<ResponseEntity<?>>map(r -> r)
+                .orElseGet(() -> {
+                    var status = HttpStatus.NOT_FOUND;
+                    return ResponseEntity.status(status).body(
+                            ProblemDetail.forStatusAndDetail(status, "No telemetry snapshot found for device " + deviceId)
+                    );
+                });
+    }
+
+    /**
+     * Retrieves all historical telemetry snapshots for a specific OBD2 device.
+     * @param deviceId the unique identifier of the OBD2 device
+     * @return a ResponseEntity containing the list of telemetry snapshots ordered descending by date
+     */
+    @GetMapping("/{deviceId}/telemetry-snapshots")
+    @Operation(summary = "Get telemetry snapshot history for a device", description = "Retrieves all telemetry snapshots recorded for a specific OBD2 device ordered descending by date")
+    public ResponseEntity<List<TelemetrySnapshotResource>> getTelemetrySnapshotHistory(@PathVariable UUID deviceId) {
+        var query = new GetTelemetrySnapshotHistoryQuery(new Obd2DeviceId(deviceId));
+        var list = telemetryQueryService.handle(query);
         var resources = list.stream()
-                .map(Obd2DeviceResourceFromAggregateAssembler::toResourceFromAggregate)
+                .map(TelemetrySnapshotResourceFromAggregateAssembler::toResourceFromAggregate)
                 .toList();
         return ResponseEntity.ok(resources);
     }
