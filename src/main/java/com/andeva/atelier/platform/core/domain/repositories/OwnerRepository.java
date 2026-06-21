@@ -12,5 +12,6 @@ public interface OwnerRepository {
     Optional<Owner> findByUserId(UserId userId);
     boolean existsById(OwnerId id);
     boolean existsByUserId(UserId userId);
+    Optional<Owner> findByDocumentNumber(String documentNumber);
     void delete(Owner owner);
 }
