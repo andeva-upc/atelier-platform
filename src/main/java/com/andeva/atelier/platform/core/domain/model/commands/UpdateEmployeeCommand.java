@@ -1,12 +1,12 @@
 package com.andeva.atelier.platform.core.domain.model.commands;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
 public record UpdateEmployeeCommand(
-        UserId userId,
+        EmployeeId employeeId,
         PersonName name,
         Document document,
         Phone phone
