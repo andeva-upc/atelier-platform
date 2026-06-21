@@ -12,7 +12,6 @@ import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistr
 import com.andeva.atelier.platform.fleet.domain.model.queries.GetEmployeeRegistrationsByBranchIdAndStatusQuery;
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.EmployeeRegistrationStatus;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.CreateEmployeeRegistrationResource;
-import com.andeva.atelier.platform.fleet.interfaces.rest.resources.EmployeeRegistrationResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.resources.UpdateEmployeeRegistrationResource;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.CreateEmployeeRegistrationCommandFromResourceAssembler;
 import com.andeva.atelier.platform.fleet.interfaces.rest.transform.EmployeeRegistrationResourceFromAggregateAssembler;
@@ -28,7 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController

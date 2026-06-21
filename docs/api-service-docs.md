@@ -1878,13 +1878,14 @@ A continuación, se detalla **CADA ENDPOINT** disponible en el sistema con sus p
 
 ---
 
-### `GET /api/v1/vehicles/available-for-linking`
+### `GET /api/v1/vehicles`
 **Propósito:** Get vehicles available for linking
 
-*Retrieves all vehicles available for linking (unlinked) under a specific branch*
+*Retrieves vehicles filtered by branch and status (e.g., status=available-for-linking)*
 
 **📍 Parámetros (URL / Query):**
 - `branchId` (query):  (Requerido: true)
+- `status` (query):  (Requerido: false)
 
 **📥 Qué vas a recibir (Responses):**
 - **Código HTTP 200**: OK
@@ -2155,43 +2156,15 @@ A continuación, se detalla **CADA ENDPOINT** disponible en el sistema con sus p
 - **Código HTTP 200**: OK
 
 ---
-### `GET /api/v1/employee-registrations/branch/{branchId}`
-**Propósito:** Get employee registrations by branch
+### `GET /api/v1/employee-registrations`
+**Propósito:** Get employee registrations
 
-*Returns all active employee registrations for a given branch ID*
-
-**📍 Parámetros (URL / Query):**
-- `branchId` (path):  (Requerido: true)
-
-**📥 Qué vas a recibir (Responses):**
-- **Código HTTP 200**: OK
-  ```json
-  [
-    {
-      "id": "string",
-      "employeeId": "string",
-      "branchId": "string",
-      "speciality": "string",
-      "specialityName": "string",
-      "salary": 0.0,
-      "status": "string",
-      "createdAt": "string",
-      "updatedAt": "string",
-      "deletedAt": "string"
-    }
-  ]
-  ```
-
----
-
-### `GET /api/v1/employee-registrations/branch/{branchId}/status/{status}`
-**Propósito:** Get employee registrations by branch and status
-
-*Returns employee registrations filtered by branch ID and status. Values: ACTIVE, INACTIVE*
+*Get registrations filtered by branch, branch and status, or employee ID*
 
 **📍 Parámetros (URL / Query):**
-- `branchId` (path):  (Requerido: true)
-- `status` (path):  (Requerido: true)
+- `branchId` (query):  (Requerido: false)
+- `status` (query):  (Requerido: false)
+- `employeeId` (query):  (Requerido: false)
 
 **📥 Qué vas a recibir (Responses):**
 - **Código HTTP 200**: OK
