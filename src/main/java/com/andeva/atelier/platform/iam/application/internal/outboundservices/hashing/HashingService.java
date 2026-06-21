@@ -2,5 +2,6 @@ package com.andeva.atelier.platform.iam.application.internal.outboundservices.ha
 
 public interface HashingService {
     String encode(CharSequence rawPassword);
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean matches(CharSequence rawPassword, String encodedPassword);
 }
