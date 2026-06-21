@@ -21,10 +21,10 @@ public class UserPersistenceEntity extends AuditableAbstractPersistenceEntity {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name = "password_hash", nullable = false, unique = true, length = 255)
+    @Column(name = "password_hash", nullable = false, unique = true)
     private String passwordHash;
 
-    @Column(name = "google_id", unique = true, length = 255)
+    @Column(name = "google_id", unique = true)
     private String googleId;
 
     @Column(name = "status", nullable = false, length = 20)

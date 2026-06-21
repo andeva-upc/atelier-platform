@@ -1,18 +1,15 @@
 package com.andeva.atelier.platform.iam.application.internal.commandservices;
 
-import com.andeva.atelier.platform.iam.application.internal.outboundservices.HashingService;
-import com.andeva.atelier.platform.iam.domain.model.aggregates.User;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.hashing.HashingService;
 import com.andeva.atelier.platform.iam.domain.model.commands.GeneratePasswordRecoveryTokenCommand;
 import com.andeva.atelier.platform.iam.domain.model.commands.ResetPasswordCommand;
 import com.andeva.atelier.platform.iam.domain.model.entities.PasswordRecoveryToken;
 import com.andeva.atelier.platform.iam.domain.repositories.PasswordRecoveryTokenRepository;
 import com.andeva.atelier.platform.iam.domain.repositories.UserRepository;
 import com.andeva.atelier.platform.iam.application.commandservices.PasswordRecoveryCommandService;
-import com.andeva.atelier.platform.iam.application.internal.outboundservices.EmailService;
-import com.andeva.atelier.platform.iam.application.internal.outboundservices.TokenService;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.email.EmailService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service

@@ -11,8 +11,11 @@ import com.andeva.atelier.platform.iam.interfaces.rest.transform.UpdateUserPassw
 import com.andeva.atelier.platform.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import com.andeva.atelier.platform.iam.interfaces.rest.resources.AuthenticatedUserResource;
 import com.andeva.atelier.platform.iam.interfaces.rest.transform.AuthenticatedUserResourceFromEntityAssembler;
+import com.andeva.atelier.platform.iam.interfaces.rest.resources.SignUpResource;
+import com.andeva.atelier.platform.iam.interfaces.rest.transform.SignUpCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +32,18 @@ public class UsersController {
     public UsersController(UserCommandService userCommandService, UserQueryService userQueryService) {
         this.userCommandService = userCommandService;
         this.userQueryService = userQueryService;
+    }
+
+    @PostMapping
+    @Operation(summary = "Sign up", description = "Register a new user")
+    public ResponseEntity<UserResource> signUp(@RequestBody SignUpResource signUpResource) {
+        var signUpCommand = SignUpCommandFromResourceAssembler.toCommandFromResource(signUpResource);
+        var user = userCommandService.handle(signUpCommand);
+        if (user.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
+        return new ResponseEntity<>(userResource, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Get user by ID", description = "Retrieves the details of a specific user")

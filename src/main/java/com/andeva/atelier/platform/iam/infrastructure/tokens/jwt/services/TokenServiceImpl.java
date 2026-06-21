@@ -1,10 +1,11 @@
-package com.andeva.atelier.platform.iam.infrastructure.authorization.sfs.services;
+package com.andeva.atelier.platform.iam.infrastructure.tokens.jwt.services;
 
-import com.andeva.atelier.platform.iam.application.internal.outboundservices.TokenService;
+import com.andeva.atelier.platform.iam.infrastructure.tokens.jwt.BearerTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class BearerTokenService implements TokenService {
+public class TokenServiceImpl implements BearerTokenService {
 
     @Value("${authorization.jwt.secret}")
     private String secret;
@@ -24,6 +25,8 @@ public class BearerTokenService implements TokenService {
     @Value("${authorization.jwt.expiration.days}")
     private int expirationDays;
 
+    @Override
+    @SuppressWarnings("unused")
     public String generateToken(Authentication authentication) {
         return generateToken(authentication.getName());
     }
@@ -56,6 +59,15 @@ public class BearerTokenService implements TokenService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public String getBearerTokenFrom(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        return null;
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

@@ -1,4 +1,4 @@
-package com.andeva.atelier.platform.iam.application.internal.outboundservices;
+package com.andeva.atelier.platform.iam.application.internal.outboundservices.email;
 
 /**
  * Port for sending emails (Application Layer).

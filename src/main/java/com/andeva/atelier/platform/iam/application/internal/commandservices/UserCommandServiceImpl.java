@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.iam.application.internal.commandservices;
 
-import com.andeva.atelier.platform.iam.application.internal.outboundservices.HashingService;
-import com.andeva.atelier.platform.iam.application.internal.outboundservices.TokenService;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.hashing.HashingService;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.tokens.TokenService;
 import com.andeva.atelier.platform.iam.domain.model.aggregates.User;
 import com.andeva.atelier.platform.iam.domain.model.commands.SignInCommand;
 import com.andeva.atelier.platform.iam.domain.model.commands.SignUpCommand;
@@ -79,7 +79,7 @@ public class UserCommandServiceImpl implements UserCommandService {
 
             if (user == null) {
                 // Register new user with a secure random password since they use Google
-                String randomPassword = UUID.randomUUID().toString() + UUID.randomUUID().toString();
+                String randomPassword = String.format("%s%s", UUID.randomUUID(), UUID.randomUUID());
                 user = new User(new com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress(email), new com.andeva.atelier.platform.iam.domain.model.valueobjects.Password(hashingService.encode(randomPassword)), new com.andeva.atelier.platform.iam.domain.model.valueobjects.GoogleId(googleId));
                 userRepository.save(user);
             } else {

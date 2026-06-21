@@ -1,4 +1,4 @@
-package com.andeva.atelier.platform.iam.application.internal.outboundservices;
+package com.andeva.atelier.platform.iam.application.internal.outboundservices.tokens;
 
 public interface TokenService {
     String generateToken(String username);

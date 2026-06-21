@@ -1,7 +1,8 @@
 package com.andeva.atelier.platform.iam.infrastructure.authorization.sfs.configuration;
 
-import com.andeva.atelier.platform.iam.infrastructure.authorization.sfs.pipeline.AuthenticationExceptionEntryPoint;
 import com.andeva.atelier.platform.iam.infrastructure.authorization.sfs.pipeline.BearerAuthorizationRequestFilter;
+import com.andeva.atelier.platform.iam.infrastructure.authorization.sfs.pipeline.UnauthorizedRequestHandlerEntryPoint;
+import com.andeva.atelier.platform.iam.infrastructure.hashing.bcrypt.BCryptHashingService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,7 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -21,25 +21,29 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
+
 @Configuration
 public class WebSecurityConfiguration {
 
     private final UserDetailsService userDetailsService;
     private final BearerAuthorizationRequestFilter authorizationRequestFilter;
-    private final AuthenticationExceptionEntryPoint unauthorizedHandler;
+    private final UnauthorizedRequestHandlerEntryPoint unauthorizedHandler;
+    private final BCryptHashingService hashingService;
 
     public WebSecurityConfiguration(UserDetailsService userDetailsService,
                                     BearerAuthorizationRequestFilter authorizationRequestFilter,
-                                    AuthenticationExceptionEntryPoint unauthorizedHandler) {
+                                    UnauthorizedRequestHandlerEntryPoint unauthorizedHandler,
+                                    BCryptHashingService hashingService) {
         this.userDetailsService = userDetailsService;
         this.authorizationRequestFilter = authorizationRequestFilter;
         this.unauthorizedHandler = unauthorizedHandler;
+        this.hashingService = hashingService;
     }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setPasswordEncoder(hashingService);
         return authProvider;
     }
 
@@ -54,16 +58,18 @@ public class WebSecurityConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return hashingService;
     }
 
     @Bean
+    @SuppressWarnings("RedundantThrows")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/users").permitAll()
                         .requestMatchers(
                                 "/api/v1/authentication/**",
                                 "/v3/api-docs/**",

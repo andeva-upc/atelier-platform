@@ -5,7 +5,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import com.andeva.atelier.platform.iam.application.internal.outboundservices.EmailService;
+import com.andeva.atelier.platform.iam.application.internal.outboundservices.email.EmailService;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
