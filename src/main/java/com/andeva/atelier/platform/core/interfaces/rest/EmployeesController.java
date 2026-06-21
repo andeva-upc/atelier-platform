@@ -5,6 +5,7 @@ import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
 
 import com.andeva.atelier.platform.core.domain.model.queries.GetEmployeeByIdQuery;
 import com.andeva.atelier.platform.core.domain.model.queries.GetEmployeeByUserIdQuery;
+import com.andeva.atelier.platform.core.domain.model.queries.GetEmployeeByDocumentNumberQuery;
 import com.andeva.atelier.platform.core.application.commandservices.EmployeeCommandService;
 import com.andeva.atelier.platform.core.application.queryservices.EmployeeQueryService;
 import com.andeva.atelier.platform.core.domain.model.commands.DeleteEmployeeCommand;
@@ -76,9 +77,22 @@ public class EmployeesController {
     }
 
     @Operation(summary = "Get an employee profile by User ID", description = "Retrieves the details of a specific employee profile using the User ID")
-    @GetMapping
+    @GetMapping(params = "userId")
     public ResponseEntity<EmployeeResource> getEmployeeByUserId(@RequestParam(name = "userId") UUID userId) {
         var query = new GetEmployeeByUserIdQuery(new UserId(userId));
+        var employee = employeeQueryService.handle(query);
+        if (employee.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employee.get());
+        return ResponseEntity.ok(employeeResource);
+    }
+
+    @Operation(summary = "Get an employee profile by Document Number", description = "Retrieves the details of a specific employee profile using their DNI/RUC")
+    @GetMapping(params = "documentNumber")
+    public ResponseEntity<EmployeeResource> getEmployeeByDocumentNumber(@RequestParam(name = "documentNumber") String documentNumber) {
+        var query = new GetEmployeeByDocumentNumberQuery(documentNumber);
         var employee = employeeQueryService.handle(query);
         if (employee.isEmpty()) {
             return ResponseEntity.notFound().build();
