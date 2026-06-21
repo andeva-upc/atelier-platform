@@ -24,8 +24,7 @@ public class EmployeeRegistration extends AbstractDomainAggregateRoot<EmployeeRe
     private Instant updatedAt;
     private Instant deletedAt;
 
-    @SuppressWarnings("unused")
-    public EmployeeRegistration() {
+    protected EmployeeRegistration() {
     }
 
     public EmployeeRegistration(UUID employeeId, BranchId branchId,
