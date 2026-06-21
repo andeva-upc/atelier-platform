@@ -47,6 +47,14 @@ public class WorkOrderQueryServiceImpl implements WorkOrderQueryService {
         return workOrderRepository.findById(query.workOrderId());
     }
 
+    @Override
+    public Optional<WorkOrder> handle(GetWorkOrderByTaskIdQuery query) {
+        if (query.taskId() == null) {
+            throw new IllegalArgumentException("operations.error.query.taskId.required");
+        }
+        return workOrderRepository.findByTaskId(query.taskId());
+    }
+
     /**
      * Handles the GetWorkOrdersByBranchIdQuery by retrieving a list of work orders from the repository based on the branch ID. If the branch ID is null, an IllegalArgumentException is thrown.
      * @param query The query containing the branch ID to retrieve work orders for.
