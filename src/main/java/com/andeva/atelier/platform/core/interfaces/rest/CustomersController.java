@@ -49,10 +49,10 @@ public class CustomersController {
         return new ResponseEntity<>(customerResource, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update a customer profile", description = "Updates an existing customer profile using the user ID")
-    @PutMapping("/user/{userId}")
-    public ResponseEntity<CustomerResource> updateCustomer(@PathVariable UUID userId, @RequestBody UpdateCustomerResource resource) {
-        var command = UpdateCustomerCommandFromResourceAssembler.toCommandFromResource(userId, resource);
+    @Operation(summary = "Update a customer profile", description = "Updates an existing customer profile")
+    @PutMapping("/{customerId}")
+    public ResponseEntity<CustomerResource> updateCustomer(@PathVariable UUID customerId, @RequestBody UpdateCustomerResource resource) {
+        var command = UpdateCustomerCommandFromResourceAssembler.toCommandFromResource(customerId, resource);
         var customer = customerCommandService.handle(command);
         if (customer.isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -76,8 +76,8 @@ public class CustomersController {
     }
 
     @Operation(summary = "Get a customer profile by User ID", description = "Retrieves the details of a specific customer profile using the User ID")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<CustomerResource> getCustomerByUserId(@PathVariable UUID userId) {
+    @GetMapping
+    public ResponseEntity<CustomerResource> getCustomerByUserId(@RequestParam(name = "userId") UUID userId) {
         var query = new GetCustomerByUserIdQuery(new UserId(userId));
         var customer = customerQueryService.handle(query);
         if (customer.isEmpty()) {
@@ -88,10 +88,10 @@ public class CustomersController {
         return ResponseEntity.ok(customerResource);
     }
 
-    @Operation(summary = "Delete a customer profile", description = "Deletes an existing customer profile using the user ID")
-    @DeleteMapping("/user/{userId}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable UUID userId) {
-        var command = new DeleteCustomerCommand(new UserId(userId));
+    @Operation(summary = "Delete a customer profile", description = "Deletes an existing customer profile")
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity<?> deleteCustomer(@PathVariable UUID customerId) {
+        var command = new DeleteCustomerCommand(new CustomerId(customerId));
         customerCommandService.handle(command);
         return ResponseEntity.ok().build();
     }

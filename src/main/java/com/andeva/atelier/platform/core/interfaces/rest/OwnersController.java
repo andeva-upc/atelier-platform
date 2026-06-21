@@ -49,10 +49,10 @@ public class OwnersController {
         return new ResponseEntity<>(ownerResource, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update an owner profile", description = "Updates an existing owner profile using the user ID")
-    @PutMapping("/user/{userId}")
-    public ResponseEntity<OwnerResource> updateOwner(@PathVariable UUID userId, @RequestBody UpdateOwnerResource resource) {
-        var command = UpdateOwnerCommandFromResourceAssembler.toCommandFromResource(userId, resource);
+    @Operation(summary = "Update an owner profile", description = "Updates an existing owner profile")
+    @PutMapping("/{ownerId}")
+    public ResponseEntity<OwnerResource> updateOwner(@PathVariable UUID ownerId, @RequestBody UpdateOwnerResource resource) {
+        var command = UpdateOwnerCommandFromResourceAssembler.toCommandFromResource(ownerId, resource);
         var owner = ownerCommandService.handle(command);
         if (owner.isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -76,8 +76,8 @@ public class OwnersController {
     }
 
     @Operation(summary = "Get an owner profile by User ID", description = "Retrieves the details of a specific owner profile using the User ID")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<OwnerResource> getOwnerByUserId(@PathVariable UUID userId) {
+    @GetMapping
+    public ResponseEntity<OwnerResource> getOwnerByUserId(@RequestParam(name = "userId") UUID userId) {
         var query = new GetOwnerByUserIdQuery(new UserId(userId));
         var owner = ownerQueryService.handle(query);
         if (owner.isEmpty()) {
@@ -88,10 +88,10 @@ public class OwnersController {
         return ResponseEntity.ok(ownerResource);
     }
 
-    @Operation(summary = "Delete an owner profile", description = "Deletes an existing owner profile using the user ID")
-    @DeleteMapping("/user/{userId}")
-    public ResponseEntity<?> deleteOwner(@PathVariable UUID userId) {
-        var command = new DeleteOwnerCommand(new UserId(userId));
+    @Operation(summary = "Delete an owner profile", description = "Deletes an existing owner profile")
+    @DeleteMapping("/{ownerId}")
+    public ResponseEntity<?> deleteOwner(@PathVariable UUID ownerId) {
+        var command = new DeleteOwnerCommand(new OwnerId(ownerId));
         ownerCommandService.handle(command);
         return ResponseEntity.ok().build();
     }
