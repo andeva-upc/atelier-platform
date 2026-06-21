@@ -94,7 +94,7 @@ public class Obd2DeviceRegistrationsController {
             return ResponseEntityFromObd2DeviceRegistrationCommandResultAssembler.toResponseEntityFromResult(result, HttpStatus.OK, messageSource);
         }
 
-        var status = HttpStatus.UNPROCESSABLE_ENTITY;
+        var status = HttpStatus.valueOf(422);
         return ResponseEntity.status(status).body(
                 ProblemDetail.forStatusAndDetail(status, "Unsupported status transition: " + resource.status())
         );

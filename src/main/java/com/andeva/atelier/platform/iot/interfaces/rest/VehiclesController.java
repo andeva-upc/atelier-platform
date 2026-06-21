@@ -12,7 +12,6 @@ import com.andeva.atelier.platform.iot.interfaces.rest.resources.DtcAlertResourc
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.RegisterVehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.TelemetrySnapshotResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.UpdateVehicleResource;
-import com.andeva.atelier.platform.iot.interfaces.rest.resources.VehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.DtcAlertResourceFromAggregateAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.RegisterVehicleCommandFromResourceAssembler;
 import com.andeva.atelier.platform.iot.interfaces.rest.transform.ResponseEntityFromVehicleCommandResultAssembler;
@@ -26,6 +25,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -60,19 +61,30 @@ public class VehiclesController {
     }
 
     /**
-     * Retrieves all vehicles available for linking (unlinked) under a specific branch.
+     * Retrieves vehicles under a specific branch, filtered by status.
      * @param branchId the branch identifier to filter vehicles
-     * @return a ResponseEntity containing the list of vehicle resources
+     * @param status the vehicle status filter (e.g. "available-for-linking")
+     * @return a ResponseEntity containing the list of vehicle resources, or a ProblemDetail on unsupported status
      */
-    @GetMapping("/available-for-linking")
-    @Operation(summary = "Get vehicles available for linking", description = "Retrieves all vehicles available for linking (unlinked) under a specific branch")
-    public ResponseEntity<List<VehicleResource>> getVehiclesAvailableForLinking(@RequestParam UUID branchId) {
-        var query = new GetVehiclesAvailableForLinkingQuery(new BranchId(branchId));
-        var list = vehicleQueryService.handle(query);
-        var resources = list.stream()
-                .map(VehicleResourceFromAggregateAssembler::toResourceFromAggregate)
-                .toList();
-        return ResponseEntity.ok(resources);
+    @GetMapping
+    @Operation(summary = "Get vehicles by branch and status", description = "Retrieves vehicles under a specific branch. Use ?status=available-for-linking to get vehicles available for OBD2 device linking.")
+    public ResponseEntity<?> getVehicles(
+            @RequestParam UUID branchId,
+            @RequestParam String status) {
+
+        if ("available-for-linking".equalsIgnoreCase(status)) {
+            var query = new GetVehiclesAvailableForLinkingQuery(new BranchId(branchId));
+            var list = vehicleQueryService.handle(query);
+            var resources = list.stream()
+                    .map(VehicleResourceFromAggregateAssembler::toResourceFromAggregate)
+                    .toList();
+            return ResponseEntity.ok(resources);
+        }
+
+        var httpStatus = HttpStatus.valueOf(422);
+        return ResponseEntity.status(httpStatus).body(
+                ProblemDetail.forStatusAndDetail(httpStatus, "Unsupported vehicle status filter: " + status)
+        );
     }
 
     /**
