@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.core.domain.model.commands;
 
-import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.OwnerId;
 
-public record DeleteOwnerCommand(UserId userId) {
+public record DeleteOwnerCommand(OwnerId ownerId) {
 }

@@ -38,7 +38,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
     @Override
     public Optional<Employee> handle(UpdateEmployeeCommand command) {
-        var result = employeeRepository.findByUserId(command.userId());
+        var result = employeeRepository.findById(command.employeeId());
         if (result.isEmpty()) throw new IllegalArgumentException("core.error.employee.notFound");
 
         var employee = result.get();
@@ -55,7 +55,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
 
     @Override
     public void handle(DeleteEmployeeCommand command) {
-        var existingEmployee = employeeRepository.findByUserId(command.userId());
+        var existingEmployee = employeeRepository.findById(command.employeeId());
         if (existingEmployee.isEmpty()) {
             throw new IllegalArgumentException("core.error.employee.notFound");
         }

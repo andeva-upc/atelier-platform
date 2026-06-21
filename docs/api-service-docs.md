@@ -89,7 +89,7 @@ Toma el total acumulado de la Orden de Trabajo y genera una proforma.
 
 ### Paso 2: Aprobar la Cotización (APPROVED)
 El cliente acepta el presupuesto.
-* **Endpoint:** `POST /api/v1/quotes/{quoteId}/approve`
+* **Endpoint:** `POST /api/v1/quotes/{quoteId}/approvals`
 * *(No requiere body)*
 
 ### Paso 3: Emitir el Comprobante (Voucher) a SUNAT
@@ -160,6 +160,7 @@ Para que tengas una visión global, aquí tienes el listado de todas las rutas (
 - `/api/v1/services`
 
 **Cotizaciones y Facturación (Billing Context)**
+- `/api/v1/checkouts`
 - `/api/v1/quotes`
 - `/api/v1/vouchers`
 - `/api/v1/vouchers/{voucherId}/payments`
@@ -1117,7 +1118,7 @@ A continuación, se detalla **CADA ENDPOINT** disponible en el sistema con sus p
 
 ---
 
-### `POST /api/v1/vouchers/checkout`
+### `POST /api/v1/checkouts`
 **Propósito:** Process checkout
 
 *Generates a voucher and records a full payment in a single transaction*
@@ -1234,7 +1235,7 @@ A continuación, se detalla **CADA ENDPOINT** disponible en el sistema con sus p
 
 ---
 
-### `POST /api/v1/quotes/{id}/cancel`
+### `POST /api/v1/quotes/{id}/cancellations`
 **Propósito:** Cancel a quote
 
 *Cancels a Quote, transitioning its state to CANCELED*
@@ -1249,7 +1250,7 @@ A continuación, se detalla **CADA ENDPOINT** disponible en el sistema con sus p
 
 ---
 
-### `POST /api/v1/quotes/{id}/approve`
+### `POST /api/v1/quotes/{id}/approvals`
 **Propósito:** Approve a quote
 
 *Approves a Quote, transitioning its state from DRAFT to APPROVED*

@@ -3,10 +3,10 @@ package com.andeva.atelier.platform.core.domain.model.commands;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Document;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.PersonName;
 import com.andeva.atelier.platform.core.domain.model.valueobjects.Phone;
-import com.andeva.atelier.platform.core.domain.model.valueobjects.UserId;
+import com.andeva.atelier.platform.core.domain.model.valueobjects.OwnerId;
 
 public record UpdateOwnerCommand(
-        UserId userId,
+        OwnerId ownerId,
         PersonName name,
         Document document,
         Phone phone

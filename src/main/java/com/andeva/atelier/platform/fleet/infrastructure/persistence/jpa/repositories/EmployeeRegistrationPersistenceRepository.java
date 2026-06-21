@@ -1,6 +1,6 @@
-package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories;
+package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.repositories;
 
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.EmployeeRegistrationPersistenceEntity;
+import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.entities.EmployeeRegistrationPersistenceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

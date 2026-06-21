@@ -40,7 +40,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 
     @Override
     public Optional<Customer> handle(UpdateCustomerCommand command) {
-        var result = customerRepository.findByUserId(command.userId());
+        var result = customerRepository.findById(command.customerId());
         if (result.isEmpty()) throw new IllegalArgumentException("core.error.customer.notFound");
         
         var customer = result.get();
@@ -58,7 +58,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 
     @Override
     public void handle(DeleteCustomerCommand command) {
-        var existingCustomer = customerRepository.findByUserId(command.userId());
+        var existingCustomer = customerRepository.findById(command.customerId());
         if (existingCustomer.isEmpty()) {
             throw new IllegalArgumentException("core.error.customer.notFound");
         }

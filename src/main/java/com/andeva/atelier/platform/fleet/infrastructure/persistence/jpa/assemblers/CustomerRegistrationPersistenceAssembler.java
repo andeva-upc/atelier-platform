@@ -1,6 +1,6 @@
 package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.assemblers;
 
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.CustomerRegistrationPersistenceEntity;
+import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.entities.CustomerRegistrationPersistenceEntity;
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.CustomerRegistration;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;

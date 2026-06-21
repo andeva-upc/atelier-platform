@@ -49,10 +49,10 @@ public class EmployeesController {
         return new ResponseEntity<>(employeeResource, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update an employee profile", description = "Updates an existing employee profile using the user ID")
-    @PutMapping("/user/{userId}")
-    public ResponseEntity<EmployeeResource> updateEmployee(@PathVariable UUID userId, @RequestBody UpdateEmployeeResource resource) {
-        var command = UpdateEmployeeCommandFromResourceAssembler.toCommandFromResource(userId, resource);
+    @Operation(summary = "Update an employee profile", description = "Updates an existing employee profile")
+    @PutMapping("/{employeeId}")
+    public ResponseEntity<EmployeeResource> updateEmployee(@PathVariable UUID employeeId, @RequestBody UpdateEmployeeResource resource) {
+        var command = UpdateEmployeeCommandFromResourceAssembler.toCommandFromResource(employeeId, resource);
         var employee = employeeCommandService.handle(command);
         if (employee.isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -76,8 +76,8 @@ public class EmployeesController {
     }
 
     @Operation(summary = "Get an employee profile by User ID", description = "Retrieves the details of a specific employee profile using the User ID")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<EmployeeResource> getEmployeeByUserId(@PathVariable UUID userId) {
+    @GetMapping
+    public ResponseEntity<EmployeeResource> getEmployeeByUserId(@RequestParam(name = "userId") UUID userId) {
         var query = new GetEmployeeByUserIdQuery(new UserId(userId));
         var employee = employeeQueryService.handle(query);
         if (employee.isEmpty()) {
@@ -88,10 +88,10 @@ public class EmployeesController {
         return ResponseEntity.ok(employeeResource);
     }
 
-    @Operation(summary = "Delete an employee profile", description = "Deletes an existing employee profile using the user ID")
-    @DeleteMapping("/user/{userId}")
-    public ResponseEntity<?> deleteEmployee(@PathVariable UUID userId) {
-        var command = new DeleteEmployeeCommand(new UserId(userId));
+    @Operation(summary = "Delete an employee profile", description = "Deletes an existing employee profile")
+    @DeleteMapping("/{employeeId}")
+    public ResponseEntity<?> deleteEmployee(@PathVariable UUID employeeId) {
+        var command = new DeleteEmployeeCommand(new EmployeeId(employeeId));
         employeeCommandService.handle(command);
         return ResponseEntity.ok().build();
     }
