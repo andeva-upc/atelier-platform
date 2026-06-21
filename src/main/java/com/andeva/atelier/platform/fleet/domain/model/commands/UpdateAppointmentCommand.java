@@ -1,5 +1,6 @@
 package com.andeva.atelier.platform.fleet.domain.model.commands;
 
+import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentStatus;
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.AppointmentSummary;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.CustomerId;
@@ -14,6 +15,7 @@ public record UpdateAppointmentCommand(
         CustomerId customerId,
         VehicleId vehicleId,
         LocalDateTime scheduledStart,
+        AppointmentStatus status,
         AppointmentSummary notes
 ) {
     public UpdateAppointmentCommand {
@@ -31,6 +33,9 @@ public record UpdateAppointmentCommand(
         }
         if (scheduledStart == null) {
             throw new IllegalArgumentException("Scheduled start is required");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Status is required");
         }
     }
 }

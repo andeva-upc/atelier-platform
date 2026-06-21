@@ -18,6 +18,7 @@ public class UpdateAppointmentCommandFromResourceAssembler {
                 new CustomerId(resource.customerId()),
                 new VehicleId(resource.vehicleId()),
                 resource.scheduledStart(),
+                resource.status(),
                 resource.notes() == null || resource.notes().isBlank()
                         ? null
                         : new AppointmentSummary(resource.notes())
