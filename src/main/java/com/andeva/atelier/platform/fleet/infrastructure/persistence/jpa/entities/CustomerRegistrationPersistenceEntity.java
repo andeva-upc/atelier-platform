@@ -1,4 +1,4 @@
-package com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities;
+package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.entities;
 
 import com.andeva.atelier.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
 import jakarta.persistence.Column;

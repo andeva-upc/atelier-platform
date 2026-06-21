@@ -88,8 +88,8 @@ public class BranchesController {
     }
 
     @Operation(summary = "Get branches by workshop ID", description = "Retrieves all branches belonging to a specific workshop")
-    @GetMapping("/workshop/{workshopId}")
-    public ResponseEntity<List<BranchResource>> getBranchesByWorkshopId(@PathVariable UUID workshopId) {
+    @GetMapping
+    public ResponseEntity<List<BranchResource>> getBranchesByWorkshopId(@RequestParam(name = "workshopId") UUID workshopId) {
         var query = new GetAllBranchesByWorkshopIdQuery(new WorkshopId(workshopId));
         var branches = branchQueryService.handle(query);
 
@@ -101,7 +101,7 @@ public class BranchesController {
     }
 
     @Operation(summary = "Simulate payment and assign subscription", description = "Simulates a payment (Mock Stripe) using a dummy credit card and assigns the subscription plan")
-    @PostMapping("/{branchId}/subscriptions/pay")
+    @PostMapping("/{branchId}/subscriptions")
     public ResponseEntity<BranchSubscriptionResource> assignSubscription(
             @PathVariable UUID branchId, 
             @RequestBody AssignSubscriptionResource resource) {
@@ -116,7 +116,7 @@ public class BranchesController {
     }
 
     @Operation(summary = "Cancel an active subscription", description = "Cancels the currently active subscription of a branch")
-    @DeleteMapping("/{branchId}/subscriptions/active")
+    @DeleteMapping("/{branchId}/subscription")
     public ResponseEntity<BranchSubscriptionResource> cancelSubscription(@PathVariable UUID branchId) {
         var command = new CancelSubscriptionCommand(new BranchId(branchId));
         var subscription = subscriptionCommandService.handle(command);

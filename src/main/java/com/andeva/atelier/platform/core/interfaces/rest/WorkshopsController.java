@@ -77,8 +77,8 @@ public class WorkshopsController {
     }
 
     @Operation(summary = "Get workshops by owner ID", description = "Retrieves all workshops belonging to a specific owner")
-    @GetMapping("/owner/{ownerId}")
-    public ResponseEntity<List<WorkshopResource>> getWorkshopsByOwnerId(@PathVariable UUID ownerId) {
+    @GetMapping
+    public ResponseEntity<List<WorkshopResource>> getWorkshopsByOwnerId(@RequestParam(name = "ownerId") UUID ownerId) {
         var query = new GetAllWorkshopsByOwnerIdQuery(new OwnerId(ownerId));
         var workshops = workshopQueryService.handle(query);
         

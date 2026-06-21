@@ -22,9 +22,9 @@ public class ProfilesController {
         this.profileQueryService = profileQueryService;
     }
 
-    @GetMapping("/users/{userId}/roles")
+    @GetMapping("/roles")
     @Operation(summary = "Get all profile roles for a specific user ID", description = "Returns a list of roles (e.g. OWNER, CUSTOMER, EMPLOYEE) that the user currently has.")
-    public ResponseEntity<List<String>> getUserProfileRoles(@PathVariable UUID userId) {
+    public ResponseEntity<List<String>> getUserProfileRoles(@RequestParam(name = "userId") UUID userId) {
         var query = new GetProfileRolesByUserIdQuery(new UserId(userId));
         var roles = profileQueryService.handle(query);
         return ResponseEntity.ok(roles);

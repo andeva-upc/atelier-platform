@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.assemblers;
 
 import com.andeva.atelier.platform.core.domain.model.valueobjects.EmployeeId;
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.EmployeeRegistrationPersistenceEntity;
+import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.entities.EmployeeRegistrationPersistenceEntity;
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.EmployeeRegistration;
 import com.andeva.atelier.platform.fleet.domain.model.valueobjects.EmployeeRegistrationStatus;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;

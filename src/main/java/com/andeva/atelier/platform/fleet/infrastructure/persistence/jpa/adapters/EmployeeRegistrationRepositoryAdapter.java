@@ -1,7 +1,7 @@
 package com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.adapters;
 
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.entities.EmployeeRegistrationPersistenceEntity;
-import com.andeva.atelier.platform.core.infrastructure.persistence.jpa.repositories.EmployeeRegistrationPersistenceRepository;
+import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.entities.EmployeeRegistrationPersistenceEntity;
+import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.repositories.EmployeeRegistrationPersistenceRepository;
 import com.andeva.atelier.platform.fleet.domain.model.aggregates.EmployeeRegistration;
 import com.andeva.atelier.platform.fleet.domain.repositories.EmployeeRegistrationRepository;
 import com.andeva.atelier.platform.fleet.infrastructure.persistence.jpa.assemblers.EmployeeRegistrationPersistenceAssembler;
