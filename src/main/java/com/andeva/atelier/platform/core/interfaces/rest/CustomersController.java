@@ -95,5 +95,6 @@ public class CustomersController {
         customerCommandService.handle(command);
         return ResponseEntity.ok().build();
     }
+
 }
 

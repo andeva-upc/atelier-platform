@@ -60,6 +60,20 @@ public class UsersController {
         return ResponseEntity.ok(userResource);
     }
 
+    @Operation(summary = "Get user by email", description = "Retrieves the details of a specific user using their email address")
+    @GetMapping
+    public ResponseEntity<UserResource> getUserByEmail(@RequestParam(name = "email") String email) {
+        var query = new com.andeva.atelier.platform.iam.domain.model.queries.GetUserByEmailQuery(new com.andeva.atelier.platform.iam.domain.model.valueobjects.EmailAddress(email));
+        var user = userQueryService.handle(query);
+
+        if (user.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
+        return ResponseEntity.ok(userResource);
+    }
+
     @Operation(summary = "Update user email", description = "Updates the email address of a specific user and returns a new authentication token")
     @PutMapping("/{userId}/email")
     public ResponseEntity<AuthenticatedUserResource> updateUserEmail(@PathVariable UUID userId, @RequestBody UpdateUserEmailResource resource) {
