@@ -144,6 +144,7 @@ Para que tengas una visión global, aquí tienes el listado de todas las rutas (
 - `/api/v1/authentication/sign-in`
 - `/api/v1/authentication/sign-up`
 - `/api/v1/users/{userId}*`
+- `/api/v1/users?email={email}`
 
 **Perfiles, Talleres y Sucursales (Core Context)**
 - `/api/v1/profiles`
@@ -185,6 +186,26 @@ Para que tengas una visión global, aquí tienes el listado de todas las rutas (
 ## 📚 Referencia Completa de Endpoints
 
 A continuación, se detalla **CADA ENDPOINT** disponible en el sistema con sus parámetros, body a enviar y lo que vas a recibir.
+
+### `GET /api/v1/users`
+**Propósito:** Get user by email
+
+*Retrieves the details of a specific user using their email address. Useful for checking if a user account exists before creating a customer profile.*
+
+**📍 Parámetros (URL / Query):**
+- `email` (query):  (Requerido: true)
+
+**📥 Qué vas a recibir (Responses):**
+- **Código HTTP 200**: OK
+  ```json
+  {
+    "id": "string",
+    "email": "string"
+  }
+  ```
+- **Código HTTP 404**: Not Found
+
+---
 
 ### `GET /api/v1/profiles`
 **Propósito:** Get profile by document number
