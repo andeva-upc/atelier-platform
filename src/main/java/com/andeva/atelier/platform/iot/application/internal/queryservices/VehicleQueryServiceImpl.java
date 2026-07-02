@@ -6,6 +6,7 @@ import com.andeva.atelier.platform.iot.application.queryservices.VehicleQuerySer
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetActiveVehiclesByCustomerIdQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehiclesAvailableForLinkingQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleByIdQuery;
 import com.andeva.atelier.platform.iot.domain.repositories.VehicleRegistrationRepository;
 import com.andeva.atelier.platform.iot.domain.repositories.VehicleRepository;
 import org.springframework.stereotype.Service;
@@ -55,5 +56,11 @@ public class VehicleQueryServiceImpl implements VehicleQueryService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Vehicle> handle(GetVehicleByIdQuery query) {
+        return vehicleRepository.findById(query.vehicleId());
     }
 }
