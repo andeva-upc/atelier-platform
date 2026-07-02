@@ -8,6 +8,7 @@ import com.andeva.atelier.platform.iot.application.queryservices.VehicleQuerySer
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehiclesAvailableForLinkingQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleDtcAlertHistoryQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleTelemetrySnapshotHistoryQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleByIdQuery;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.DtcAlertResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.RegisterVehicleResource;
 import com.andeva.atelier.platform.iot.interfaces.rest.resources.TelemetrySnapshotResource;
@@ -85,6 +86,22 @@ public class VehiclesController {
         return ResponseEntity.status(httpStatus).body(
                 ProblemDetail.forStatusAndDetail(httpStatus, "Unsupported vehicle status filter: " + status)
         );
+    }
+
+    /**
+     * Retrieves client vehicle details by its unique identifier.
+     * @param id the unique identifier of the vehicle
+     * @return a ResponseEntity containing the VehicleResource
+     */
+    @GetMapping("/{id}")
+    @Operation(summary = "Get client vehicle by ID", description = "Retrieves client vehicle details by its unique identifier")
+    public ResponseEntity<?> getVehicleById(@PathVariable UUID id) {
+        var query = new GetVehicleByIdQuery(new VehicleId(id));
+        var vehicleOpt = vehicleQueryService.handle(query);
+        if (vehicleOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(VehicleResourceFromAggregateAssembler.toResourceFromAggregate(vehicleOpt.get()));
     }
 
     /**
