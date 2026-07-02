@@ -3,8 +3,10 @@ package com.andeva.atelier.platform.iot.application.queryservices;
 import com.andeva.atelier.platform.iot.domain.model.aggregates.Vehicle;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetActiveVehiclesByCustomerIdQuery;
 import com.andeva.atelier.platform.iot.domain.model.queries.GetVehiclesAvailableForLinkingQuery;
+import com.andeva.atelier.platform.iot.domain.model.queries.GetVehicleByIdQuery;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service interface for handling Vehicle queries inside the iot context.
@@ -24,4 +26,11 @@ public interface VehicleQueryService {
      * @return the list of active vehicles
      */
     List<Vehicle> handle(GetActiveVehiclesByCustomerIdQuery query);
+
+    /**
+     * Handles retrieving a vehicle by its unique identifier.
+     * @param query the query containing the vehicle ID
+     * @return an Optional containing the vehicle if found, or empty
+     */
+    Optional<Vehicle> handle(GetVehicleByIdQuery query);
 }
