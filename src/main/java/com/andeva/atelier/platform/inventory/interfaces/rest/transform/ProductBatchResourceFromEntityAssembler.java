@@ -9,7 +9,8 @@ public class ProductBatchResourceFromEntityAssembler {
                 entity.getBatchId().toString(),
                 entity.getInitialQuantity().value(),
                 entity.getAvailableQuantity().value(),
-                entity.getAcquisitionCost().amount().doubleValue()
+                entity.getAcquisitionCost().amount().doubleValue(),
+                entity.getReceptionDate()
         );
     }
 }

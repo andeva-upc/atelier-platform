@@ -22,23 +22,24 @@ public class ProductBatch {
         this.receptionDate = new Date();
     }
 
-    private ProductBatch(UUID batchId, InventoryQuantity initialQuantity, InventoryQuantity availableQuantity, Money acquisitionCost, Long version) {
+    private ProductBatch(UUID batchId, InventoryQuantity initialQuantity, InventoryQuantity availableQuantity, Money acquisitionCost, Date receptionDate, Long version) {
         this.batchId = batchId;
         this.initialQuantity = initialQuantity;
         this.availableQuantity = availableQuantity;
         this.acquisitionCost = acquisitionCost;
-        this.receptionDate = new Date();
+        this.receptionDate = receptionDate != null ? receptionDate : new Date();
         this.version = version;
     }
 
-    public static ProductBatch reconstitute(UUID batchId, InventoryQuantity initialQuantity, InventoryQuantity availableQuantity, Money acquisitionCost, Long version) {
-        return new ProductBatch(batchId, initialQuantity, availableQuantity, acquisitionCost, version);
+    public static ProductBatch reconstitute(UUID batchId, InventoryQuantity initialQuantity, InventoryQuantity availableQuantity, Money acquisitionCost, Date receptionDate, Long version) {
+        return new ProductBatch(batchId, initialQuantity, availableQuantity, acquisitionCost, receptionDate, version);
     }
 
     public UUID getBatchId() { return batchId; }
     public InventoryQuantity getInitialQuantity() { return initialQuantity; }
     public InventoryQuantity getAvailableQuantity() { return availableQuantity; }
     public Money getAcquisitionCost() { return acquisitionCost; }
+    public Date getReceptionDate() { return receptionDate; }
     public Long getVersion() { return version; }
     
     public void deductQuantity(InventoryQuantity amount) { this.availableQuantity = this.availableQuantity.subtract(amount); }

@@ -64,6 +64,7 @@ public class ProductEntityAssembler {
                     new InventoryQuantity(be.getInitialQuantity()), 
                     new InventoryQuantity(be.getAvailableQuantity()), 
                     be.getAcquisitionCost(),
+                    be.getCreatedAt() != null ? java.util.Date.from(be.getCreatedAt()) : null,
                     be.getVersion()
                 ));
             }
