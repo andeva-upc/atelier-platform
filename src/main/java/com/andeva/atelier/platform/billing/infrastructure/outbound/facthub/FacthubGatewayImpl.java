@@ -39,17 +39,17 @@ public class FacthubGatewayImpl implements FacthubGateway {
             String customerDocumentType, 
             String customerDocumentNumber, 
             String customerName, 
-            Quote quote
+            List<FacthubGateway.FacthubItem> items
     ) {
         try {
-            // Map Quote items to Facthub API items
-            // In a real scenario, we would map the actual Work Order Items.
-            // Since Quote only holds amounts in our domain, we'll send a summary item.
-            var item = new FacthubIssueInvoiceRequest.Item(
-                    "Servicios de taller automotriz según orden " + quote.getWorkOrderId(),
-                    1,
-                    quote.getTotalAmount().amount()
-            );
+            // Map FacthubItem list to Facthub API items DTO
+            List<FacthubIssueInvoiceRequest.Item> apiItems = items.stream()
+                    .map(item -> new FacthubIssueInvoiceRequest.Item(
+                            item.description(),
+                            item.quantity(),
+                            item.unitPrice()
+                    ))
+                    .toList();
 
             var requestDto = new FacthubIssueInvoiceRequest(
                     issuerRuc,
@@ -57,8 +57,19 @@ public class FacthubGatewayImpl implements FacthubGateway {
                     customerDocumentType,
                     customerDocumentNumber,
                     customerName,
-                    List.of(item)
+                    apiItems
             );
+
+            System.out.println("=== ENVIANDO PETICION A FACTHUB (JSON) ===");
+            try {
+                var objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestDto);
+                System.out.println(json);
+            } catch (Exception e) {
+                System.out.println("Error serializing requestDto: " + e.getMessage());
+                System.out.println(requestDto);
+            }
+            System.out.println("==========================================");
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
