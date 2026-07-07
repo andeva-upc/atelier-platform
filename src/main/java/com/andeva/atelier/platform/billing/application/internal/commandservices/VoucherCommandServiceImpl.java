@@ -15,8 +15,14 @@ import com.andeva.atelier.platform.core.domain.model.queries.GetBranchByIdQuery;
 import com.andeva.atelier.platform.core.domain.model.queries.GetWorkshopByIdQuery;
 import com.andeva.atelier.platform.shared.domain.model.valueobjects.BranchId;
 import com.andeva.atelier.platform.shared.application.result.Result;
+import com.andeva.atelier.platform.operations.application.queryservices.WorkOrderQueryService;
+import com.andeva.atelier.platform.operations.domain.model.queries.GetWorkOrderByIdQuery;
+import com.andeva.atelier.platform.operations.domain.model.valueobjects.WorkOrderId;
+import com.andeva.atelier.platform.inventory.application.queryservices.ProductQueryService;
+import com.andeva.atelier.platform.inventory.domain.model.queries.GetProductByIdQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 /**
  * Implementation of the VoucherCommandService interface.
@@ -32,18 +38,24 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
     private final BranchQueryService branchQueryService;
     private final WorkshopQueryService workshopQueryService;
     private final FacthubGateway facthubGateway;
+    private final WorkOrderQueryService workOrderQueryService;
+    private final ProductQueryService productQueryService;
 
     public VoucherCommandServiceImpl(
             VoucherRepository voucherRepository,
             QuoteRepository quoteRepository,
             BranchQueryService branchQueryService,
             WorkshopQueryService workshopQueryService,
-            FacthubGateway facthubGateway) {
+            FacthubGateway facthubGateway,
+            WorkOrderQueryService workOrderQueryService,
+            ProductQueryService productQueryService) {
         this.voucherRepository = voucherRepository;
         this.quoteRepository = quoteRepository;
         this.branchQueryService = branchQueryService;
         this.workshopQueryService = workshopQueryService;
         this.facthubGateway = facthubGateway;
+        this.workOrderQueryService = workOrderQueryService;
+        this.productQueryService = productQueryService;
     }
 
     @Override
@@ -79,7 +91,7 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
                 command.customerDocumentType(),
                 command.customerDocumentNumber(),
                 command.customerName(),
-                quote
+                getDetailedBillingItems(quote)
         );
 
         if (externalInvoiceIdOpt.isEmpty()) {
@@ -194,7 +206,7 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
                 command.customerDocumentType(),
                 command.customerDocumentNumber(),
                 command.customerName(),
-                quote
+                getDetailedBillingItems(quote)
         );
 
         if (externalInvoiceIdOpt.isEmpty()) {
@@ -222,5 +234,64 @@ public class VoucherCommandServiceImpl implements VoucherCommandService {
         } catch (IllegalArgumentException | IllegalStateException e) {
             return Result.failure(VoucherCommandFailure.INVALID_VOUCHER_DATA);
         }
+    }
+
+    private List<FacthubGateway.FacthubItem> getDetailedBillingItems(com.andeva.atelier.platform.billing.domain.model.aggregates.Quote quote) {
+        List<FacthubGateway.FacthubItem> items = new java.util.ArrayList<>();
+        
+        var workOrderOpt = workOrderQueryService.handle(new GetWorkOrderByIdQuery(new WorkOrderId(quote.getWorkOrderId())));
+        if (workOrderOpt.isPresent()) {
+            var workOrder = workOrderOpt.get();
+            if (workOrder.getTasks() != null) {
+                for (var task : workOrder.getTasks()) {
+                    // Calculate labor price (task total price - sum of its products)
+                    com.andeva.atelier.platform.shared.domain.model.valueobjects.Money laborPrice = task.getPrice();
+                    if (task.getProducts() != null) {
+                        for (var productAssoc : task.getProducts()) {
+                            if (!productAssoc.isDeleted()) {
+                                laborPrice = laborPrice.minus(productAssoc.getTotalAmount());
+                            }
+                        }
+                    }
+                    
+                    // Add the task itself as labor item
+                    items.add(new FacthubGateway.FacthubItem(
+                            task.getDescription().value(),
+                            1,
+                            laborPrice.amount()
+                    ));
+                    
+                    // Add each product
+                    if (task.getProducts() != null) {
+                        for (var productAssoc : task.getProducts()) {
+                            if (!productAssoc.isDeleted()) {
+                                String productName = "Producto " + productAssoc.getProductId().value();
+                                var productOpt = productQueryService.handle(new GetProductByIdQuery(productAssoc.getProductId().value()));
+                                if (productOpt.isPresent()) {
+                                    productName = productOpt.get().getName().name();
+                                }
+                                
+                                items.add(new FacthubGateway.FacthubItem(
+                                        productName,
+                                        productAssoc.getQuantity().value(),
+                                        productAssoc.getUnitPrice().amount()
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Fallback to summary item if no items could be resolved
+        if (items.isEmpty()) {
+            items.add(new FacthubGateway.FacthubItem(
+                    "Servicios de taller automotriz según orden " + quote.getWorkOrderId(),
+                    1,
+                    quote.getTotalAmount().amount()
+            ));
+        }
+        
+        return items;
     }
 }
